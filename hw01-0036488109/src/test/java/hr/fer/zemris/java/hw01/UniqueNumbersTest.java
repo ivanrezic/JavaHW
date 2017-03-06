@@ -35,8 +35,6 @@ public class UniqueNumbersTest {
 	@Test
 	public void brojiElementeUStablu() {
 		TreeNode glava = null;
-		assertEquals(treeSize(glava),0);
-		
 		glava = addNode(glava, 42);
 		glava = addNode(glava, 76);
 		glava = addNode(glava, 21);
@@ -53,6 +51,12 @@ public class UniqueNumbersTest {
 		assertEquals(treeSize(glava),7);
 		glava = addNode(glava, 12);
 		assertEquals(treeSize(glava),8);
+		
+	}
+	@Test
+	public void brojiElementeUPraznomStablu() {
+		TreeNode glava = null;
+		assertEquals(treeSize(glava),0);
 		
 	}
 	

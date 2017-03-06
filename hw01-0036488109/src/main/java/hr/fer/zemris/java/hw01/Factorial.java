@@ -20,31 +20,30 @@ public class Factorial {
 	public static void main(String[] args) {
 
 		System.out.println("Unesite broj > ");
-		Scanner sc = new Scanner(System.in);
+		Scanner scanner = new Scanner(System.in);
 
-		String sljedeciToken;
 
-		while (sc.hasNext()) {
-			sljedeciToken = sc.next();
+		while (scanner.hasNext()) {
+			String sljedeciToken = scanner.next();
 			if (sljedeciToken.equals("kraj")) {
 				break;
 			}
 			try {
-				int temp = Integer.parseInt(sljedeciToken);
+				int intVrijednost = Integer.parseInt(sljedeciToken);
 
-				if (temp < 1 || temp > 20) {
+				if (intVrijednost < 1 || intVrijednost > 20) {
 					System.out.println("Uneseni broj mora biti u segmentu [1,20]");
 					continue;
 				}
 
-				System.out.println(Factorial.izracunaj(temp));
+				System.out.println(Factorial.izracunaj(intVrijednost));
 			} catch (NumberFormatException ex) {
 				System.out.println("'" + sljedeciToken + "' nije cijeli broj.");
 			}
 
 		}
 		System.out.println("Doviđenja.");
-		sc.close();
+		scanner.close();
 	}
 
 	/**
