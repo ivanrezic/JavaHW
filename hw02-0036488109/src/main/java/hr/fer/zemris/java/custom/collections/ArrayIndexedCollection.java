@@ -19,9 +19,7 @@ public class ArrayIndexedCollection extends Collection {
 		capacity = initialCapacity;
 		elements = new Object[capacity];
 
-		if (other != null) {
-			this.addAll(other);
-		}
+		this.addAll(other);
 	}
 
 	public ArrayIndexedCollection(int initialCapacity) {
@@ -35,8 +33,6 @@ public class ArrayIndexedCollection extends Collection {
 	public ArrayIndexedCollection(Collection other) {
 		this(other, MINIMUM_CAPACITY);
 	}
-	
-	
 
 	@Override
 	public int size() {
@@ -92,7 +88,7 @@ public class ArrayIndexedCollection extends Collection {
 
 	public void remove(int index) {
 		if (index < 0 || index >= size) {
-			throw new IndexOutOfBoundsException("Index range should be from 0 to " + (size-1));
+			throw new IndexOutOfBoundsException("Index range should be from 0 to " + (size - 1));
 		}
 		remove(this.get(index));
 	}
