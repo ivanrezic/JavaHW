@@ -136,7 +136,8 @@ public class ArrayIndexedCollection extends Collection {
 	}
 	
 	public Object[] resize(Object[] array,int resizeCoefficient){
-		Object[] temporary = new Object[array.length * resizeCoefficient];
+		capacity = array.length * resizeCoefficient;
+		Object[] temporary = new Object[capacity];
 		
 		for (int i = 0; i < array.length; i++) {
 			temporary[i] = array[i];
