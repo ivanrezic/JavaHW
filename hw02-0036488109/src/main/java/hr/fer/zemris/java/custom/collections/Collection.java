@@ -6,7 +6,7 @@ public class Collection {
 	}
 
 	public boolean isEmpty() {
-		return this.size() == 0 ? false : true;
+		return this.size() == 0 ? true : false;
 	}
 
 	public int size() {
@@ -16,7 +16,6 @@ public class Collection {
 	public void add(Object value) {
 	}
 
-	// It is OK to ask if collection contains null provjeriti sta s tim kasnije
 	public boolean contains(Object value) {
 		return false;
 	}
@@ -33,15 +32,22 @@ public class Collection {
 	}
 
 	void addAll(Collection other) {
-		
-		class Processor {
 
+		class LocalProcessor extends Processor {
+
+			@Override
 			public void process(Object value) {
-
+				add(value);
 			}
+
 		}
+
+		if (other != null) {
+			other.forEach(new LocalProcessor());
+		}
+
 	}
-	
-	public void clear(){
+
+	public void clear() {
 	}
 }
