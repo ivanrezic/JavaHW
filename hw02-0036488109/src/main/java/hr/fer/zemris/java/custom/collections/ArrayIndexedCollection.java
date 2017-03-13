@@ -1,10 +1,7 @@
 package hr.fer.zemris.java.custom.collections;
 
-import org.junit.Before;
-
 public class ArrayIndexedCollection extends Collection {
 	public static final int DEFAULT_CAPACITY = 16;
-	public static final int MINIMUM_CAPACITY = 1;
 	public static final int CAPACITY_EXTENDING_COEFFICIENT = 2;
 
 	private int size;
@@ -19,7 +16,7 @@ public class ArrayIndexedCollection extends Collection {
 		capacity = initialCapacity;
 		elements = new Object[capacity];
 
-		this.addAll(other);
+		addAll(other);
 	}
 
 	public ArrayIndexedCollection(int initialCapacity) {
@@ -31,7 +28,7 @@ public class ArrayIndexedCollection extends Collection {
 	}
 
 	public ArrayIndexedCollection(Collection other) {
-		this(other, MINIMUM_CAPACITY);
+		this(other, other.size());
 	}
 
 	@Override
@@ -43,62 +40,46 @@ public class ArrayIndexedCollection extends Collection {
 	public void add(Object value) {
 		if (value == null) {
 			throw new IllegalArgumentException();
-		} else if (size < capacity) {
-			elements[size++] = value;
-		} else {
-			capacity *= CAPACITY_EXTENDING_COEFFICIENT;
-			Object[] temporary = new Object[capacity];
-
-			for (int i = 0; i < size; i++) {
-				temporary[i] = elements[i];
-			}
-			temporary[size++] = value;
-			elements = temporary;
+		} else if (size == capacity) {
+			elements = resize(elements, CAPACITY_EXTENDING_COEFFICIENT);
 		}
+
+		elements[size++] = value;
 	}
 
 	@Override
 	public boolean contains(Object value) {
-		for (int i = 0; i < size; i++) {
-			if (elements[i].equals(value)) {
-				return true;
-			}
-		}
-
-		return false;
+		return indexOf(value) == -1 ? false : true;
 	}
 
 	@Override
 	public boolean remove(Object value) {
-		for (int i = 0; i < size; i++) {
-			if (elements[i].equals(value)) {
-				for (int j = i + 1; j < size; j++) {
-					elements[j - 1] = elements[j];
-				}
-
-				elements[size - 1] = null;
-				size--;
-
-				return true;
-			}
+		try {
+			remove(indexOf(value));
+		} catch (IndexOutOfBoundsException e) {
+			return false;
 		}
-
-		return false;
+		
+		return true;
 	}
 
 	public void remove(int index) {
 		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException("Index range should be from 0 to " + (size - 1));
 		}
-		remove(this.get(index));
+		
+		for (int i = index; i < size -1; i++) {
+			elements[i] = elements[i+1];
+		}
+		
+		elements[size--] = null;
 	}
 
 	@Override
 	public Object[] toArray() {
-		int length = this.size();
-		Object[] newArray = new Object[length];
+		Object[] newArray = new Object[size];
 
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < size; i++) {
 			newArray[i] = this.get(i);
 		}
 
@@ -133,21 +114,15 @@ public class ArrayIndexedCollection extends Collection {
 		} else if (value == null) {
 			throw new IllegalArgumentException("Value shouldnt be null");
 		} else if (size == capacity) {
-			capacity *= CAPACITY_EXTENDING_COEFFICIENT;
-		}
-
-		Object[] temporary = new Object[capacity];
-
-		for (int i = 0; i < position; i++) {
-			temporary[i] = elements[i];
-		}
-		temporary[position] = value;
-		for (int i = position; i < size; i++) {
-			temporary[i + 1] = elements[i];
+			elements = resize(elements, CAPACITY_EXTENDING_COEFFICIENT);
 		}
 
 		size++;
-		elements = temporary;
+		for (int i = size; i > position; i--) {
+			elements[i] = elements[i-1];
+		}
+		
+		elements[position] = value;
 	}
 
 	public int indexOf(Object value) {
@@ -158,5 +133,15 @@ public class ArrayIndexedCollection extends Collection {
 		}
 
 		return -1;
+	}
+	
+	public Object[] resize(Object[] array,int resizeCoefficient){
+		Object[] temporary = new Object[array.length * resizeCoefficient];
+		
+		for (int i = 0; i < array.length; i++) {
+			temporary[i] = array[i];
+		}
+		
+		return temporary;
 	}
 }
