@@ -1,7 +1,5 @@
 package hr.fer.zemris.java.custom.collections;
 
-import java.util.Arrays;
-
 public class LinkedListIndexedCollection extends Collection {
 	private int size;
 	private ListNode first;
@@ -172,21 +170,28 @@ public class LinkedListIndexedCollection extends Collection {
 	}
 
 	public void insert(Object value, int position) {
-		if (position < 0 || position >= size) {
-			throw new IndexOutOfBoundsException("Legal postitions are 0 to " + (size - 1));
+		if (position < 0 || position > size) {
+			throw new IndexOutOfBoundsException("Legal postitions are 0 to " + size);
 		} else if (value == null) {
 			throw new IllegalArgumentException("Value shouldnt be null");
-		} else if (position == size - 1) {
+		} else if (position == size || size == 0) {
 			add(value);
 		} else if (position == 0) {
 			ListNode newNode = new ListNode(null, first, value);
 			first = newNode;
+			size++;
+		} else if (position == size - 1) {
+			Object temporary = get(size - 1);
+			remove(size - 1);
+			add(value);
+			add(temporary);
+
 		} else {
 			ListNode node = first;
 
 			int counter = 0;
 			while (counter != position) {
-				first = first.next;
+				node = node.next;
 				counter++;
 			}
 
@@ -194,60 +199,5 @@ public class LinkedListIndexedCollection extends Collection {
 			node.previous = newNode;
 			size++;
 		}
-
 	}
-
-	public static void main(String[] args) {
-		LinkedListIndexedCollection kolekcija = new LinkedListIndexedCollection();
-		kolekcija.add(5);
-		kolekcija.add(6);
-		kolekcija.add(7);
-		kolekcija.add(8);
-		kolekcija.add(4);
-		kolekcija.add(2);
-		kolekcija.add(1);
-		ListNode first = kolekcija.first;
-		for (int i = 0; i < kolekcija.size; i++) {
-			System.out.printf(first.value + " ");
-			first = first.next;
-		}
-		kolekcija.remove((Object) 8);
-		System.out.println();
-		first = kolekcija.first;
-		for (int i = 0; i < kolekcija.size; i++) {
-			System.out.printf(first.value + " ");
-			first = first.next;
-		}
-		System.out.println();
-		ArrayIndexedCollection col = new ArrayIndexedCollection(2);
-		col.add(new Integer(20));
-		col.add("New York");
-		col.add("San Francisco"); // here the internal array is reallocated to 4
-		System.out.println(col.contains("New York")); // writes: true
-		col.remove(1); // removes "New York"; shifts "San Francisco" to position
-						// 1
-		System.out.println(col.get(1)); // writes: "San Francisco"
-		System.out.println(col.size()); // writes: 2
-		col.add("Los Angeles");
-		LinkedListIndexedCollection col2 = new LinkedListIndexedCollection(col);
-		class P extends Processor {
-			public void process(Object o) {
-				System.out.println(o);
-			}
-		}
-		;
-		System.out.println("col1 elements:");
-		col.forEach(new P());
-		System.out.println("col1 elements again:");
-		System.out.println(Arrays.toString(col.toArray()));
-		System.out.println("col2 elements:");
-		col2.forEach(new P());
-		System.out.println("col2 elements again:");
-		System.out.println(Arrays.toString(col2.toArray()));
-		System.out.println(col.contains(col2.get(1))); // true
-		System.out.println(col2.contains(col.get(1))); // true
-		col.remove(new Integer(20)); // removes 20 from collection (at position
-										// 0)
-	}
-
 }
