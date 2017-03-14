@@ -39,7 +39,7 @@ public class ArrayIndexedCollection extends Collection {
 	@Override
 	public void add(Object value) {
 		if (value == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Value shouldnt be null");
 		} else if (size == capacity) {
 			elements = resize(elements, CAPACITY_EXTENDING_COEFFICIENT);
 		}
