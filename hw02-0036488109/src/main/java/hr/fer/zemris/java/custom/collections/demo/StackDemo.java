@@ -14,7 +14,7 @@ public class StackDemo {
 		String[] elements = args[0].split(" +");
 
 		for (String element : elements) {
-			if (element.matches("(-{0,1}(?!0)\\d+)")) {
+			if (element.matches("(-?\\d+)")) {
 				stack.push(Integer.parseInt(element));
 			} else {
 				checkExpression(stack);
