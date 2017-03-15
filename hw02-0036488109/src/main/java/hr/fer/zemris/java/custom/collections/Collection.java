@@ -34,8 +34,8 @@ public class Collection {
 	}
 
 	/**
-	 * Method which checks number of objects in calling collection.
-	 * Note: It is not implemented in this class.
+	 * Method which checks number of objects in calling collection. Note: It is
+	 * not implemented in this class.
 	 *
 	 * @return number of containing objects
 	 */
@@ -54,8 +54,8 @@ public class Collection {
 	}
 
 	/**
-	 * Method which tells if value type <code>Object</code> is contained in calling collection.
-	 * Note: It is not implemented in this class.
+	 * Method which tells if value type <code>Object</code> is contained in
+	 * calling collection. Note: It is not implemented in this class.
 	 *
 	 * @param value
 	 *            the value
@@ -78,8 +78,8 @@ public class Collection {
 	}
 
 	/**
-	 * Method which returns array containing references to calling collection elements.
-	 * Note: It is not implemented in this class.
+	 * Method which returns array containing references to calling collection
+	 * elements. Note: It is not implemented in this class.
 	 * 
 	 * @return array of references type <code>Object</code>
 	 */
@@ -88,8 +88,8 @@ public class Collection {
 	}
 
 	/**
-	 * Method which iterates through each collection element.
-	 * Note: It is not implemented in this class.
+	 * Method which iterates through each collection element. Note: It is not
+	 * implemented in this class.
 	 * 
 	 * @param processor
 	 *            <code>Processor</code> object with processing abilities.
@@ -98,13 +98,18 @@ public class Collection {
 	}
 
 	/**
-	 * Method which adds into itself all elements from given collection.
-	 * This other collection remains unchanged.
+	 * Method which adds into itself all elements from given collection. This
+	 * other collection remains unchanged.
 	 *
 	 * @param other
 	 *            collection containg wanted elements
+	 * @throws NullPointerException
+	 *             when <code>null</code> is set as argument
 	 */
 	void addAll(Collection other) {
+		if (other == null) {
+			throw new NullPointerException("Value given can not be null.");
+		}
 
 		class LocalProcessor extends Processor {
 
@@ -122,8 +127,8 @@ public class Collection {
 	}
 
 	/**
-	 * Method which removes all elements from calling collection.
-	 * Note: It is not implemented in this class.
+	 * Method which removes all elements from calling collection. Note: It is
+	 * not implemented in this class.
 	 */
 	public void clear() {
 	}

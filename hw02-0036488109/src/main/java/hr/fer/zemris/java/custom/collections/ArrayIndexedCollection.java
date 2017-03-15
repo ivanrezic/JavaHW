@@ -3,7 +3,7 @@ package hr.fer.zemris.java.custom.collections;
 /**
  * ArrayIndexedCollection is Collection subclass which represents
  * <code>Object</code> array. ArrayIndexedCollection instance is defined by its
- * size, capacity and elements it contains. List of methods contained are:
+ * size, capacity and elements it contains.
  */
 public class ArrayIndexedCollection extends Collection {
 
@@ -228,7 +228,7 @@ public class ArrayIndexedCollection extends Collection {
 	/**
 	 * Method which inserts given value at wanted position.Allowed position is
 	 * (<code>0</code> to <code>size-1</code>). It does not overwrite value at
-	 * given position but it removes all elements from that postiti by one
+	 * given position but it removes all elements from that position by one
 	 * position to the right.
 	 *
 	 * @param value
