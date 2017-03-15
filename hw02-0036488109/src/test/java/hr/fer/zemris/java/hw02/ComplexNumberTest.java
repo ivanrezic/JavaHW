@@ -79,6 +79,33 @@ public class ComplexNumberTest {
 		assertEquals(0.5 * PI, c4.getAngle(), PRECISION);
 		assertEquals(0, c5.getAngle(), PRECISION);
 	}
+	
+	@Test
+	public void parseComplexNumber() throws Exception {
+		ComplexNumber n1 = ComplexNumber.parse("510");
+		ComplexNumber n2 = ComplexNumber.parse("-510");
+		ComplexNumber n3 = ComplexNumber.parse("0.510");
+		ComplexNumber n4 = ComplexNumber.parse("-0.510");
+		ComplexNumber n5 = ComplexNumber.parse("510i");
+		ComplexNumber n6 = ComplexNumber.parse("-510i");
+		ComplexNumber n7 = ComplexNumber.parse("0.510i");
+		ComplexNumber n8 = ComplexNumber.parse("-0.510i");
+		ComplexNumber n10 = ComplexNumber.parse("-1321.1122+0.2332i");
+		ComplexNumber n11 = ComplexNumber.parse("123213.0001-51i");
+		ComplexNumber n12 = ComplexNumber.parse("-1.1231-232322.9i");
+		
+		assertTrue(n1.equals(new ComplexNumber(510, 0)));
+		assertTrue(n2.equals(new ComplexNumber(-510, 0)));
+		assertTrue(n3.equals(new ComplexNumber(0.510, 0)));
+		assertTrue(n4.equals(new ComplexNumber(-0.510, 0)));
+		assertTrue(n5.equals(new ComplexNumber(0, 510)));
+		assertTrue(n6.equals(new ComplexNumber(0, -510)));
+		assertTrue(n7.equals(new ComplexNumber(0, 0.510)));
+		assertTrue(n8.equals(new ComplexNumber(0, -0.510)));
+		assertTrue(n10.equals(new ComplexNumber(-1321.1122, 0.2332)));
+		assertTrue(n11.equals(new ComplexNumber(123213.0001, -51)));
+		assertTrue(n12.equals(new ComplexNumber(-1.1231, -232322.9)));
+	}
 
 	@Test
 	public void complexNumberMultiplication() throws Exception {

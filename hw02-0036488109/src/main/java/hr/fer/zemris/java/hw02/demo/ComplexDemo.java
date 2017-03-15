@@ -20,6 +20,9 @@ public class ComplexDemo {
 		System.out.println(c1);
 		System.out.println(c2);
 		System.out.println(c3);
+		
+		ComplexNumber c11 = ComplexNumber.parse("510i");
+		System.err.println(c11);
 
 	}
 
