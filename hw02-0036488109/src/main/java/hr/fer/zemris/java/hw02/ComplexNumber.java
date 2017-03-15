@@ -9,6 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ComplexNumber {
+	public static final double PRECISION = 0.0001;
+	
 	private final double real;
 	private final double imaginary;
 
@@ -141,4 +143,34 @@ public class ComplexNumber {
 		}
 		return roots;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(imaginary);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(real);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ComplexNumber other = (ComplexNumber) obj;
+		if (Math.abs(imaginary-other.imaginary) > PRECISION)
+			return false;
+		if (Math.abs(real-other.real) > PRECISION)
+			return false;
+		return true;
+	}
+	
+	
 }

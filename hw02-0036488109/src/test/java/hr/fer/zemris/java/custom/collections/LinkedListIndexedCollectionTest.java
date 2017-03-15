@@ -13,7 +13,7 @@ public class LinkedListIndexedCollectionTest {
 	LinkedListIndexedCollection emptyOne;
 
 	@Before
-	public void initializeArrayIndexedCollections() {
+	public void initializeLinkedListIndexedIndexedCollections() {
 		array = new ArrayIndexedCollection();
 		second = new LinkedListIndexedCollection(first);
 		emptyOne = new LinkedListIndexedCollection();
