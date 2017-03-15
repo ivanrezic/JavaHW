@@ -117,6 +117,10 @@ public class ComplexNumber {
 		double nominatorReal = (real * c.getReal() + imaginary * c.getImaginary());
 		double nominatorImaginary = (imaginary * c.getReal() - real * c.getImaginary());
 		double denominator = c.getReal() * c.getReal() + c.getImaginary() * c.getImaginary();
+		
+		if (denominator == 0) {
+			throw new ArithmeticException("Nedozvoljeno djeljenje s 0");
+		}
 
 		return new ComplexNumber(nominatorReal / denominator, nominatorImaginary / denominator);
 	}
