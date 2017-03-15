@@ -55,7 +55,7 @@ public class ComplexNumber {
 
 	public static ComplexNumber parse(String s) {
 		String regexReal = "-?(?>\\d*\\.?\\d+)(?!i)";
-		String regexImaginary = "-?\\d*\\.?\\d+(?=i)";
+		String regexImaginary = "-?\\d*(\\.\\d+)?(?=i)";
 
 		return new ComplexNumber(regexMatcher(s, regexReal), regexMatcher(s, regexImaginary));
 	}
@@ -66,6 +66,10 @@ public class ComplexNumber {
 
 		if (!matcher.find()) {
 			return 0;
+		} else if (matcher.group().equals("")) {
+			return 1;
+		} else if (matcher.group().equals("-")) {
+			return -1;
 		}
 
 		return Double.parseDouble(matcher.group());
@@ -113,8 +117,8 @@ public class ComplexNumber {
 		double nominatorReal = (real * c.getReal() + imaginary * c.getImaginary());
 		double nominatorImaginary = (imaginary * c.getReal() - real * c.getImaginary());
 		double denominator = c.getReal() * c.getReal() + c.getImaginary() * c.getImaginary();
-		
-		return new ComplexNumber(nominatorReal/denominator, nominatorImaginary/denominator);
+
+		return new ComplexNumber(nominatorReal / denominator, nominatorImaginary / denominator);
 	}
 
 	public ComplexNumber power(int n) {

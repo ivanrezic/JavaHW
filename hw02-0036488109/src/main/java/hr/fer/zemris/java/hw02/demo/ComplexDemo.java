@@ -21,7 +21,7 @@ public class ComplexDemo {
 		System.out.println(c2);
 		System.out.println(c3);
 		
-		ComplexNumber c11 = ComplexNumber.parse("510i");
+		ComplexNumber c11 = ComplexNumber.parse("-i");
 		System.err.println(c11);
 
 	}

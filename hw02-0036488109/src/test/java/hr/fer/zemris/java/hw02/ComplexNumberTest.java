@@ -1,8 +1,10 @@
 package hr.fer.zemris.java.hw02;
 
-import static java.lang.Math.PI;
 import static hr.fer.zemris.java.hw02.ComplexNumber.PRECISION;
-import static org.junit.Assert.*;
+import static java.lang.Math.PI;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -105,6 +107,25 @@ public class ComplexNumberTest {
 		assertTrue(n10.equals(new ComplexNumber(-1321.1122, 0.2332)));
 		assertTrue(n11.equals(new ComplexNumber(123213.0001, -51)));
 		assertTrue(n12.equals(new ComplexNumber(-1.1231, -232322.9)));
+	}
+	
+	@Test
+	public void parseComplexNumberWithJustIAsImaginaryPart() throws Exception {
+		ComplexNumber n1 = ComplexNumber.parse("-1321.1122+i");
+		ComplexNumber n2 = ComplexNumber.parse("123213.0001-i");
+		ComplexNumber n3 = ComplexNumber.parse("-1.1231-i");
+		ComplexNumber n4 = ComplexNumber.parse("+i");
+		ComplexNumber n5 = ComplexNumber.parse("-i");
+		ComplexNumber n6 = ComplexNumber.parse("-i + 4");
+		//ComplexNumber n7 = ComplexNumber.parse("-12.32iiiiii + 4");
+		
+		assertTrue(n1.equals(new ComplexNumber(-1321.1122, 1)));
+		assertTrue(n2.equals(new ComplexNumber(123213.0001, -1)));
+		assertTrue(n3.equals(new ComplexNumber(-1.1231, -1)));
+		assertTrue(n4.equals(new ComplexNumber(0, 1)));
+		assertTrue(n5.equals(new ComplexNumber(0, -1)));
+		assertTrue(n6.equals(new ComplexNumber(4, -1)));
+		//assertTrue(n7.equals(new ComplexNumber(4, -12.32)));
 	}
 
 	@Test
