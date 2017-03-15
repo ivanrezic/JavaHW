@@ -11,6 +11,10 @@ public class ComplexDemo {
 
 		ComplexNumber c9 = ComplexNumber.fromMagnitudeAndAngle(c3.getMagnitude(), c3.getAngle());
 		System.out.println(c9);
+		
+		ComplexNumber c10 = new ComplexNumber(0,0);
+		System.out.println(c10);
+		System.out.println(c2.mul(c3));
 		System.out.println();
 
 		System.out.println(c1);

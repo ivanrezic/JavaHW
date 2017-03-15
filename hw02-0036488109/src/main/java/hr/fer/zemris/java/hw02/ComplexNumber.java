@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class ComplexNumber {
 	public static final double PRECISION = 0.0001;
-	
+
 	private final double real;
 	private final double imaginary;
 
@@ -74,7 +74,16 @@ public class ComplexNumber {
 
 	@Override
 	public String toString() {
-		return "real=" + real + ", imaginary=" + imaginary;
+		if (real == 0 && imaginary != 0) {
+			return imaginary + "i";
+		} else if (real != 0 && imaginary == 0) {
+			return real + "";
+		} else if (real == 0 && imaginary == 0) {
+			return "0";
+		} else if (imaginary < 0) {
+			return real + "" + imaginary + "i";
+		} else
+			return real + "" + "+" + imaginary + "i";
 	}
 
 	public ComplexNumber add(ComplexNumber c) {
@@ -121,26 +130,26 @@ public class ComplexNumber {
 
 	public ComplexNumber power(int n) {
 		if (n < 0) {
-			throw new IllegalArgumentException(
-					"Power must be greater or equal to 0");
+			throw new IllegalArgumentException("Power must be greater or equal to 0");
 		}
 		double magnitude = Math.pow(getMagnitude(), n);
 		double angle = getAngle() * n;
 		return fromMagnitudeAndAngle(magnitude, angle);
 	}
-	
+
 	public ComplexNumber[] root(int n) {
 		if (n <= 0) {
-			throw new IllegalArgumentException(
-					"You requested a negative or 0 root. Root must be positive");
+			throw new IllegalArgumentException("You requested a negative or 0 root. Root must be positive");
 		}
 		double rootAngle = getAngle() / n;
 		double rootMagnitude = Math.pow(getMagnitude(), 1. / n);
 		ComplexNumber[] roots = new ComplexNumber[n];
+
 		for (int i = 0; i < n; i++) {
 			roots[i] = fromMagnitudeAndAngle(rootMagnitude, rootAngle);
 			rootAngle += 2 * Math.PI / n;
 		}
+
 		return roots;
 	}
 
@@ -165,12 +174,11 @@ public class ComplexNumber {
 		if (getClass() != obj.getClass())
 			return false;
 		ComplexNumber other = (ComplexNumber) obj;
-		if (Math.abs(imaginary-other.imaginary) > PRECISION)
+		if (Math.abs(imaginary - other.imaginary) > PRECISION)
 			return false;
-		if (Math.abs(real-other.real) > PRECISION)
+		if (Math.abs(real - other.real) > PRECISION)
 			return false;
 		return true;
 	}
-	
-	
+
 }

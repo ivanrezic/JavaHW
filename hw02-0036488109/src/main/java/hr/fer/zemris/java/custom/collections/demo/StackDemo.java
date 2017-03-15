@@ -14,9 +14,9 @@ public class StackDemo {
 		String[] elements = args[0].split(" +");
 
 		for (String element : elements) {
-			if (element.matches("(-?\\d+)")) {
+			try {
 				stack.push(Integer.parseInt(element));
-			} else {
+			} catch (NumberFormatException e) {
 				checkExpression(stack);
 
 				int second = (int) stack.pop();

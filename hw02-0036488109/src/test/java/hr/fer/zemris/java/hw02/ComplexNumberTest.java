@@ -48,14 +48,13 @@ public class ComplexNumberTest {
 		assertTrue(c8.equals(new ComplexNumber(0, -0.245)));
 		assertTrue(c9.equals(new ComplexNumber(0, 0)));
 	}
-	
+
 	@Test
 	public void complexNumberFromMagnitudeAndAngle() throws Exception {
 		ComplexNumber c6 = ComplexNumber.fromMagnitudeAndAngle(c1.getMagnitude(), c1.getAngle());
 		ComplexNumber c7 = ComplexNumber.fromMagnitudeAndAngle(c2.getMagnitude(), c2.getAngle());
 		ComplexNumber c8 = ComplexNumber.fromMagnitudeAndAngle(c3.getMagnitude(), c3.getAngle());
 		ComplexNumber c9 = ComplexNumber.fromMagnitudeAndAngle(c4.getMagnitude(), c4.getAngle());
-		
 
 		assertTrue(c6.equals(c1));
 		assertTrue(c7.equals(c2));
@@ -79,6 +78,54 @@ public class ComplexNumberTest {
 		assertEquals(-0.01352 * PI + 2 * PI, c3.getAngle(), PRECISION);
 		assertEquals(0.5 * PI, c4.getAngle(), PRECISION);
 		assertEquals(0, c5.getAngle(), PRECISION);
+	}
+
+	@Test
+	public void complexNumberMultiplication() throws Exception {
+		ComplexNumber first = c1.mul(c2);
+		ComplexNumber second = c2.mul(c3);
+		ComplexNumber third = c1.mul(c3);
+
+		assertTrue(first.equals(new ComplexNumber(14, 1.5)));
+		assertTrue(second.equals(new ComplexNumber(3.83908, -5.02649)));
+		assertTrue(third.equals(new ComplexNumber(3.44270, 4.71695)));
+	}
+
+	@Test
+	public void complexNumberDivision() throws Exception {
+		ComplexNumber first = c1.div(c2);
+		ComplexNumber second = c2.div(c3);
+		ComplexNumber third = c1.div(c3);
+
+		assertTrue(first.equals(new ComplexNumber(-0.2622951, 0.8852459)));
+		assertTrue(second.equals(new ComplexNumber(1.6208287, -1.7850415)));
+		assertTrue(third.equals(new ComplexNumber(1.15506, 1.90303)));
+	}
+
+	@Test
+	public void complexNumberPower() throws Exception {
+		ComplexNumber first = c3.power(12);
+		ComplexNumber second = c3.power(18);
+		ComplexNumber third = c1.power(1);
+
+		assertTrue(second.equals(new ComplexNumber(4244.3719538, -4072.0969226)));
+		assertTrue(first.equals(new ComplexNumber(284.4129395, -159.0107504)));
+		assertTrue(third.equals(c1));
+	}
+
+	@Test
+	public void complexNumberRoot() throws Exception {
+		ComplexNumber[] first = c3.root(2);
+		ComplexNumber[] second = c3.root(3);
+
+		ComplexNumber[] expecteds1 = new ComplexNumber[] { new ComplexNumber(-1.27236, +0.02702),
+				new ComplexNumber(1.27236, -0.02702) };
+		ComplexNumber[] expecteds2 = new ComplexNumber[] { new ComplexNumber(-0.572726, 1.02525),
+				new ComplexNumber(-0.601527, -1.00862), new ComplexNumber(1.17425, -0.01662) };
+
+		assertArrayEquals(expecteds1, first);
+		assertArrayEquals(expecteds2, second);
+
 	}
 
 }
