@@ -99,7 +99,10 @@ public class ComplexNumber {
 			throw new NullPointerException();
 		}
 
-		return mulDivHelper(c, "mul");
+		double newReal = (real * c.getReal() - imaginary * c.getImaginary());
+		double newImaginary = (imaginary * c.getReal() + real * c.getImaginary());
+
+		return new ComplexNumber(newReal, newImaginary);
 	}
 
 	public ComplexNumber div(ComplexNumber c) {
@@ -107,25 +110,11 @@ public class ComplexNumber {
 			throw new NullPointerException();
 		}
 
-		return mulDivHelper(c, "div");
-	}
-
-	private ComplexNumber mulDivHelper(ComplexNumber c, String selected) {
-		double newAngle = 0.0;
-		double newMagnitude = 0;
-
-		if (selected.equals("mul")) {
-			newMagnitude = this.getMagnitude() * c.getMagnitude();
-			newAngle = this.getAngle() + c.getAngle();
-		} else if (selected.equals("div")) {
-			newMagnitude = this.getMagnitude() / c.getMagnitude();
-			newAngle = this.getAngle() - c.getAngle();
-		}
-
-		double real = newMagnitude * cos(newAngle);
-		double imaginary = newMagnitude * sin(newAngle);
-
-		return new ComplexNumber(real, imaginary);
+		double nominatorReal = (real * c.getReal() + imaginary * c.getImaginary());
+		double nominatorImaginary = (imaginary * c.getReal() - real * c.getImaginary());
+		double denominator = c.getReal() * c.getReal() + c.getImaginary() * c.getImaginary();
+		
+		return new ComplexNumber(nominatorReal/denominator, nominatorImaginary/denominator);
 	}
 
 	public ComplexNumber power(int n) {
