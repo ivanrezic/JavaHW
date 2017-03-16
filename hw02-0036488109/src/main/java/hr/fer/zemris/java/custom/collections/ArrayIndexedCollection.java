@@ -153,7 +153,7 @@ public class ArrayIndexedCollection extends Collection {
 			elements[i] = elements[i + 1];
 		}
 
-		elements[size--] = null;
+		size--;
 	}
 
 	/**
@@ -242,20 +242,22 @@ public class ArrayIndexedCollection extends Collection {
 	 *             if value is <code>null</code>
 	 */
 	public void insert(Object value, int position) {
-		if (position < 0 || position >= size) {
-			throw new IndexOutOfBoundsException("Legal postitions are 0 to " + (size - 1));
+		if (position < 0 || position > size) {
+			throw new IndexOutOfBoundsException("Legal postitions are 0 to " + (size));
 		} else if (value == null) {
 			throw new IllegalArgumentException("Value shouldnt be null");
 		} else if (size == capacity) {
 			elements = resize(elements, CAPACITY_EXTENDING_COEFFICIENT);
-		}
+		} else if (position == size) {
+			add(value);
+		} else {
+			size++;
+			for (int i = size; i > position; i--) {
+				elements[i] = elements[i - 1];
+			}
 
-		size++;
-		for (int i = size; i > position; i--) {
-			elements[i] = elements[i - 1];
+			elements[position] = value;
 		}
-
-		elements[position] = value;
 	}
 
 	/**

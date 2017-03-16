@@ -103,14 +103,8 @@ public class Collection {
 	 *
 	 * @param other
 	 *            collection containg wanted elements
-	 * @throws NullPointerException
-	 *             when <code>null</code> is set as argument
 	 */
 	void addAll(Collection other) {
-		if (other == null) {
-			throw new NullPointerException("Value given can not be null.");
-		}
-
 		class LocalProcessor extends Processor {
 
 			@Override
