@@ -2,8 +2,18 @@ package hr.fer.zemris.java.hw02.demo;
 
 import hr.fer.zemris.java.hw02.ComplexNumber;
 
+/**
+ * Demonstration class which is used for demonstration of ComplexNumber implementation.
+ * 
+ * @author Ivan
+ */
 public class ComplexDemo {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args command line aguments which are not used in this program
+	 */
 	public static void main(String[] args) {
 		ComplexNumber c1 = new ComplexNumber(2, 3);
 		ComplexNumber c2 = ComplexNumber.parse("2.5-3i");

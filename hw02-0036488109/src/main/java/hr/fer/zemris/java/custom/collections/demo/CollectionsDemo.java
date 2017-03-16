@@ -6,8 +6,18 @@ import hr.fer.zemris.java.custom.collections.ArrayIndexedCollection;
 import hr.fer.zemris.java.custom.collections.LinkedListIndexedCollection;
 import hr.fer.zemris.java.custom.collections.Processor;
 
+/**
+ * Demonstration class which is used for demonstration of collections implementation.
+ * 
+ * @author Ivan
+ */
 public class CollectionsDemo {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args command line arguments which are not used
+	 */
 	public static void main(String[] args) {
 		ArrayIndexedCollection col = new ArrayIndexedCollection(2);
 		col.add(new Integer(20));
