@@ -2,7 +2,6 @@ package hr.fer.zemris.java.custom.collections.demo;
 
 import hr.fer.zemris.java.custom.collections.ObjectStack;
 
-// TODO: Auto-generated Javadoc
 /**
  * Demonstration class which is used for demonstration of stack implementation.
  * This class represents program which accepts arguments in postfix notation
