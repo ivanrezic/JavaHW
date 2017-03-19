@@ -50,29 +50,33 @@ public class Lexer {
 					return token;
 				}
 			} else {
-				String word = "";
-
-				if (skipBlanks() == data.length) {
-					token = new Token(TokenType.EOF, null);
-					return token;
-				}
-
-				while (data[currentIndex] != '#' && data[currentIndex] != ' ') {
-					word += data[currentIndex++];
-				}
-
-				if (data[currentIndex] == '#') {
-					setState(LexerState.BASIC);
-				}else {
-					skipBlanks();
-				}
-				
-				token = new Token(TokenType.WORD, word);
-				return token;
+				return extenedStateSearch();
 			}
 		}
 
 		token = new Token(TokenType.EOF, null);
+		return token;
+	}
+
+	private Token extenedStateSearch() {
+		String word = "";
+
+		if (skipBlanks() == data.length) {
+			token = new Token(TokenType.EOF, null);
+			return token;
+		}
+
+		while (data[currentIndex] != '#' && data[currentIndex] != ' ') {
+			word += data[currentIndex++];
+		}
+
+		if (data[currentIndex] == '#') {
+			setState(LexerState.BASIC);
+		} else {
+			skipBlanks();
+		}
+
+		token = new Token(TokenType.WORD, word);
 		return token;
 	}
 
@@ -106,7 +110,8 @@ public class Lexer {
 				}
 			}
 			word += data[currentIndex++];
-			if (currentIndex >= data.length) break;
+			if (currentIndex >= data.length)
+				break;
 		}
 		return word;
 	}
