@@ -13,12 +13,11 @@ public class Lexer {
 		this.data = text.toCharArray();
 		this.state = LexerState.BASIC;
 	}
-	
-	public void setState(LexerState state){
+
+	public void setState(LexerState state) {
 		if (state == null) {
 			throw new IllegalArgumentException("State shouldnt be null");
 		}
-		
 		this.state = state;
 	}
 
@@ -32,14 +31,43 @@ public class Lexer {
 		}
 
 		while (currentIndex < data.length) {
-			if (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
-				token = new Token(TokenType.WORD, findWord());
-				return token;
-			} else if (Character.isDigit(data[currentIndex])) {
-				token = new Token(TokenType.NUMBER, findNumber());
-				return token;
-			} else if (skipBlanks() == 0) {
-				token = new Token(TokenType.SYMBOL, data[currentIndex++]);
+			if (state == LexerState.BASIC) {
+				if (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
+					token = new Token(TokenType.WORD, findWord());
+					return token;
+				} else if (Character.isDigit(data[currentIndex])) {
+					token = new Token(TokenType.NUMBER, findNumber());
+					return token;
+				} else if (skipBlanks() == 0) {
+					token = new Token(TokenType.SYMBOL, data[currentIndex++]);
+					if (token.getValue() == "#") {
+						if (state == LexerState.BASIC) {
+							setState(LexerState.EXTENDED);
+						} else {
+							setState(LexerState.BASIC);
+						}
+					}
+					return token;
+				}
+			} else {
+				String word = "";
+
+				if (skipBlanks() == data.length) {
+					token = new Token(TokenType.EOF, null);
+					return token;
+				}
+
+				while (data[currentIndex] != '#' && data[currentIndex] != ' ') {
+					word += data[currentIndex++];
+				}
+
+				if (data[currentIndex] == '#') {
+					setState(LexerState.BASIC);
+				}else {
+					skipBlanks();
+				}
+				
+				token = new Token(TokenType.WORD, word);
 				return token;
 			}
 		}
@@ -47,27 +75,20 @@ public class Lexer {
 		token = new Token(TokenType.EOF, null);
 		return token;
 	}
-	
-//	private Token basicTokenFinder(){
-//		
-//	}
-//	
-//	private Token extendedTokenFinder() {
-//		
-//	}
 
 	private Long findNumber() {
 		String word = "";
-		
-		while(Character.isDigit(data[currentIndex])){
+
+		while (Character.isDigit(data[currentIndex])) {
 			word += data[currentIndex++];
-			if (currentIndex >= data.length) break;
+			if (currentIndex >= data.length)
+				break;
 		}
-		
-		if (Double.parseDouble(word) - Long.MAX_VALUE  > 0) {
-			throw new LexerException("Broje ne smije biti veci od "+ Long.MAX_VALUE);
+
+		if (Double.parseDouble(word) - Long.MAX_VALUE > 0) {
+			throw new LexerException("Broje ne smije biti veci od " + Long.MAX_VALUE);
 		}
-		
+
 		return Long.parseLong(word);
 	}
 
@@ -78,13 +99,14 @@ public class Lexer {
 			if (data[currentIndex] == '\\') {
 				if (currentIndex == data.length - 1 || Character.isLetter(data[currentIndex + 1])) {
 					throw new LexerException();
-				} else{
+				} else {
 					word += data[++currentIndex];
 					currentIndex++;
 					continue;
 				}
 			}
 			word += data[currentIndex++];
+			if (currentIndex >= data.length) break;
 		}
 		return word;
 	}
