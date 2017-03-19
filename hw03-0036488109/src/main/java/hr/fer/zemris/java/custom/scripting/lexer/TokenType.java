@@ -1,5 +1,5 @@
 package hr.fer.zemris.java.custom.scripting.lexer;
 
 public enum TokenType {
-	EOF, WORD, NUMBER, SYMBOL
+	TEXT,TAG,FUNCTION,VARIABLE,OPERATOR,STRING,CONSTANT_INTEGER,CONSTANT_DOUBLE,EOF
 }

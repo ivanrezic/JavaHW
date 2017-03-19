@@ -10,11 +10,11 @@ public class SmartScriptParser {
 			throw new SmartScriptParserException("Document body can't be null.");
 		}
 		
-		Lexer lexer = new Lexer();
-		parse(lexer,documentBody);
+		Lexer lexer = new Lexer(documentBody);
+		parse(lexer);
 	}
 
-	public void parse(Lexer lexer, String documentBody) {
+	public void parse(Lexer lexer) {
 	}
 	
 	public DocumentNode getDocumentNode(){
