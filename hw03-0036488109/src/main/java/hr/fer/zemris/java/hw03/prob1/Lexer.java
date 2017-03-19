@@ -4,22 +4,28 @@ public class Lexer {
 	private char[] data; // ulazni tekst
 	private Token token; // trenutni token
 	private int currentIndex; // indeks prvog neobrađenog znaka
+	private LexerState state;
 
 	public Lexer(String text) {
 		if (text == null) {
 			throw new IllegalArgumentException("Input text shouldnt be null!");
 		}
 		this.data = text.toCharArray();
+		this.state = LexerState.BASIC;
+	}
+	
+	public void setState(LexerState state){
+		if (state == null) {
+			throw new IllegalArgumentException("State shouldnt be null");
+		}
+		
+		this.state = state;
 	}
 
-	// vraća zadnji generirani token; može se pozivati
-	// više puta; ne pokreće generiranje sljedećeg tokena
 	public Token getToken() {
 		return token;
 	}
 
-	// generira i vraća sljedeći token
-	// baca LexerException ako dođe do pogreške
 	public Token nextToken() {
 		if (token != null && token.getType().equals(TokenType.EOF)) {
 			throw new LexerException("No tokens available.");
@@ -41,6 +47,14 @@ public class Lexer {
 		token = new Token(TokenType.EOF, null);
 		return token;
 	}
+	
+//	private Token basicTokenFinder(){
+//		
+//	}
+//	
+//	private Token extendedTokenFinder() {
+//		
+//	}
 
 	private Long findNumber() {
 		String word = "";
