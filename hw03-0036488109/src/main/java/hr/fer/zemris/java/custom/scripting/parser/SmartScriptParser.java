@@ -74,8 +74,6 @@ public class SmartScriptParser {
 	private void endTag(ObjectStack stack) {
 
 		lexer.nextToken();
-//		Node parent = (Node) stack.peek();
-//		parent.addChildNode(new node);
 		stack.pop();
 		if (stack.isEmpty()) {
 			throw new SmartScriptParserException("After removing END tag stack shouldnt be empty.");

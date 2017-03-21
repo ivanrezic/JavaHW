@@ -40,7 +40,7 @@ public class SmartScriptTester {
 //		System.out.println(originalDocumentBody); // should write something like
 //													// original content of
 //													// docBody
-
+//	}
 		String filepath = "C:/Users/Ivan/workspace/JavaHW/hw03-0036488109/Examples/doc1.txt";
 		String docBody = null;
 		try {
@@ -61,9 +61,9 @@ public class SmartScriptTester {
 		System.out.println();
 		System.out.println(originalDocumentBody2);
 		if(originalDocumentBody.equals(originalDocumentBody2)){
-			System.out.println("Bravo, uspješno riješeno");
+			System.out.println("Bravo!");
 		}else{
-			System.out.println("Padaš");
+			System.out.println("Fail!");
 		}
 	}
 

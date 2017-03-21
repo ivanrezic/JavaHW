@@ -25,7 +25,11 @@ public class EchoNode extends Node {
 		String str = "{$=";
 		for (Element t : elements) {
 			if(t instanceof ElementString) {
-				str += "\"" + t.asText() + "\" ";
+				if (t.toString().contains("\\r") || t.toString().contains("\\n")) {
+					str += "\"" + t.asText().replace("\"", "\\\"") + "\" ";
+				}else{
+					str += "\"" + t.asText().replace("\\", "\\\\").replace("\"", "\\\"") + "\" ";
+				}
 				continue;
 			}
 			str += t.asText() + " ";

@@ -11,7 +11,7 @@ public class Lexer {
 	public static final String OPERATORS = "([+]|\\-(?!\\d)|[*]|[\\/]|[\\^])";
 	public static final String VARIABLE = "([a-zA-Z]\\w*)";
 	public static final String NUMBER = "(-?\\d+(?:\\.\\d+)?)";
-	public static final String STRING = "\\\"(.*?)\\\"";
+	public static final String STRING = "(?<!\\\\)\\\"(.*?)(?<!\\\\)\\\"";
 	public static final String END_TAG = "(\\$})";
 
 	private String[] document;
@@ -48,7 +48,7 @@ public class Lexer {
 			throw new LexerException("There should be no { without escape preceding");
 		}
 		if (stringOrTextRegexChecker(part, "(?<!\\\\)(\\\\[^\\\\{])")) {
-			throw new LexerException("In string after \\ there should be no characters except { and \".");
+			throw new LexerException("In text after \\ there should be no characters except { and \\.");
 		}
 
 		part = part.replace("\\\\", "\\").replace("\\{", "{");
@@ -104,8 +104,8 @@ public class Lexer {
 	}
 
 	private String correctString(String string) {
-		if (stringOrTextRegexChecker(string, "(?<!\\\\)(\\\\[^\\\\\"])")) {
-			throw new LexerException("In string after \\ there should be no characters except \\ and \".");
+		if (stringOrTextRegexChecker(string, "(?<!\\\\)(\\\\[^\\\\\"\\\\r\\\\n])")) {
+			throw new LexerException("In string after \\ there should be no characters except \\ and \"");
 		}
 
 		return string.replace("\\\\", "\\").replace("\\\"", "\"");
@@ -135,52 +135,52 @@ public class Lexer {
 		return tokens[currentIndex++];
 	}
 
-//	public static void main(String[] args) {
-//		Lexer lexer = new Lexer(
-//				"This is sample text.  {$ FOR i 1 10 1 $} This is {$= i $}-th time this message is generated. {$END$} {$FOR i 0 10 2 $}sin({$=i$}^2) = {$= i i * @sin \"0.000\" @decfmt $} {$END$}");
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//		System.out.println(lexer.nextToken());
-//	}
+	public static void main(String[] args) {
+		Lexer lexer = new Lexer(
+				"This is sa\\\\mp  \\{le text.  {$ FOR i 1 10 1 $} This is {$= i $}-th time this message is generated. {$END$} {$FOR i 0 10 2 $}sin({$=i$}^2) = {$= i i * @sin \"0.000\" @decfmt $} {$END$}");
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+		System.out.println(lexer.nextToken());
+	}
 
 }
