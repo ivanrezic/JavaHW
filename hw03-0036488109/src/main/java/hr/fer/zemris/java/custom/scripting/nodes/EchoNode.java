@@ -1,6 +1,7 @@
 package hr.fer.zemris.java.custom.scripting.nodes;
 
 import hr.fer.zemris.java.custom.scripting.elems.Element;
+import hr.fer.zemris.java.custom.scripting.elems.ElementFunction;
 import hr.fer.zemris.java.custom.scripting.elems.ElementString;
 
 /**
@@ -31,6 +32,8 @@ public class EchoNode extends Node {
 					str += "\"" + t.asText().replace("\\", "\\\\").replace("\"", "\\\"") + "\" ";
 				}
 				continue;
+			}else if (t instanceof ElementFunction) {
+				str+="@";
 			}
 			str += t.asText() + " ";
 		}
