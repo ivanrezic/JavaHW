@@ -6,6 +6,14 @@ import java.util.regex.Pattern;
 import hr.fer.zemris.java.custom.collections.ArrayIndexedCollection;
 
 public class Lexer {
+	public static final String TAG_NAME = "(^[=]|^([a-zA-Z]\\w*))";
+	public static final String FUNCTION = "(@([a-zA-Z]\\w*))";
+	public static final String OPERATORS = "([+]|\\-(?!\\d)|[*]|[\\/]|[\\^])";
+	public static final String VARIABLE = "([a-zA-Z]\\w*)";
+	public static final String NUMBER = "(-?\\d+(?:\\.\\d+)?)";
+	public static final String STRING = "\\\"(.*?)\\\"";
+	public static final String END_TAG = "(\\$})";
+
 	private String[] document;
 	private ArrayIndexedCollection helperCollector;
 	private ArrayIndexedCollection tagBodyParts;
@@ -36,15 +44,15 @@ public class Lexer {
 	}
 
 	public void processText(String part) {
-		if (stringOrTextRegexChecker(part, 	"(?<!\\\\)[{]")) {
+		if (stringOrTextRegexChecker(part, "(?<!\\\\)[{]")) {
 			throw new LexerException("There should be no { without escape preceding");
 		}
 		if (stringOrTextRegexChecker(part, "(?<!\\\\)(\\\\[^\\\\{])")) {
 			throw new LexerException("In string after \\ there should be no characters except { and \".");
 		}
 
-		part = part.replace("\\\\","\\" ).replace("\\{","{");
-		
+		part = part.replace("\\\\", "\\").replace("\\{", "{");
+
 		helperCollector.add(new Token(TokenType.TEXT, part));
 	}
 
@@ -56,16 +64,8 @@ public class Lexer {
 	}
 
 	private void regexMatcher(String tagBody) {
-		String tagName = "(^[=]|^([a-zA-Z]\\w*))";
-		String functionName = "(@([a-zA-Z]\\w*))";
-		String operators = "([+]|\\-(?!\\d)|[*]|[\\/]|[\\^])";
-		String variable = "([a-zA-Z]\\w*)";
-		String digit = "(-?\\d+)";
-		String string = "\\\"(.*?)\\\"";
-		String endTag = "(\\$})";
-
-		Pattern pattern = Pattern.compile(tagName + "|" + functionName + "|" + operators + "|" + variable + "|" + digit
-				+ "|" + string + "|" + endTag);
+		Pattern pattern = Pattern.compile(TAG_NAME + "|" + FUNCTION + "|" + OPERATORS + "|" + VARIABLE + "|" + NUMBER
+				+ "|" + STRING + "|" + END_TAG);
 		Matcher matcher = pattern.matcher(tagBody);
 
 		while (matcher.find()) {
@@ -86,15 +86,15 @@ public class Lexer {
 
 		if (string.startsWith("@")) {
 			token = new Token(TokenType.FUNCTION, string.substring(1));
-		} else if (string.matches("([+]|\\-(?!\\d)|[*]|[\\/]|[\\^])")) {
+		} else if (string.matches(OPERATORS)) {
 			token = new Token(TokenType.OPERATOR, string);
-		} else if (string.matches("(\\$})")) {
+		} else if (string.matches(END_TAG)) {
 			token = new Token(TokenType.TAGEND, string);
-		} else if (string.matches("(-?\\d+)")) {
+		} else if (string.matches(NUMBER)) {
 			token = new Token(TokenType.NUMBER, string);
-		} else if (string.matches("([a-zA-Z]\\w*)")) {
+		} else if (string.matches(VARIABLE)) {
 			token = new Token(TokenType.VARIABLE, string);
-		} else if (string.matches("\\\"(.*?)\\\"")) {
+		} else if (string.matches(STRING)) {
 			string = string.substring(1, string.length() - 1);
 			string = correctString(string);
 			token = new Token(TokenType.STRING, string);
@@ -110,11 +110,11 @@ public class Lexer {
 
 		return string.replace("\\\\", "\\").replace("\\\"", "\"");
 	}
-	
-	public boolean stringOrTextRegexChecker(String string, String regex){
+
+	public boolean stringOrTextRegexChecker(String string, String regex) {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(string);
-		
+
 		return matcher.find();
 	}
 
@@ -123,6 +123,7 @@ public class Lexer {
 
 		for (int i = 0, n = helperCollector.size(); i < n; i++) {
 			Token temporary = (Token) helperCollector.get(i);
+
 			tokens[i] = new Token(temporary.getType(), temporary.getValue());
 		}
 
@@ -136,7 +137,7 @@ public class Lexer {
 
 	public static void main(String[] args) {
 		Lexer lexer = new Lexer(
-				"{$= \"text/plain\" @setMimeType $}Prvih 10 fibonaccijevih brojeva je: {$= \"0\" \"a\" @tparamSet \"1\" \"b\" @tparamSet \"0\r\n1\r\n\" $}{$FOR i 3 10 1$}{$= \"b\" \"0\" @tparamGet @dup \"a\" \"0\" @tparamGet + \"b\" @tparamSet \"a\" @tparamSet\"b\" \"0\" @tparamGet \"\r\n\" $}{$END$}");
+				"This is sample text.  {$ FOR i 1 10 1 $} This is {$= i $}-th time this message is generated. {$END$} {$FOR i 0 10 2 $}sin({$=i$}^2) = {$= i i * @sin \"0.000\" @decfmt $} {$END$}");
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
@@ -171,7 +172,6 @@ public class Lexer {
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
-		System.out.println(lexer.nextToken());		
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
@@ -181,9 +181,6 @@ public class Lexer {
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
 		System.out.println(lexer.nextToken());
-		System.out.println(lexer.nextToken());
-		System.out.println(lexer.nextToken());
-
 	}
 
 }
