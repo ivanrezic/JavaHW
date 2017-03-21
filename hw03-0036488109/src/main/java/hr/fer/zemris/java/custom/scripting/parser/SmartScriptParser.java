@@ -66,10 +66,18 @@ public class SmartScriptParser {
 			token = lexer.nextToken();
 		}
 
+		if (stack.size() != 1) {
+			throw new SmartScriptParserException(" Stack contains more END tags than opened non-empty tags");
+		}
 	}
 
 	private void endTag(ObjectStack stack) {
 
+		lexer.nextToken();
+		stack.pop();
+		if (stack.isEmpty()) {
+			throw new SmartScriptParserException("After removing END tag stack shouldnt be empty.");
+		}
 	}
 
 	private void equalsTag(ObjectStack stack) {
