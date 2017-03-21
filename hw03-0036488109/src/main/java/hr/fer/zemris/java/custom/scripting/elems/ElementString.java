@@ -16,4 +16,10 @@ public class ElementString extends Element {
 	public String asText() {
 		return value;
 	}
+	
+	@Override
+	public String toString() {
+		return asText();
+		
+	}
 }

@@ -45,4 +45,9 @@ public class Node {
 	public Node getChild(int index) throws IndexOutOfBoundsException {
 		return (Node) children.get(index);
 	}
+
+	@Override
+	public String toString() {
+		return "";
+	}
 }

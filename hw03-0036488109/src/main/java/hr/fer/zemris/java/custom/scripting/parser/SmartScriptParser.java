@@ -74,6 +74,8 @@ public class SmartScriptParser {
 	private void endTag(ObjectStack stack) {
 
 		lexer.nextToken();
+//		Node parent = (Node) stack.peek();
+//		parent.addChildNode(new node);
 		stack.pop();
 		if (stack.isEmpty()) {
 			throw new SmartScriptParserException("After removing END tag stack shouldnt be empty.");
@@ -139,24 +141,27 @@ public class SmartScriptParser {
 					throw new SmartScriptParserException(token.getValue().toString() + "is not variable name.");
 				}
 				variable = new ElementVariable(token.getValue().toString());
+				counter++;
 				break;
 			case 2:
 				if (elementCondition(token)) {
 					startExpression = getCorrectType(token);
 				}
+				counter++;
 				break;
 			case 3:
 				if (elementCondition(token)) {
 					endExpression = getCorrectType(token);
 				}
+				counter++;
 				break;
 			case 4:
 				if (elementCondition(token)) {
 					stepExpression = getCorrectType(token);
 				}
+				counter++;
 				break;
-			}
-			if (counter < 3 || counter > 4) {
+			default:
 				throw new SmartScriptParserException("ForLoop should have 3 or 4 elements");
 			}
 			token = lexer.nextToken();
@@ -169,7 +174,7 @@ public class SmartScriptParser {
 	}
 
 	private boolean elementCondition(Token token) {
-		if (token.getType() == TokenType.OPERATOR || token.getType() == TokenType.STRING) {
+		if (token.getType() == TokenType.OPERATOR || token.getType() == TokenType.FUNCTION) {
 			throw new SmartScriptParserException(token.getValue().toString() + "is not variable name.");
 		}
 		return true;

@@ -1,6 +1,7 @@
 package hr.fer.zemris.java.custom.scripting.nodes;
 
 import hr.fer.zemris.java.custom.scripting.elems.Element;
+import hr.fer.zemris.java.custom.scripting.elems.ElementString;
 
 /**
  * A node representing a command which generates some textual output
@@ -17,6 +18,20 @@ public class EchoNode extends Node {
 
 	public Element[] getElements() {
 		return elements;
+	}
+
+	@Override
+	public String toString() {
+		String str = "{$=";
+		for (Element t : elements) {
+			if(t instanceof ElementString) {
+				str += "\"" + t.asText() + "\" ";
+				continue;
+			}
+			str += t.asText() + " ";
+		}
+		str += "$}";
+		return str;
 	}
 	
 	
