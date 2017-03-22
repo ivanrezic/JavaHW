@@ -1,7 +1,7 @@
 This is \{samp\\\\le            text.
 {$FOR a2 1 10a $}
              This is {$=i$}-th time this message is generated. A  
-{$FOR a2 1 10a $}
+
       {$= "moj\"Tag"$}
 {$END$}
 {$END$}

@@ -7,35 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Before;
 import org.junit.Test;
 
-public class SmartScriptParserTest {
-	String document1;
-	String document2;
-	String document3;
-	String document4;
-	String document5;
-	SmartScriptParser parser1;
-	SmartScriptParser parser2;
-	SmartScriptParser parser3;
-	SmartScriptParser parser4;
-	SmartScriptParser parser5;
+import hr.fer.zemris.java.custom.scripting.lexer.LexerException;
 
-	@Before
-	public void initialize() {
-		document1 = loader("doc1.text");
-		document2 = loader("doc2.text");
-		document3 = loader("doc3.text");
-		document4 = loader("doc4.text");
-		document5 = loader("doc5.text");
-		
-		
-		parser2 = new SmartScriptParser(document2);
-		parser3 = new SmartScriptParser(document3);
-		parser4 = new SmartScriptParser(document4);
-		parser5 = new SmartScriptParser(document5);
-	}
+public class SmartScriptParserTest {
+	SmartScriptParser parser;
 
 	private String loader(String filename) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -54,12 +31,107 @@ public class SmartScriptParserTest {
 	}
 
 	@Test
-	public void testName() throws Exception {
-		parser1 = new SmartScriptParser(document1);
-		String first = parser1.getDocumentNode().toString();
-		parser1 = new SmartScriptParser(first);
-		String second = parser1.getDocumentNode().toString();
+	public void testDoc1Parsing() throws Exception {
+		parser = new SmartScriptParser(loader("doc1.txt"));
+		String first = parser.getDocumentNode().toString();
+		parser = new SmartScriptParser(first);
+		String second = parser.getDocumentNode().toString();
 		
 		assertEquals(first, second);
+	}
+	
+	@Test
+	public void testDoc2Parsing() throws Exception {
+		parser = new SmartScriptParser(loader("doc2.txt"));
+		String first = parser.getDocumentNode().toString();
+		parser = new SmartScriptParser(first);
+		String second = parser.getDocumentNode().toString();
+		
+		assertEquals(first, second);
+	}
+	
+	@Test
+	public void testDoc3Parsing() throws Exception {
+		parser = new SmartScriptParser(loader("doc3.txt"));
+		String first = parser.getDocumentNode().toString();
+		parser = new SmartScriptParser(first);
+		String second = parser.getDocumentNode().toString();
+		
+		assertEquals(first, second);
+	}
+	
+	@Test
+	public void testDoc4Parsing() throws Exception {
+		parser = new SmartScriptParser(loader("doc4.txt"));
+		String first = parser.getDocumentNode().toString();
+		parser = new SmartScriptParser(first);
+		String second = parser.getDocumentNode().toString();
+		
+		assertEquals(first, second);
+	}
+	
+	@Test
+	public void testDoc5Parsing() throws Exception {
+		parser = new SmartScriptParser(loader("doc5.txt"));
+		String first = parser.getDocumentNode().toString();
+		parser = new SmartScriptParser(first);
+		String second = parser.getDocumentNode().toString();
+		
+		assertEquals(first, second);
+	}
+	
+	@Test(expected = LexerException.class)
+	public void escapingNonAllowedCharsInText() throws Exception {
+		parser = new SmartScriptParser(loader("doc6.txt"));
+	}
+	
+	@Test(expected = LexerException.class)
+	public void escapingNonAllowedCharsInString() throws Exception {
+		parser = new SmartScriptParser(loader("doc7.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void parserConstrutorPassingNull() throws Exception {
+		parser = new SmartScriptParser(null);
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void invalidTagName() throws Exception {
+		parser = new SmartScriptParser(loader("doc8.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void moreEndTagsThanOpenedTags() throws Exception {
+		parser = new SmartScriptParser(loader("doc9.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void emptyStackAfterRemovingEndTag() throws Exception {
+		parser = new SmartScriptParser(loader("doc10.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void illegalTokenAfterForToken() throws Exception {
+		parser = new SmartScriptParser(loader("doc11.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void illegalTagAsStarExpression() throws Exception {
+		parser = new SmartScriptParser(loader("doc12.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void illegalTagAsEndExpression() throws Exception {
+		parser = new SmartScriptParser(loader("doc13.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void illegalTagAsStepExpression() throws Exception {
+		parser = new SmartScriptParser(loader("doc14.txt"));
+	}
+	
+	@Test(expected = SmartScriptParserException.class)
+	public void invalidNumberOfForLoopNoodChilderns() throws Exception {
+		parser = new SmartScriptParser(loader("doc15.txt"));
 	}
 }

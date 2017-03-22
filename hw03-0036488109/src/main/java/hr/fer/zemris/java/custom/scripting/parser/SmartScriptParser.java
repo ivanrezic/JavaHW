@@ -173,7 +173,7 @@ public class SmartScriptParser {
 
 	private boolean elementCondition(Token token) {
 		if (token.getType() == TokenType.OPERATOR || token.getType() == TokenType.FUNCTION) {
-			throw new SmartScriptParserException(token.getValue().toString() + "is not variable name.");
+			throw new SmartScriptParserException(token.getValue().toString() + "is not legal type.");
 		}
 		return true;
 	}

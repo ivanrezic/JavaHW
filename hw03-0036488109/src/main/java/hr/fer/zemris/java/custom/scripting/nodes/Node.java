@@ -3,7 +3,10 @@ package hr.fer.zemris.java.custom.scripting.nodes;
 import hr.fer.zemris.java.custom.collections.ArrayIndexedCollection;
 
 /**
- * Base class for all graph nodes.
+ * Base class for all graph nodes which can contain one or more nodes as its children.
+ * Also it provides method as: {@link #addChildNode(Node)}, {@link #numberOfChildren()} and {@link #getChild(int)}.
+ * 
+ * @author Ivan
  */
 public class Node {
 

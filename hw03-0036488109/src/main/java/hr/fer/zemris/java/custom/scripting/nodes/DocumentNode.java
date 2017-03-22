@@ -2,7 +2,9 @@ package hr.fer.zemris.java.custom.scripting.nodes;
 
 /**
  * A node representing an entire document. It inherits from <code>Node</code>
- * class
+ * class and provides insight to its child collection and so on.
+ * 
+ * @author Ivan
  */
 public class DocumentNode extends Node {
 
