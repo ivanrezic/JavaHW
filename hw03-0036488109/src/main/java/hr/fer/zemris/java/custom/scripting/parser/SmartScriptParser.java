@@ -18,11 +18,32 @@ import hr.fer.zemris.java.custom.scripting.nodes.ForLoopNode;
 import hr.fer.zemris.java.custom.scripting.nodes.Node;
 import hr.fer.zemris.java.custom.scripting.nodes.TextNode;
 
+/**
+ * SmartScriptParser represents object which processes text through syntax
+ * analysis. After processing text is divided in syntax groups which are later
+ * encapsulated in nodes used for construction of syntax tree. There are two
+ * main text groups, ones inside {$ ... $} which we call tags, and ones outside
+ * tags - text. After that we have 3 tags subgroups which we call: for, echo and
+ * end.
+ * 
+ * @author Ivan
+ */
 public class SmartScriptParser {
 
+	/**
+	 * The document node is root node which we later use for tree construction.
+	 */
 	private DocumentNode documentNode;
+
+	/** The lexer is reference to object {@link Lexer}. */
 	private Lexer lexer;
 
+	/**
+	 * Constructor that instantiates a new smart script parser.
+	 *
+	 * @param documentBody
+	 *            text
+	 */
 	public SmartScriptParser(String documentBody) {
 		if (documentBody == null) {
 			throw new SmartScriptParserException("Document body can't be null.");
@@ -32,6 +53,16 @@ public class SmartScriptParser {
 		parse(lexer);
 	}
 
+	/**
+	 * Method which delegates its work to {@link Lexer} for lexic analysis. It
+	 * digest tokens and creates nodes using {@link ObjectStack} out of it.
+	 *
+	 * @param lexer
+	 *            instance of {@link Lexer}
+	 * 
+	 * @throws SmartScriptParserException
+	 *             if some error occurs while parsing the tokens
+	 */
 	public void parse(Lexer lexer) {
 		ObjectStack stack = new ObjectStack();
 		documentNode = new DocumentNode();
@@ -71,6 +102,14 @@ public class SmartScriptParser {
 		}
 	}
 
+	/**
+	 * Represents end tag token.
+	 *
+	 * @param stack
+	 *            the stack
+	 * @throws SmartScriptParserException
+	 *             if stack is empty after removing END tag
+	 */
 	private void endTag(ObjectStack stack) {
 
 		lexer.nextToken();
@@ -80,6 +119,12 @@ public class SmartScriptParser {
 		}
 	}
 
+	/**
+	 * Represents tag type "=". Which we encapsulate in EchoNode.
+	 *
+	 * @param stack
+	 *            instance of <code>ObjectStack</code>
+	 */
 	private void equalsTag(ObjectStack stack) {
 		ArrayIndexedCollection tokenElements = new ArrayIndexedCollection();
 		Element[] elements;
@@ -101,6 +146,15 @@ public class SmartScriptParser {
 		parent.addChildNode(new EchoNode(elements));
 	}
 
+	/**
+	 * Returns token that matches input argument.
+	 *
+	 * @param temporary
+	 *            token which we are matching against
+	 * @return the correct type of token
+	 * @throws SmartScriptParserException
+	 *             If EchoNode argument is invalid
+	 */
 	private Element getCorrectType(Token temporary) {
 		TokenType type = temporary.getType();
 		String value = temporary.getValue().toString();
@@ -126,6 +180,16 @@ public class SmartScriptParser {
 
 	}
 
+	/**
+	 * For tag is method which processes tokens that should be encapsulated in
+	 * ForLoopNode. ForLoopNode consists of 3 or 4 elements. First one is type
+	 * ElementVariable others can be string,variable, or number.
+	 *
+	 * @param stack
+	 *            instance of ObjectStack
+	 * @throws SmartScriptParserException
+	 *             if there are more than 4 elements
+	 */
 	private void forTag(ObjectStack stack) {
 		int counter = 1;
 		Element startExpression = null, endExpression = null, stepExpression = null;
@@ -171,6 +235,14 @@ public class SmartScriptParser {
 		stack.push(foorLoopNode);
 	}
 
+	/**
+	 * Helper method which checks if token type matches string,variable or number.
+	 *
+	 * @param token
+	 *            the token we are matching against
+	 * @return true, if successful false otherwise
+	 * @throws SmartScriptParserException if token is of type OPERATOR or FUNCTION
+	 */
 	private boolean elementCondition(Token token) {
 		if (token.getType() == TokenType.OPERATOR || token.getType() == TokenType.FUNCTION) {
 			throw new SmartScriptParserException(token.getValue().toString() + "is not legal type.");
@@ -178,6 +250,11 @@ public class SmartScriptParser {
 		return true;
 	}
 
+	/**
+	 * Returns text representation of <code>DocumentNode</code>
+	 *
+	 * @return the document node
+	 */
 	public DocumentNode getDocumentNode() {
 		return documentNode;
 	}

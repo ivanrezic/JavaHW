@@ -1,7 +1,7 @@
 package hr.fer.zemris.java.hw03.prob1;
 
 /**
- * The Enum LexerState represents states in which lexer could be. Valid states
+ * The enumeration LexerState represents states in which lexer could be. Valid states
  * are: {@link #BASIC}, {@link #EXTENDED} .
  * 
  * @author Ivan
