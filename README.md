@@ -1,2 +1,2 @@
 # JavaHW
-Repository which contains homework assignments from Java.
+Repository which contains Java homework assignments.
