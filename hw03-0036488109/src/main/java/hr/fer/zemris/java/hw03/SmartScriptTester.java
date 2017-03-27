@@ -65,7 +65,7 @@ public class SmartScriptTester {
 	 *            output document from parser processing
 	 * @return the string representation of DocumentNode
 	 */
-	private static String createOriginalDocumentBody(DocumentNode document) {
+	public static String createOriginalDocumentBody(DocumentNode document) {
 		if (document == null) {
 			throw new IllegalArgumentException("Document given shouldnt be null.");
 		}

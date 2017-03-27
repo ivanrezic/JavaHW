@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 
 import hr.fer.zemris.java.custom.scripting.lexer.LexerException;
+import hr.fer.zemris.java.hw03.SmartScriptTester;
 
 public class SmartScriptParserTest {
 	SmartScriptParser parser;
@@ -33,9 +34,9 @@ public class SmartScriptParserTest {
 	@Test
 	public void testDoc1Parsing() throws Exception {
 		parser = new SmartScriptParser(loader("doc1.txt"));
-		String first = parser.getDocumentNode().toString();
+		String first = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		parser = new SmartScriptParser(first);
-		String second = parser.getDocumentNode().toString();
+		String second = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		
 		assertEquals(first, second);
 	}
@@ -43,9 +44,9 @@ public class SmartScriptParserTest {
 	@Test
 	public void testDoc2Parsing() throws Exception {
 		parser = new SmartScriptParser(loader("doc2.txt"));
-		String first = parser.getDocumentNode().toString();
+		String first = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		parser = new SmartScriptParser(first);
-		String second = parser.getDocumentNode().toString();
+		String second = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		
 		assertEquals(first, second);
 	}
@@ -53,9 +54,9 @@ public class SmartScriptParserTest {
 	@Test
 	public void testDoc3Parsing() throws Exception {
 		parser = new SmartScriptParser(loader("doc3.txt"));
-		String first = parser.getDocumentNode().toString();
+		String first = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		parser = new SmartScriptParser(first);
-		String second = parser.getDocumentNode().toString();
+		String second = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		
 		assertEquals(first, second);
 	}
@@ -63,9 +64,9 @@ public class SmartScriptParserTest {
 	@Test
 	public void testDoc4Parsing() throws Exception {
 		parser = new SmartScriptParser(loader("doc4.txt"));
-		String first = parser.getDocumentNode().toString();
+		String first = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		parser = new SmartScriptParser(first);
-		String second = parser.getDocumentNode().toString();
+		String second = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		
 		assertEquals(first, second);
 	}
@@ -73,9 +74,9 @@ public class SmartScriptParserTest {
 	@Test
 	public void testDoc5Parsing() throws Exception {
 		parser = new SmartScriptParser(loader("doc5.txt"));
-		String first = parser.getDocumentNode().toString();
+		String first = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		parser = new SmartScriptParser(first);
-		String second = parser.getDocumentNode().toString();
+		String second = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
 		
 		assertEquals(first, second);
 	}

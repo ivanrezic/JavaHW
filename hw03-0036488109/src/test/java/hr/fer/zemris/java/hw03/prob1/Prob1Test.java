@@ -198,12 +198,11 @@ public class Prob1Test {
 			counter++;
 		}
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullState() {
 		new Lexer("").setState(null);
 	}
-
 
 	@Test
 	public void testNotNullInExtended() {
@@ -212,7 +211,6 @@ public class Prob1Test {
 
 		assertNotNull("Token was expected but null was returned.", lexer.nextToken());
 	}
-
 
 	@Test
 	public void testEmptyInExtended() {
@@ -234,7 +232,6 @@ public class Prob1Test {
 		assertEquals("getToken returned different token than nextToken.", token, lexer.getToken());
 	}
 
-
 	@Test(expected = LexerException.class)
 	public void testRadAfterEOFInExtended() {
 		Lexer lexer = new Lexer("");
@@ -246,7 +243,6 @@ public class Prob1Test {
 		lexer.nextToken();
 	}
 
-
 	@Test
 	public void testNoActualContentInExtended() {
 		// When input is only of spaces, tabs, newlines, etc...
@@ -257,7 +253,6 @@ public class Prob1Test {
 				lexer.nextToken().getType());
 	}
 
-	
 	@Test
 	public void testMultipartInput() {
 		// Test input which has parts which are tokenized by different rules...
