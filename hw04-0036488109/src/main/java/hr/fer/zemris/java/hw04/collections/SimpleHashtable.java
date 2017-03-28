@@ -297,8 +297,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
 		public void remove() {
 			checkModification();
-			if (curent == null) {
-				throw new IllegalStateException("Can not remove element from empty collection");
+			if (curent == null || !containsKey(curent.getKey())) {
+				throw new IllegalStateException("Can not remove element that does not exist.");
 			}
 			SimpleHashtable.this.remove(curent.getKey());
 			modificationCheck = modificationCount;

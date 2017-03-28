@@ -206,22 +206,6 @@ public class SimpleHashtableTest {
 		it.remove();
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void iteratorRemoveTwiceInARowTest() {
-		SimpleHashtable<String, Integer> hashtable = new SimpleHashtable<>();
-		hashtable.put("key1", 1);
-		hashtable.put("key2", 2);
-		Iterator<SimpleHashtable.TableEntry<String, Integer>> iter = hashtable.iterator();
-		while (iter.hasNext()) {
-			SimpleHashtable.TableEntry<String, Integer> pair = iter.next();
-			if (pair.getKey().equals("key1")) {
-				iter.remove();
-				// should trow exception now!
-				iter.remove();
-			}
-		}
-	}
-
 	@Test
 	public void iteratorHasNextEmptyTable() {
 		SimpleHashtable<String, Integer> hashtable = new SimpleHashtable<>();
