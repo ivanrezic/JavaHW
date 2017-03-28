@@ -1,5 +1,7 @@
 package hr.fer.zemris.java.hw04.collections;
 
+import java.util.Iterator;
+
 public class Primjer {
 	public static void main(String[] args) {
 		// create collection:
@@ -20,5 +22,16 @@ public class Primjer {
 //						pair2.getValue());
 //			}
 //		}
+		
+		System.out.println();
+		
+		Iterator<SimpleHashtable.TableEntry<String,Integer>> iter = examMarks.iterator();
+		while(iter.hasNext()) {
+		SimpleHashtable.TableEntry<String,Integer> pair = iter.next();
+		System.out.printf("%s => %d%n", pair.getKey(), pair.getValue());
+		iter.remove();
+		iter.remove();
+		}
+		System.out.printf("Veličina: %d%n", examMarks.size());
 	}
 }

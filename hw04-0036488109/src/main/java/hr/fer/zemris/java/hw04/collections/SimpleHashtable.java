@@ -5,18 +5,22 @@ import static java.lang.Math.ceil;
 import static java.lang.Math.log10;
 import static java.lang.Math.pow;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K, V>> {
+	private static final double LIMIT_FACTOR = 0.75;
 	private final static int DEFAULT_CAPACITY = 16;
 	private final static int RESIZE_FACTOR = 2;
 	private int size;
-	private int slotLimit;
-	private TableEntry<K, V>[] table;
+	private double slotLimit;
+	private int modificationCount;
+	TableEntry<K, V>[] table; //nakon testiranja vratiti na private
 
 	public SimpleHashtable() {
 		table = new TableEntry[DEFAULT_CAPACITY];
-		slotLimit = (int) (0.75 * DEFAULT_CAPACITY);
+		slotLimit = LIMIT_FACTOR * DEFAULT_CAPACITY;
 	}
 
 	public SimpleHashtable(int capacity) {
@@ -24,7 +28,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 			throw new IllegalArgumentException("Capacity can not be less than 1.");
 		} else {
 			int temporary = (int) pow(2, ceil(log10(capacity) / log10(2)));
-			slotLimit = (int) (0.75 * temporary);
+			slotLimit = LIMIT_FACTOR * temporary;
 			table = new TableEntry[temporary];
 		}
 	}
@@ -99,31 +103,24 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 		if (key == null) {
 			throw new IllegalArgumentException("Key can not be null.");
 		} else if (!containsKey(key)) {
-			slotLimitReached();
 			addTableEntry(key, value);
+			slotLimitReached();
+			modificationCount++;
 		} else {
 			updateTableEntry(key, value);
 		}
 	}
 
 	private void slotLimitReached() {
-		int count = 0;
-
-		for (int i = 0; i < table.length; i++) {
-			if (table[i] != null) {
-				count++;
-			}
-		}
-
-		if (count >= slotLimit) {
+		if (size >= slotLimit) {
 			resizeTable();
-			slotLimit = (int) (0.75 * table.length);
 		}
 	}
 
 	private void resizeTable() {
 		TableEntry<K, V>[] oldTable = table;
 		table = new TableEntry[oldTable.length * RESIZE_FACTOR];
+		slotLimit = LIMIT_FACTOR * table.length;
 		size = 0;
 		for (int i = 0; i < oldTable.length; i++) {
 			TableEntry<K, V> tracker = oldTable[i];
@@ -205,7 +202,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 	public boolean containsValue(Object value) {
 		for (int i = 0, size = table.length; i < size; i++) {
 			for (TableEntry<K, V> tracker = table[i]; tracker != null; tracker = tracker.next) {
-				if (tracker.value == null || (tracker.value != null && tracker.value.equals(value))) {
+				if (tracker.value == value || (tracker.value != null && tracker.value.equals(value))) {
 					return true;
 				}
 			}
@@ -221,17 +218,19 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
 		int slot = abs(key.hashCode()) % table.length;
 		TableEntry<K, V> temporary = table[slot];
-
-		while (temporary.next != null && temporary.next.getKey() != key) {
-			temporary = temporary.next;
-		}
-
 		if (temporary.next == null) {
-			temporary.next = null;
+			table[slot] = null;
+		} else if (temporary.getKey().equals(key)) {
+			table[slot] = temporary.next;
 		} else {
-			temporary.next = temporary.next.next;
+			while (temporary.getKey() != key) {
+				temporary = temporary.next;
+			}
 		}
+
 		size--;
+		modificationCount++;
+
 	}
 
 	public boolean isEmpty() {
@@ -248,19 +247,23 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
 	@Override
 	public String toString() {
-		StringBuilder sBuilder = new StringBuilder("[");
+		String result = "[]";
+		StringBuilder sb = new StringBuilder();
 
+		TableEntry<K, V> help;
+		sb.append("[");
 		for (int i = 0; i < table.length; i++) {
-			for (TableEntry<K, V> j = table[i]; j != null; j = j.next) {
-				if (j.next != null || j == table[i]) {
-					sBuilder.append(j.toString() + ", ");
-				} else {
-					sBuilder.append(j.toString());
-				}
+			help = table[i];
+			while (help != null) {
+				sb.append(help.toString()).append(", ");
+				help = help.next;
+			}
+			if (i == table.length - 1 && sb.length() > 2) {
+				result = sb.substring(0, sb.length() - 2).concat("]");
 			}
 		}
 
-		return sBuilder.append("]").toString();
+		return result;
 	}
 
 	@Override
@@ -271,38 +274,55 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
 	private class IteratorImpl implements Iterator<SimpleHashtable.TableEntry<K, V>> {
 		private int slotPosition = 0;
+		private int count = size;
+		private int modificationCheck = modificationCount;
 		private TableEntry<K, V> helper = table[slotPosition];
+		private TableEntry<K, V> curent;
 
 		public boolean hasNext() {
-			for (int i = slotPosition; i < table.length; i++) {
-				if (helper == null) {
-					if (slotPosition < table.length - 1) {
-						helper = table[++slotPosition];
-					}
-					continue;
-				}
-				while (helper != null) {
-					if (helper.next == null) {
-						if (slotPosition < table.length - 1) {
-							helper = table[++slotPosition];
-						}
-						break;
-					}
-					helper = helper.next;
-					return true;
-				}
-				if (slotPosition < table.length - 1) {
-					helper = table[++slotPosition];
-				}
-			}
-			return false;
+			checkModification();
+			return count != 0;
 		}
 
 		public SimpleHashtable.TableEntry next() {
-			return helper;
+			checkModification();
+
+			if (!searchHelper()) {
+				throw new NoSuchElementException("No entries left.");
+			}
+
+			count--;
+			return curent;
 		}
 
 		public void remove() {
+			checkModification();
+			if (curent == null) {
+				throw new IllegalStateException("Can not remove element from empty collection");
+			}
+			SimpleHashtable.this.remove(curent.getKey());
+			modificationCheck = modificationCount;
+		}
+
+		private void checkModification() {
+			if (modificationCheck != modificationCount) {
+				throw new ConcurrentModificationException();
+			}
+		}
+
+		private boolean searchHelper() {
+			for (int i = slotPosition; i < table.length; i++) {
+				if (helper == null && slotPosition < table.length - 1) {
+					helper = table[++slotPosition];
+					continue;
+				}
+				while (helper != null) {
+					curent = helper;
+					helper = helper.next;
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
