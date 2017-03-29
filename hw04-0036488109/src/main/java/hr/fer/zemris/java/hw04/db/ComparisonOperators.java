@@ -1,13 +1,34 @@
 package hr.fer.zemris.java.hw04.db;
 
+/**
+ * The Class ComparisonOperators.
+ * 
+ * @author Ivan
+ */
 public class ComparisonOperators {
 
+	/** Checks if first value is less than other. */
 	public static final IComparisonOperator LESS;
+
+	/** Checks if first value is less than other or equals. */
 	public static final IComparisonOperator LESS_OR_EQUALS;
+
+	/** Checks if first value is greater than other. */
 	public static final IComparisonOperator GREATER;
+
+	/** Checks if first value is greater than other or equals. */
 	public static final IComparisonOperator GREATER_OR_EQUALS;
+
+	/** Checks if first value is equal to the other. */
 	public static final IComparisonOperator EQUALS;
+
+	/** Checks if first value is not equal to the other. */
 	public static final IComparisonOperator NOT_EQUALS;
+
+	/**
+	 * Checks if first value matches second value, for second value we can use
+	 * wildcard once.
+	 */
 	public static final IComparisonOperator LIKE;
 
 	static {

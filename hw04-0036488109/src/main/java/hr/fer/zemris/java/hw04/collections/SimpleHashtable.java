@@ -16,11 +16,14 @@ import java.util.NoSuchElementException;
  * list whose elements are added at the end.This class also uses key hashCode
  * for slot calculation and implements interface <code>Iterable</code> used for
  * retrieving and deleting elements.
+ * 
  *
  * @param <K>
  *            key representation of this class
  * @param <V>
  *            value representation of this class
+ * 
+ * @author Ivan
  */
 @SuppressWarnings("all")
 public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K, V>> {
@@ -47,7 +50,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 	private int modificationCount;
 
 	/** The table. */
-	private TableEntry<K, V>[] table;
+	TableEntry<K, V>[] table;
 
 	/**
 	 * Constructor that instantiates a new simple hashtable.

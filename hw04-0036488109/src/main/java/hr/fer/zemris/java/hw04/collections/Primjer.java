@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 /**
  * SimpleHashtable example class.
+ * 
+ * @author Ivan
  */
 public class Primjer {
 	

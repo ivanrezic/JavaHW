@@ -10,6 +10,8 @@ import hr.fer.zemris.java.hw04.db.StudentRecord;
  *
  * @param <E>
  *            the element type
+ * 
+ * @author Ivan
  */
 public class ExtendedArrayList<E> extends ArrayList<E> {
 	// this class is used to store max last name and name size for later

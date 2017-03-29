@@ -2,6 +2,8 @@ package hr.fer.zemris.java.hw04.collections;
 
 /**
  * SimpleHastable demonstration class.
+ * 
+ * @author Ivan
  */
 public class Demo {
 	
