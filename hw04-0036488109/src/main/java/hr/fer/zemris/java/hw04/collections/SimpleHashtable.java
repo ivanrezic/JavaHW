@@ -174,7 +174,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 		TableEntry<K, V> temporary = table[slot];
 
 		while (temporary != null) {
-			if (temporary.getKey() == key) {
+			if (temporary.getKey().equals(key)) {
 				return temporary.getValue();
 			}
 			temporary = temporary.next;
