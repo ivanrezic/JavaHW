@@ -1,6 +1,15 @@
 package hr.fer.zemris.java.hw04.collections;
 
+/**
+ * SimpleHastable demonstration class.
+ */
 public class Demo {
+	
+	/**
+	 * The main method.
+	 *
+	 * @param args comand line arguments, not used in this method. 
+	 */
 	public static void main(String[] args) {
 		// create collection:
 		SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>(2);

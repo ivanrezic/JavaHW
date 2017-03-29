@@ -2,7 +2,16 @@ package hr.fer.zemris.java.hw04.collections;
 
 import java.util.Iterator;
 
+/**
+ * SimpleHashtable example class.
+ */
 public class Primjer {
+	
+	/**
+	 * The main method.
+	 *
+	 * @param args arguments from command line, not used in this method
+	 */
 	public static void main(String[] args) {
 		// create collection:
 		SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>(2);
