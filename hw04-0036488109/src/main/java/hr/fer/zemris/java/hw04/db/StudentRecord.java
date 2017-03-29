@@ -3,14 +3,14 @@ package hr.fer.zemris.java.hw04.db;
 public class StudentRecord {
 	private String jmbag;
 	private String lastName;
-	private String fristName;
-	private int ocjena;
+	private String firstName;
+	private int mark;
 
-	public StudentRecord(String jmbag, String lastName, String fristName, int ocjena) {
+	public StudentRecord(String jmbag, String lastName, String fristName, int mark) {
 		this.jmbag = jmbag;
 		this.lastName = lastName;
-		this.fristName = fristName;
-		this.ocjena = ocjena;
+		this.firstName = fristName;
+		this.mark = mark;
 	}
 
 	public String getJmbag() {
@@ -22,11 +22,11 @@ public class StudentRecord {
 	}
 
 	public String getFristName() {
-		return fristName;
+		return firstName;
 	}
 
-	public int getOcjena() {
-		return ocjena;
+	public int getMark() {
+		return mark;
 	}
 
 	@Override
@@ -52,6 +52,11 @@ public class StudentRecord {
 		} else if (!jmbag.equals(other.jmbag))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return jmbag + "	" + lastName + "	" + firstName + "	" + mark;
 	}
 
 }

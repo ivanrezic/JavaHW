@@ -10,7 +10,7 @@ public class StudentDatabase {
 	List<StudentRecord> studentList = new ArrayList<>();
 	SimpleHashtable<String, StudentRecord> studentTable = new SimpleHashtable<>();
 
-	public StudentDatabase(String[] data) {
+	public StudentDatabase(List<String> data) {
 		for (String dataRow : data) {
 			String[] row = dataRow.split("\t");
 			StudentRecord studentRecord = new StudentRecord(row[0], row[1], row[2], Integer.parseInt(row[3]));

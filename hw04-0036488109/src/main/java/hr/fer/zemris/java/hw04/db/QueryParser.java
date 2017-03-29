@@ -6,32 +6,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class QueryParser {
-	private static final String STRING_LITERAL = "(?<=\").*(?=\")";
-	private static final String OPERATOR_REGEX = "(LIKE|<=|>=|!=|>|<|(?<=)=)";
-	private static final String FIELD_VARIABLE_CONSTANT = "(.+?\\s*(?=!|<|>|=|LIKE))";
-	private String querry;
+	protected static final String DIRECT_QUERY = "jmbag\\s*=\\s*\"\\d+\"(?!.)";
+	protected static final String STRING_LITERAL = "(?<=\").+(?=\")";
+	protected static final String OPERATOR = "(LIKE|<=|>=|!=|>|<|(?<=)=)";
+	protected static final String FIELD_VARIABLE_CONSTANT = "(.+?\\s*(?=!|<|>|=|LIKE))";
+	private String query;
 	private List<ConditionalExpression> conditionals = new LinkedList<>();
 
-	public QueryParser(String querry) {
-		this.querry = querry.trim();
-		parse();
+	public QueryParser(String query) {
+		this.query = query.trim();
 	}
 
 	boolean isDirectQuery() {
-		return querry.matches("jmbag\\s*=\\s*\".+\"");
+		return query.matches(DIRECT_QUERY);
 	}
 
 	String getQueriedJMBAG() {
 		if (!isDirectQuery()) {
-			throw new IllegalStateException("Querry is not direct one.");
+			throw new IllegalStateException("Query is not direct one.");
 		}
-		return regexMathcer(querry, "(?<=\").+(?=\")").get(0);
+		return regexMathcer(query, STRING_LITERAL).get(0);
 	}
 
-	private List<String> regexMathcer(String querry, String regex) {
+	private List<String> regexMathcer(String query, String regex) {
 		List<String> parts = new LinkedList<>();
 		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(querry);
+		Matcher matcher = pattern.matcher(query);
 
 		while (matcher.find()) {
 			parts.add(matcher.group().trim());
@@ -41,30 +41,24 @@ public class QueryParser {
 	}
 
 	List<ConditionalExpression> getQuery() {
-		return conditionals;
-	}
-
-	private void parse() {
 		if (isDirectQuery()) {
 			conditionals.add(
 					new ConditionalExpression(FieldValueGetters.JMBAG, getQueriedJMBAG(), ComparisonOperators.EQUALS));
-			return;
+			return conditionals;
 		}
 
-		String[] querryParts = querry.split("\\s*(?i)AND\\s*");
-		for (String part : querryParts) {
-			if (part.matches("jmbag\\s*=\\s*\".+\"")) {
-				throw new IllegalArgumentException("Multiple querries can not contain direct querry.");
-			}
+		String[] queryParts = query.split("\\s*(?i)AND\\s*");
+		for (String part : queryParts) {
+			List<String> parts = regexMathcer(part, STRING_LITERAL + "|" + OPERATOR + "|" + FIELD_VARIABLE_CONSTANT);
 
-			List<String> parts = regexMathcer(part,
-					STRING_LITERAL + "|" + OPERATOR_REGEX + "|" + FIELD_VARIABLE_CONSTANT);
-
-			IFieldValueGetter fieldValue = getProperFieldName(parts.get(0));
+			IFieldValueGetter fieldValue = getProperFieldValue(parts.get(0));
 			IComparisonOperator operator = getProperComparisonOperator(parts.get(1));
 			String stringLiteral = parts.get(2);
+			
 			conditionals.add(new ConditionalExpression(fieldValue, stringLiteral, operator));
 		}
+		
+		return conditionals;
 	}
 
 	private IComparisonOperator getProperComparisonOperator(String string) {
@@ -84,10 +78,10 @@ public class QueryParser {
 		case "=":
 			return ComparisonOperators.EQUALS;
 		}
-		return null;
+		throw new IllegalStateException();
 	}
 
-	private IFieldValueGetter getProperFieldName(String string) {
+	private IFieldValueGetter getProperFieldValue(String string) {
 		switch (string) {
 		case "jmbag":
 			return FieldValueGetters.JMBAG;
@@ -96,6 +90,6 @@ public class QueryParser {
 		case "firstName":
 			return FieldValueGetters.FIRST_NAME;
 		}
-		return null;
+		throw new IllegalStateException();
 	}
 }

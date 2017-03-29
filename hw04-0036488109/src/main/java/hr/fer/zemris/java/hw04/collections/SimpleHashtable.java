@@ -9,6 +9,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+@SuppressWarnings("all")
 public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K, V>> {
 	private static final double LIMIT_FACTOR = 0.75;
 	private final static int DEFAULT_CAPACITY = 16;
@@ -16,13 +17,15 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 	private int size;
 	private double slotLimit;
 	private int modificationCount;
-	TableEntry<K, V>[] table; //nakon testiranja vratiti na private
+	TableEntry<K, V>[] table; // nakon testiranja vratiti na private
+
 
 	public SimpleHashtable() {
 		table = new TableEntry[DEFAULT_CAPACITY];
 		slotLimit = LIMIT_FACTOR * DEFAULT_CAPACITY;
 	}
 
+	
 	public SimpleHashtable(int capacity) {
 		if (capacity < 1) {
 			throw new IllegalArgumentException("Capacity can not be less than 1.");
@@ -187,7 +190,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 		return size;
 	}
 
-	public boolean containsKey(Object key) {
+	public boolean containsKey(Object key) {//popraviti s hash, hash izvuci u metodicu
 		for (int i = 0, size = table.length; i < size; i++) {
 			for (TableEntry<K, V> tracker = table[i]; tracker != null; tracker = tracker.next) {
 				if (tracker.getKey().equals(key)) {

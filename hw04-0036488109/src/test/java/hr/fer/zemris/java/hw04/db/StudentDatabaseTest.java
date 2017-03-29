@@ -1,21 +1,18 @@
 package hr.fer.zemris.java.hw04.db;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class StudentDatabaseTest {
 	List<String> lines;
-	String[] rows;
 	StudentDatabase database;
 
 	@Before
@@ -25,14 +22,8 @@ public class StudentDatabaseTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		int i = 0;
-		rows = new String[lines.size()];
-		for (String line : lines) {
-			rows[i++] = line;
-		}
 		
-		database = new StudentDatabase(rows);
+		database = new StudentDatabase(lines);
 	}
 
 	@Test

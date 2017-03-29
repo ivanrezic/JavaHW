@@ -4,7 +4,7 @@ public class FieldValueGetters {
 	public static final IFieldValueGetter FIRST_NAME;
 	public static final IFieldValueGetter LAST_NAME;
 	public static final IFieldValueGetter JMBAG;
-	
+
 	static{
 		FIRST_NAME = record -> record.getFristName();
 		LAST_NAME = record -> record.getLastName();
