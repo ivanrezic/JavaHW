@@ -8,7 +8,9 @@ public class ObjectMultistack {
 	private Map<String, MultistackEntry> map = new HashMap<>();
 
 	public void push(String name, ValueWrapper valueWrapper) {
-		if (!map.containsKey(name)) {
+		if (valueWrapper == null || name == null) {
+			throw new IllegalArgumentException("Arguments can not be null");
+		} else if (!map.containsKey(name)) {
 			map.put(name, new MultistackEntry(valueWrapper, null));
 		} else {
 			slotAdd(map.get(name), valueWrapper);
@@ -33,15 +35,15 @@ public class ObjectMultistack {
 		if (entry.next == null) {
 			temporary = entry.getValue();
 			map.remove(name);
-		}else{
+		} else {
 			while (entry.next != null) {
 				entry.next = entry.next.next;
 			}
-			
+
 			temporary = entry.getValue();
 			entry = null;
 		}
-		
+
 		return temporary;
 	}
 
@@ -52,9 +54,9 @@ public class ObjectMultistack {
 
 		MultistackEntry entry = map.get(name);
 		while (entry.next != null) {
-			entry.next = entry.next.next;
+			entry = entry.next;
 		}
-		
+
 		return entry.getValue();
 	}
 
