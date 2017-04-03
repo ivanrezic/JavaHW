@@ -433,6 +433,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 		}
 
 		size = 0;
+		modificationCount++;
 	}
 
 	/*
