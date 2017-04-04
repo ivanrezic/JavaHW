@@ -53,4 +53,12 @@ public class StudentRecord {
 	public Double getOverall() {
 		return midterm + finalExam + labs;
 	}
+
+	@Override
+	public String toString() {
+		return "StudentRecord [jmbag=" + jmbag + ", lastName=" + lastName + ", firstName=" + firstName + ", midterm="
+				+ midterm + ", finalExam=" + finalExam + ", labs=" + labs + ", mark=" + mark + "]";
+	}
+	
+	
 }
