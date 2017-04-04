@@ -81,6 +81,16 @@ public class SmartScriptParserTest {
 		assertEquals(first, second);
 	}
 	
+	@Test
+	public void testHw12Parsing() throws Exception {
+		parser = new SmartScriptParser(loader("hw12.txt"));
+		String first = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
+		parser = new SmartScriptParser(first);
+		String second = SmartScriptTester.createOriginalDocumentBody(parser.getDocumentNode());
+		
+		assertEquals(first, second);
+	}
+	
 	@Test(expected = LexerException.class)
 	public void escapingNonAllowedCharsInText() throws Exception {
 		parser = new SmartScriptParser(loader("doc6.txt"));
