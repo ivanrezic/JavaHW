@@ -5,46 +5,41 @@ import java.util.Map;
 
 public class ObjectMultistack {
 
-	private Map<String, MultistackEntry> map = new HashMap<>();
+	private Map<String, MultistackEntry> map;
+	
+	public ObjectMultistack() {
+		map = new HashMap<>();
+	}
 
 	public void push(String name, ValueWrapper valueWrapper) {
-		if (valueWrapper == null || name == null) {
-			throw new IllegalArgumentException("Arguments can not be null");
-		} else if (!map.containsKey(name)) {
-			map.put(name, new MultistackEntry(valueWrapper, null));
-		} else {
-			slotAdd(map.get(name), valueWrapper);
-		}
+		MultistackEntry help = new MultistackEntry(valueWrapper, null);
+		
+		if (name == null) {
+			throw new IllegalArgumentException("Map key can not be null");
+		} else if (map.containsKey(name)) {
+			MultistackEntry temporary = map.get(name);
+			help.next = temporary;
+		} 
+		
+		map.put(name, help);
 	}
 
-	private void slotAdd(MultistackEntry entry, ValueWrapper valueWrapper) {
-		while (entry.next != null) {
-			entry = entry.next;
-		}
-
-		entry.next = new MultistackEntry(valueWrapper, null);
-	}
 
 	public ValueWrapper pop(String name) {
 		if (!map.containsKey(name)) {
 			throw new EmptyStackException("You can't pop from empty stack");
 		}
-
-		ValueWrapper temporary;
-		MultistackEntry entry = map.get(name);
-		if (entry.next == null) {
-			temporary = entry.getValue();
+		
+		MultistackEntry temporary = map.get(name);
+		ValueWrapper value = temporary.value;
+		if (temporary.next == null) {
 			map.remove(name);
-		} else {
-			while (entry.next != null) {
-				entry.next = entry.next.next;
-			}
-
-			temporary = entry.getValue();
-			entry = null;
+		}else{
+			map.remove(name);
+			map.put(name, temporary.next);
 		}
 
-		return temporary;
+		return value;
 	}
 
 	public ValueWrapper peek(String name) {
@@ -52,16 +47,11 @@ public class ObjectMultistack {
 			throw new EmptyStackException("You can't peek from empty stack");
 		}
 
-		MultistackEntry entry = map.get(name);
-		while (entry.next != null) {
-			entry = entry.next;
-		}
-
-		return entry.getValue();
+		return map.get(name).value;
 	}
 
 	public boolean isEmpty(String name) {
-		return map.isEmpty();
+		return !map.containsKey(name);
 	}
 
 	private static class MultistackEntry {
@@ -69,13 +59,12 @@ public class ObjectMultistack {
 		private MultistackEntry next;
 
 		public MultistackEntry(ValueWrapper value, MultistackEntry next) {
-			super();
+			if (value == null) {
+				throw new IllegalArgumentException("Entry value can not be null.");
+			}
+			
 			this.value = value;
 			this.next = next;
-		}
-
-		public ValueWrapper getValue() {
-			return value;
 		}
 	}
 }
