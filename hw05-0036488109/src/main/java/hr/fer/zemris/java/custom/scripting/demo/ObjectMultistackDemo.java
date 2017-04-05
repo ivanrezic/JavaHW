@@ -3,8 +3,20 @@ package hr.fer.zemris.java.custom.scripting.demo;
 import hr.fer.zemris.java.custom.scripting.exec.ObjectMultistack;
 import hr.fer.zemris.java.custom.scripting.exec.ValueWrapper;
 
+/**
+ * <code>ObjectMultistackDemo</code> is class used for demonstration purposes.
+ * It shows how {@link #ObjectMultistackDemo} works.
+ *
+ * @author Ivan Rezic
+ */
 public class ObjectMultistackDemo {
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args
+	 *            the arguments from command line, not used here
+	 */
 	public static void main(String[] args) {
 		ObjectMultistack multistack = new ObjectMultistack();
 
