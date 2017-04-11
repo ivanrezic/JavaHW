@@ -1,14 +1,8 @@
 package hr.fer.zemris.java.hw06.shell.commands;
 
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
@@ -19,41 +13,71 @@ public class TreeShellCommand implements ShellCommand {
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
-		if (arguments.contains(" ")) {
+		boolean quoted = arguments.matches("\".+\"");
+
+		if (arguments.contains(" ") && !quoted) {
 			env.writeln("Tree command takes just one argument (path to directory).");
-		} else {
-			listTree(arguments, env);
+			return ShellStatus.CONTINUE;
+		} else if (quoted) {
+			arguments = arguments.substring(1, arguments.length() - 1);
 		}
-		return null;
+
+		File directory = new File(arguments);
+		if (directory.isDirectory()) {
+			listTree(directory, env, 0);
+		} else {
+			env.writeln("Given argument is not a directory.");
+		}
+
+		return ShellStatus.CONTINUE;
 
 	}
 
 	@Override
 	public String getCommandName() {
-		return null;
+		return "tree";
 
 	}
 
 	@Override
 	public List<String> getCommandDescription() {
-		return new ArrayList<>(Arrays.asList("temp"));
+		List<String> list = new ArrayList<>();
+
+		list.add("\tTree is recursive directory listing program that produces a depth "
+				+ "indented listing of files and outputs it to the MyShell.");
+		list.add("\tWith no arguments, tree lists the files in the current directory.");
+		list.add("\tWhen directory arguments are given, tree lists all the files and/or "
+				+ "directories found in the given directories each in turn.");
+		list.add("\tNOTE: if path contains directory with spacing in their name, "
+				+ "than argument should be enclosed with quotes.");
+
+		return Collections.unmodifiableList(list);
 
 	}
 
-	private void listTree(String arguments, Environment env) {
-		Path directory = Paths.get(arguments);
-		if (!Files.isDirectory(directory)) {
-			env.writeln("Argument provided must be a directory.");
-			return;
+	private void listTree(File directory, Environment env, int indentation) {
+		File[] files = directory.listFiles();
+		String indent = indent(indentation);
+		env.writeln(indent + directory.getName());
+
+		for (File file : files) {
+			if (file.isFile()) {
+				env.writeln(indent + file.getName());
+			} else if (file.isDirectory()) {
+				listTree(file, env, indentation + 2);
+			}
 		}
 
-		try {
-			Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
-				// ovo srediti
-			});
-		} catch (IOException e) {
-			env.writeln("Can not read from directory.");
+	}
+
+	private String indent(int indentation) {
+		StringBuilder space = new StringBuilder();
+
+		for (int i = 0; i < indentation; i++) {
+			space.append(" ");
 		}
+
+		return space.toString();
 
 	}
 }

@@ -12,6 +12,10 @@ public class ExitShellCommand implements ShellCommand {
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
+		if (arguments != "") {
+			env.writeln("\"exit\" command shouldnt be followed by any other words\\spacing");
+			return ShellStatus.CONTINUE;
+		}
 		return ShellStatus.TERMINATE;
 
 	}

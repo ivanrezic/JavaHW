@@ -1,7 +1,11 @@
 package hr.fer.zemris.java.hw06.shell;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Collections;
-import java.util.Scanner;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -18,7 +22,8 @@ import hr.fer.zemris.java.hw06.shell.commands.TreeShellCommand;
 
 public class MyShell implements Environment {
 	private SortedMap<String, ShellCommand> commands = new TreeMap<>();
-	private Scanner scanner = new Scanner(System.in);
+	private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	private BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 	private char promptSymbol = '>';
 	private char moreLinesSymbol = '\\';
 	private char multiLineSymbol = '|';
@@ -38,17 +43,32 @@ public class MyShell implements Environment {
 
 	@Override
 	public String readLine() throws ShellIOException {
-		return scanner.nextLine();
+		try {
+			return reader.readLine();
+		} catch (IOException e) {
+			throw new ShellIOException();
+		}
 	}
 
 	@Override
 	public void write(String text) throws ShellIOException {
-		System.out.printf("%s", text);
+		try {
+			writer.write(text);
+			writer.flush();
+		} catch (IOException e) {
+			throw new ShellIOException();
+		}
 	}
 
 	@Override
 	public void writeln(String text) throws ShellIOException {
-		System.out.printf("%s%n", text);
+		try {
+			writer.write(text);
+			writer.newLine();
+			writer.flush();
+		} catch (IOException e) {
+			throw new ShellIOException();
+		}
 	}
 
 	@Override
@@ -103,8 +123,8 @@ public class MyShell implements Environment {
 				line = line.replace("\\", env.readLine());
 			}
 
-			try{
-				
+			try {
+
 				ShellStatus status;
 				if (line.contains(" ")) {
 					String[] parts = line.split(" ", 2);
@@ -112,8 +132,9 @@ public class MyShell implements Environment {
 				} else {
 					status = env.commands().get(line).executeCommand(env, "");
 				}
-				if (status == ShellStatus.TERMINATE) break;
-				
+				if (status == ShellStatus.TERMINATE)
+					break;
+
 			} catch (NullPointerException e) {
 				System.out.printf("Type \"help\" for valid commands.%n");
 			}
