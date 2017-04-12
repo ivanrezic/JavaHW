@@ -1,0 +1,5 @@
+The copy command expects two arguments: source file name and destination file name (i.e. paths and
+names). Is destination file exists, you should ask user is it allowed to overwrite it. Your copy command must
+work only with files (no directories). If the second argument is directory, you should assume that user wants
+to copy the original file into that directory using the original file name. You must implement copying
+yourself: you are not allowed to simply call copy methods from Files class.

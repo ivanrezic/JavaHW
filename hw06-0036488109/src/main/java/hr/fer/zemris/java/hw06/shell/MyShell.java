@@ -115,8 +115,11 @@ public class MyShell implements Environment {
 		System.out.printf("Welcome to MyShell v 1.0%n");
 
 		while (true) {
-			System.out.printf("%c ", env.getPromptSymbol());
-			String line = env.readLine();
+			String line = "";
+			while (line.length() < 1) {
+				env.write(env.getPromptSymbol().toString());
+				line = env.readLine();
+			}
 
 			while (line.charAt(line.length() - 1) == env.getMorelinesSymbol()) {
 				System.out.printf("%c ", env.getMultilineSymbol());
@@ -136,7 +139,7 @@ public class MyShell implements Environment {
 					break;
 
 			} catch (NullPointerException e) {
-				System.out.printf("Type \"help\" for valid commands.%n");
+				env.writeln("Type \"help\" for valid commands.");
 			}
 
 		}

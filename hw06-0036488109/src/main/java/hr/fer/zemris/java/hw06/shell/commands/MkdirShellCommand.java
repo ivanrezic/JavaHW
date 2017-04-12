@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
+import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
@@ -16,15 +17,13 @@ public class MkdirShellCommand implements ShellCommand {
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
-		boolean isQuoted = arguments.matches("\".+\"");
-
-		if (arguments.contains(" ") && !isQuoted) {
+		if (arguments.matches(Regexes.ONE_ARG_QUOTED)) {
+			arguments = arguments.substring(1, arguments.length() - 1);
+		} else if (!arguments.matches(Regexes.ONE_ARG_NO_QUOTES)){
 			env.writeln("\"mkdir\" command takes single argument and it must be a directory");
 			return ShellStatus.CONTINUE;
-		} else if (isQuoted) {
-			arguments = arguments.substring(1, arguments.length()-1);
 		}
-		
+
 		createDirectory(env, arguments);
 		return ShellStatus.CONTINUE;
 	}
@@ -55,7 +54,7 @@ public class MkdirShellCommand implements ShellCommand {
 		} catch (IOException e) {
 			env.writeln("Directory couldnt be written.");
 		}
-		
+
 		env.writeln(arguments + " directory successfuly created!");
 	}
 

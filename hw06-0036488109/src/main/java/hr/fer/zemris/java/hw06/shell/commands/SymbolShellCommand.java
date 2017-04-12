@@ -5,22 +5,27 @@ import java.util.Collections;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
+import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
 public class SymbolShellCommand implements ShellCommand {
 
+	private static final int ALLOWED_SIZE = 1;
+
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
-		if (!arguments.contains(" ")) {
+		if (arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
 			writeSymbol(env, arguments);
-		} else {
+		} else if (arguments.matches(Regexes.TWO_ARGS_NO_QUOTES)) {
 			String[] parts = arguments.split(" ", 2);
-			if (parts[1].length() != 1) {
-				System.out.println("New symbol must be a single character.");
+			if (parts[1].length() != ALLOWED_SIZE) {
+				System.out.println("New symbol must be of a size " + ALLOWED_SIZE + ".");
 			} else {
 				changeSymbol(parts[0], parts[1].charAt(0), env);
 			}
+		} else {
+			env.writeln("\"symbol\" command takes one or two arguments, for more information check \"help symbol\"");
 		}
 
 		return ShellStatus.CONTINUE;
@@ -57,7 +62,7 @@ public class SymbolShellCommand implements ShellCommand {
 			env.writeln("Symbol for PROMPT is '" + env.getMultilineSymbol() + "'");
 			break;
 		default:
-			env.writeln("Invalid symbol given.");
+			env.writeln("Invalid symbol type given.");
 			break;
 		}
 	}

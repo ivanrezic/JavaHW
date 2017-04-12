@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
+import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
@@ -18,15 +19,20 @@ public class CatShellCommand implements ShellCommand {
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
-		if (!arguments.contains(" ")) {
+		if (arguments.matches(Regexes.ONE_ARG_QUOTED)) {
+			String argument = arguments.substring(1, arguments.length() - 1);
+			writeFile(argument, Charset.defaultCharset().displayName(), env);
+		} else if (arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
 			writeFile(arguments, Charset.defaultCharset().displayName(), env);
+		} else if (arguments.matches(Regexes.TWO_ARGS_NO_QUOTES)) {
+			String[] parts = arguments.split(" ");
+			writeFile(parts[0], parts[1], env);
+		} else if (arguments.matches(Regexes.TWO_ARGS_FIRST_QUOTED)) {
+			String[] parts = arguments.split("(?<=\") ");
+			String firstPart = parts[0].substring(1,parts[0].length()-1);
+			writeFile(firstPart, parts[1], env);
 		} else {
-			String[] parts = arguments.split(" ", 2);
-			if (parts[1].contains(" ")) {
-				env.writeln("Invalid charset name, please check \"charsets\" command.");
-			} else {
-				writeFile(parts[0], parts[1], env);
-			}
+			env.writeln("Wrong \"cat\" arguments, please check \"help cat\" for usage information.");
 		}
 
 		return ShellStatus.CONTINUE;
@@ -69,5 +75,4 @@ public class CatShellCommand implements ShellCommand {
 			env.writeln("Invalid path to the file.");
 		}
 	}
-
 }

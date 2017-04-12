@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
+import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
@@ -17,13 +18,11 @@ public class HexdumpShellCommand implements ShellCommand {
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
-		boolean quoted = arguments.matches("\".+\"");
-
-		if (arguments.contains(" ") && !quoted) {
-			env.writeln("\"hexdump\" command takes just one argument (path to file).");
-			return ShellStatus.CONTINUE;
-		} else if (quoted) {
+		if (arguments.matches(Regexes.ONE_ARG_QUOTED)) {
 			arguments = arguments.substring(1, arguments.length() - 1);
+		} else if (!arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
+			env.writeln("\"hexdump\" command expects one argument");
+			return ShellStatus.CONTINUE;
 		}
 
 		writeHexdump(arguments, env, 0);
@@ -55,7 +54,7 @@ public class HexdumpShellCommand implements ShellCommand {
 				size = size + 16;
 			}
 		} catch (FileNotFoundException e) {
-			env.writeln("\"hexdump\" command should be followed by single a argument, a file path.");
+			env.writeln("File provided is not valid.");
 		} catch (IOException e) {
 			env.writeln("File couldnt be reached.");
 		}
