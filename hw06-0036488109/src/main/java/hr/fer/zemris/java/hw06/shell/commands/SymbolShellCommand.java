@@ -9,10 +9,26 @@ import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
+/**
+ * <code>SymbolShellCommand</code> displays and modifies current console symbols
+ * used based on number of arguments. If one argument passed then console
+ * displays wanted symbol. If two arguments passed then wanted symbol is
+ * replaced with new one.
+ *
+ * @author Ivan Rezic
+ */
 public class SymbolShellCommand implements ShellCommand {
 
+	/** New symbol ALLOWED_SIZE. */
 	private static final int ALLOWED_SIZE = 1;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hr.fer.zemris.java.hw06.shell.ShellCommand#executeCommand(hr.fer.zemris.
+	 * java.hw06.shell.Environment, java.lang.String)
+	 */
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
 		if (arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
@@ -32,12 +48,22 @@ public class SymbolShellCommand implements ShellCommand {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.ShellCommand#getCommandName()
+	 */
 	@Override
 	public String getCommandName() {
 		return "symbol";
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.ShellCommand#getCommandDescription()
+	 */
 	@Override
 	public List<String> getCommandDescription() {
 		List<String> list = new ArrayList<>();
@@ -50,6 +76,14 @@ public class SymbolShellCommand implements ShellCommand {
 		return Collections.unmodifiableList(list);
 	}
 
+	/**
+	 * Helper method which writes symbol to console based on passed argument.
+	 *
+	 * @param env
+	 *            the environment
+	 * @param arguments
+	 *            "PROMPT" or "MORELINES" or "MULTILINE"
+	 */
 	private void writeSymbol(Environment env, String arguments) {
 		switch (arguments) {
 		case "PROMPT":
@@ -67,6 +101,16 @@ public class SymbolShellCommand implements ShellCommand {
 		}
 	}
 
+	/**
+	 * Helper method which changes old symbol to a new one.
+	 *
+	 * @param symbol
+	 *            "PROMPT" or "MORELINES" or "MULTILINE"
+	 * @param charAt
+	 *            new symbol
+	 * @param env
+	 *            the environment
+	 */
 	private void changeSymbol(String symbol, char charAt, Environment env) {
 		switch (symbol) {
 		case "PROMPT":

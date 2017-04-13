@@ -16,8 +16,8 @@ import java.util.List;
 public interface ShellCommand {
 
 	/**
-	 * Execute command and returns <code>ShellStatus</code> which defines if
-	 * shell continues wiht its work or it terminates.
+	 * Executes command and returns <code>ShellStatus</code> which defines if
+	 * shell continues with its work or it terminates.
 	 *
 	 * @param env
 	 *            the environment used for shell

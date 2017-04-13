@@ -10,8 +10,22 @@ import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
+/**
+ * <code>TreeShellCommand</code> expects a single argument: directory name and
+ * prints its content recursively as tree structure. Produced tree is depth
+ * first. If called without arguments it produces tree out of curent directory.
+ *
+ * @author Ivan Rezic
+ */
 public class TreeShellCommand implements ShellCommand {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hr.fer.zemris.java.hw06.shell.ShellCommand#executeCommand(hr.fer.zemris.
+	 * java.hw06.shell.Environment, java.lang.String)
+	 */
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
 		if (arguments.matches(Regexes.ONE_ARG_QUOTED)) {
@@ -32,12 +46,22 @@ public class TreeShellCommand implements ShellCommand {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.ShellCommand#getCommandName()
+	 */
 	@Override
 	public String getCommandName() {
 		return "tree";
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.ShellCommand#getCommandDescription()
+	 */
 	@Override
 	public List<String> getCommandDescription() {
 		List<String> list = new ArrayList<>();
@@ -54,6 +78,16 @@ public class TreeShellCommand implements ShellCommand {
 
 	}
 
+	/**
+	 * Helper method which writes tree with all listed files/directories.
+	 *
+	 * @param directory
+	 *            the directory whose content will be listed
+	 * @param env
+	 *            the environment used
+	 * @param indentation
+	 *            the indentation which will be added with each level
+	 */
 	private void listTree(File directory, Environment env, int indentation) {
 		File[] files = directory.listFiles();
 		String indent = indent(indentation);
@@ -69,6 +103,13 @@ public class TreeShellCommand implements ShellCommand {
 
 	}
 
+	/**
+	 * Helper method which adds indentation to each new level.
+	 *
+	 * @param indentation
+	 *            the indentation which will be added in front of listing
+	 * @return contatenated blanks which represent indentation
+	 */
 	private String indent(int indentation) {
 		StringBuilder space = new StringBuilder();
 

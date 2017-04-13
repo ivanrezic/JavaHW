@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
@@ -16,10 +16,26 @@ import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
+/**
+ * <code>CopyShellCommand</code> expects two arguments: source file name and
+ * destination file name. If destination file exists, it prompts message which
+ * asks if file should be overwritten or not. If second file name represents
+ * directory then original file is coppied within directory.
+ *
+ * @author Ivan Rezic
+ */
 public class CopyShellCommand implements ShellCommand {
 
+	/** Optimal BUFFER_SIZE reading and writing files. */
 	private static final int BUFFER_SIZE = 4096;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hr.fer.zemris.java.hw06.shell.ShellCommand#executeCommand(hr.fer.zemris.
+	 * java.hw06.shell.Environment, java.lang.String)
+	 */
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
 		String[] parts;
@@ -51,18 +67,48 @@ public class CopyShellCommand implements ShellCommand {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.ShellCommand#getCommandName()
+	 */
 	@Override
 	public String getCommandName() {
 		return "copy";
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.ShellCommand#getCommandDescription()
+	 */
 	@Override
 	public List<String> getCommandDescription() {
-		return new ArrayList<>(Arrays.asList("temp"));
+		List<String> list = new ArrayList<>();
 
+		list.add("\tCommand expects two arguments.");
+		list.add("\tand copies content of specified file to the new loaction or existing file.");
+		list.add("\tIf second file exists it user must decide if the file will be overwritten or not.");
+		list.add("\tOtherways if second file name represents direcotry then source file will be written within.");
+		list.add("\tNOTE: if path contains file with spacing in their name, "
+				+ "than argument should be enclosed with quotes.");
+
+		return Collections.unmodifiableList(list);
 	}
 
+	/**
+	 * Helper method which delegates file reading/writing to {@link #pasteFile},
+	 * depending if file path is directory or file and wather it should be
+	 * overwritten or not.
+	 *
+	 * @param first
+	 *            source file path
+	 * @param second
+	 *            destination file/directory path
+	 * @param env
+	 *            the environment used
+	 */
 	private void copyFile(String first, String second, Environment env) {
 		Path copy = Paths.get(first);
 		Path paste = Paths.get(second);
@@ -87,6 +133,18 @@ public class CopyShellCommand implements ShellCommand {
 
 	}
 
+	/**
+	 * Helper method which uses buffer for reading/writing.
+	 *
+	 * @param env
+	 *            the environment used
+	 * @param copy
+	 *            source file path
+	 * @param paste
+	 *            destination file path
+	 * @param help
+	 *            True if appending to destination, false if overwriting
+	 */
 	private void pasteFile(Environment env, Path copy, Path paste, boolean help) {
 		try (FileOutputStream writer = new FileOutputStream(paste.toFile(), help);
 				FileInputStream reader = new FileInputStream(copy.toFile())) {
@@ -103,6 +161,16 @@ public class CopyShellCommand implements ShellCommand {
 		}
 	}
 
+	/**
+	 * Helper method which interacts with user through console and checks
+	 * whether file should be overwritten or not.
+	 *
+	 * @param paste
+	 *            destination file path
+	 * @param env
+	 *            the environment used
+	 * @return true, if it is successful, false otherwise
+	 */
 	private boolean overwrite(Path paste, Environment env) {
 		StringBuilder builder = new StringBuilder();
 
