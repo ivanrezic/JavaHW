@@ -202,13 +202,13 @@ public class MyShell implements Environment {
 		while (true) {
 			String line = "";
 			while (line.length() < 1) {
-				env.write(env.getPromptSymbol().toString());
+				env.write(env.getPromptSymbol().toString() + " ");
 				line = env.readLine();
 			}
 
 			while (line.charAt(line.length() - 1) == env.getMorelinesSymbol()) {
-				System.out.printf("%c ", env.getMultilineSymbol());
-				line = line.replace("\\", env.readLine());
+				env.write(env.getMultilineSymbol().toString());
+				line = line.substring(0,line.length()-1).concat(env.readLine());
 			}
 
 			try {

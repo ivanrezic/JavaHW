@@ -63,7 +63,7 @@ public class MkdirShellCommand implements ShellCommand {
 
 		list.add("\tShort for \"make directory\", mkdir is used to create directories on a file system.");
 		list.add("\tIf the specified DIRECTORY does not already exist, mkdir creates it.");
-		list.add("\tIf the specified DIRECTORY does exist, but wanted subfolders do not, mkdir adds new subfoldersF.");
+		list.add("\tIf the specified DIRECTORY does exist, but wanted subfolders do not, mkdir adds new subfolders.");
 		list.add("\tIf the specified DIRECTORY contains directories within, they are automatically created.");
 		list.add("\tNOTE: if path contains directory with spacing in their name, "
 				+ "than argument should be enclosed with quotes.");
@@ -81,6 +81,10 @@ public class MkdirShellCommand implements ShellCommand {
 	private void createDirectory(Environment env, String arguments) {
 		Path directory = Paths.get(arguments);
 		try {
+			if (Files.isDirectory(directory)) {
+				env.writeln("Same directory already exists!");
+				return;
+			}
 			Files.createDirectories(directory);
 		} catch (IOException e) {
 			env.writeln("Directory couldnt be written.");
