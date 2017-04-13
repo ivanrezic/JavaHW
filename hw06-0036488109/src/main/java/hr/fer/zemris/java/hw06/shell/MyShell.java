@@ -20,12 +20,36 @@ import hr.fer.zemris.java.hw06.shell.commands.MkdirShellCommand;
 import hr.fer.zemris.java.hw06.shell.commands.SymbolShellCommand;
 import hr.fer.zemris.java.hw06.shell.commands.TreeShellCommand;
 
+/**
+ * <code>MyShell</code> represents program that acts as a simple shell that can
+ * execute following built-in commands: cat, charsets, copy, exit, help,
+ * hexdump, ls, mkdir, symbol, tree.
+ * 
+ * @author Ivan Rezic
+ */
 public class MyShell implements Environment {
+
+	/**
+	 * commands is map which contains each shell command paired with its name
+	 * (key of each pair).
+	 */
 	private SortedMap<String, ShellCommand> commands = new TreeMap<>();
+
+	/** reader used for reading text from standard input. */
 	private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+	/** writer used for writing text to standard output. */
 	private BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
+
+	/**
+	 * prompt symbol, symbol which occurs at the beginning of each command line.
+	 */
 	private char promptSymbol = '>';
+
+	/** more lines symbol which represents multiline input. */
 	private char moreLinesSymbol = '\\';
+
+	/** multiline symbol which occurs with each new input line. */
 	private char multiLineSymbol = '|';
 
 	{
@@ -41,6 +65,11 @@ public class MyShell implements Environment {
 		commands.put("help", new HelpShellCommand());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#readLine()
+	 */
 	@Override
 	public String readLine() throws ShellIOException {
 		try {
@@ -50,6 +79,11 @@ public class MyShell implements Environment {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#write(java.lang.String)
+	 */
 	@Override
 	public void write(String text) throws ShellIOException {
 		try {
@@ -60,6 +94,11 @@ public class MyShell implements Environment {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#writeln(java.lang.String)
+	 */
 	@Override
 	public void writeln(String text) throws ShellIOException {
 		try {
@@ -71,48 +110,94 @@ public class MyShell implements Environment {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#commands()
+	 */
 	@Override
 	public SortedMap<String, ShellCommand> commands() {
 		return Collections.unmodifiableSortedMap(commands);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#getMultilineSymbol()
+	 */
 	@Override
 	public Character getMultilineSymbol() {
 		return multiLineSymbol;
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hr.fer.zemris.java.hw06.shell.Environment#setMultilineSymbol(java.lang.
+	 * Character)
+	 */
 	@Override
 	public void setMultilineSymbol(Character symbol) {
 		this.multiLineSymbol = symbol;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#getPromptSymbol()
+	 */
 	@Override
 	public Character getPromptSymbol() {
 		return promptSymbol;
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#setPromptSymbol(java.lang.
+	 * Character)
+	 */
 	@Override
 	public void setPromptSymbol(Character symbol) {
 		this.promptSymbol = symbol;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hr.fer.zemris.java.hw06.shell.Environment#getMorelinesSymbol()
+	 */
 	@Override
 	public Character getMorelinesSymbol() {
 		return moreLinesSymbol;
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hr.fer.zemris.java.hw06.shell.Environment#setMorelinesSymbol(java.lang.
+	 * Character)
+	 */
 	@Override
 	public void setMorelinesSymbol(Character symbol) {
 		this.moreLinesSymbol = symbol;
 	}
 
+	/**
+	 * The main method of this class, used for user interaction.
+	 *
+	 * @param args
+	 *            the arguments from command line, not used here
+	 */
 	public static void main(String[] args) {
 		Environment env = new MyShell();
 
-		System.out.printf("Welcome to MyShell v 1.0%n");
+		env.writeln("Welcome to MyShell v 1.0");
 
 		while (true) {
 			String line = "";

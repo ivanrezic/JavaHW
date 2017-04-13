@@ -18,6 +18,8 @@ import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
 public class CopyShellCommand implements ShellCommand {
 
+	private static final int BUFFER_SIZE = 4096;
+
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
 		String[] parts;
@@ -89,7 +91,7 @@ public class CopyShellCommand implements ShellCommand {
 		try (FileOutputStream writer = new FileOutputStream(paste.toFile(), help);
 				FileInputStream reader = new FileInputStream(copy.toFile())) {
 
-			byte[] buffer = new byte[4096];
+			byte[] buffer = new byte[BUFFER_SIZE];
 			int read = 0;
 			while ((read = reader.read(buffer)) != -1) {
 				writer.write(buffer, 0, read);

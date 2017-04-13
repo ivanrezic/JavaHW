@@ -25,7 +25,7 @@ public class HexdumpShellCommand implements ShellCommand {
 			return ShellStatus.CONTINUE;
 		}
 
-		writeHexdump(arguments, env, 0);
+		writeHexdump(arguments, env);
 		return ShellStatus.CONTINUE;
 
 	}
@@ -42,7 +42,7 @@ public class HexdumpShellCommand implements ShellCommand {
 
 	}
 
-	private void writeHexdump(String arguments, Environment env, int i) {
+	private void writeHexdump(String arguments, Environment env) {
 
 		try (FileInputStream reader = new FileInputStream(arguments)) {
 			byte[] buffer = new byte[HEXDUMP_BUFFER_SIZE];
@@ -51,7 +51,7 @@ public class HexdumpShellCommand implements ShellCommand {
 
 			while ((read = reader.read(buffer)) != -1) {
 				printInHexFormat(buffer, env, size, read);
-				size = size + 16;
+				size += 16;
 			}
 		} catch (FileNotFoundException e) {
 			env.writeln("File provided is not valid.");
@@ -74,7 +74,7 @@ public class HexdumpShellCommand implements ShellCommand {
 		}
 
 		if (read < buffer.length) {
-			line.append(addEmptyOnes(read, buffer.length));
+			line.append(addEmptyOnes(buffer.length-read));
 		}
 		line.replace(33, 34, "|").append("| ");
 		line.append(new String(buffer), 0, read);
@@ -82,10 +82,10 @@ public class HexdumpShellCommand implements ShellCommand {
 		env.writeln(line.toString());
 	}
 
-	private String addEmptyOnes(int read, int length) {
+	private String addEmptyOnes(int length) {
 		StringBuilder builder = new StringBuilder();
 
-		for (int i = 0; i < length - read; i++) {
+		for (int i = 0; i < length; i++) {
 			builder.append("   ");
 		}
 

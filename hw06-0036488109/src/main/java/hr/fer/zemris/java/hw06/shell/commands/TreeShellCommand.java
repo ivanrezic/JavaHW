@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import hr.fer.zemris.java.hw06.shell.Environment;
+import hr.fer.zemris.java.hw06.shell.Regexes;
 import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
@@ -13,13 +14,11 @@ public class TreeShellCommand implements ShellCommand {
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
-		boolean quoted = arguments.matches("\".+\"");
-
-		if (arguments.contains(" ") && !quoted) {
+		if (arguments.matches(Regexes.ONE_ARG_QUOTED)) {
+			arguments = arguments.substring(1, arguments.length() - 1);
+		} else if (!arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
 			env.writeln("Tree command takes just one argument (path to directory).");
 			return ShellStatus.CONTINUE;
-		} else if (quoted) {
-			arguments = arguments.substring(1, arguments.length() - 1);
 		}
 
 		File directory = new File(arguments);

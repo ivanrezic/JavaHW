@@ -17,7 +17,7 @@ public class HelpShellCommand implements ShellCommand {
 			for (String key : env.commands().keySet()) {
 				env.writeln("\t" + key);
 			}
-		} else if (arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
+		} else if (!arguments.matches(Regexes.ONE_ARG_NO_QUOTES)) {
 			if (!env.commands().containsKey(arguments)) {
 				env.writeln("If argument is provided,it must be a valid command.");
 				return ShellStatus.CONTINUE;

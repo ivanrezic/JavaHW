@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Scanner;
 
@@ -11,10 +12,26 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * <code>Crypto</code> class represents program that allows user to
+ * encrypt/derypt given file using AES cryptoalgorithm with 128-bit encryption
+ * key or calculate and check SHA-256 file digest.
+ *
+ * @author Ivan Rezic
+ */
 public class Crypto {
 
+	/** Constant BUFFER_SIZE. */
 	private static final int BUFFER_SIZE = 4096;
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args
+	 *            the arguments from command line, valid arguments are:
+	 *            "checksha" , "encrypt" or "decrypt" following paths to
+	 *            appropriate files
+	 */
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 
@@ -30,16 +47,30 @@ public class Crypto {
 				System.err.println("There should be 2 or 3 arguments provided");
 			}
 		} catch (Exception e) {
-			System.err.println("Ups.. something went wrong during calculation.");
+			System.err.println("Ups.. something went wrong during calculations.");
 		}
 
 		scanner.close();
 
 	}
 
-	private static void digest(String[] args, Scanner scanner) throws Exception {
+	/**
+	 * Digest method calculates SHA-256 digest for wanted file and checks if
+	 * given SHA-256 matches calculated one. Usually, digest are integral part
+	 * of digital signature -a mechanism which is today broadly used online as a
+	 * replacement for persons physical signature.
+	 *
+	 * @param args
+	 *            String array containing default string "checksha" and path to
+	 *            file
+	 * @param scanner
+	 *            standard input scanner
+	 * @throws NoSuchAlgorithmException
+	 *             if MessageDigest instance could not be instantiated
+	 */
+	private static void digest(String[] args, Scanner scanner) throws NoSuchAlgorithmException {
 		if (!args[0].equals("checksha")) {
-			System.err.println("First argument should be \"digest\".");
+			System.err.println("First argument should be \"checksha\".");
 			System.exit(1);
 		}
 		MessageDigest sha = MessageDigest.getInstance("SHA-256");
@@ -66,6 +97,22 @@ public class Crypto {
 
 	}
 
+	/**
+	 * Crypt is method used for encryption/decryption. It takes two files and
+	 * depending on wanted operation conducts it from first given file to other.
+	 * Usually there are two families of cryptography: symmetric and asymmetric.
+	 * In this method symmetric key is used, which means that same key(128-bit)
+	 * is used for both ecryption and decryption.
+	 *
+	 * @param args
+	 *            String array containing "encrypt" or "decrypt"and paths to
+	 *            input and output file
+	 * @param scanner
+	 *            standard input scanner
+	 * @throws Exception
+	 *             If cipher couldn't be instantiated, initialized, if there is
+	 *             problem with buffer space or block size is not valid
+	 */
 	private static void crypt(String[] args, Scanner scanner) throws Exception {
 		if (!args[0].equals("encrypt") && !args[0].equals("decrypt")) {
 			System.err.println("First argument should be \"encrypt\" or \"decrypt\".");
@@ -91,8 +138,22 @@ public class Crypto {
 		}
 	}
 
+	/**
+	 * Helper method used for retrieving crypted/decrypted parts of file. Each
+	 * part has size of 4096 bytes, which is optimal for reading/writing.
+	 *
+	 * @param inputFile
+	 *            the input file
+	 * @param cipher
+	 *            object used for encryption/decryption
+	 * @param outputFile
+	 *            the output file
+	 * @return cipher from file
+	 * @throws Exception
+	 *             if cipher couldn't fill empty buffer space or if block size
+	 *             is not valid
+	 */
 	private static void getCipherFromFile(String inputFile, Cipher cipher, String outputFile) throws Exception {
-
 		byte[] buffer = new byte[BUFFER_SIZE];
 		byte[] data;
 		int read = 0;

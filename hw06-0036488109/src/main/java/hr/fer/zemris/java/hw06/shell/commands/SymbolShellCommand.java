@@ -20,7 +20,7 @@ public class SymbolShellCommand implements ShellCommand {
 		} else if (arguments.matches(Regexes.TWO_ARGS_NO_QUOTES)) {
 			String[] parts = arguments.split(" ", 2);
 			if (parts[1].length() != ALLOWED_SIZE) {
-				System.out.println("New symbol must be of a size " + ALLOWED_SIZE + ".");
+				env.writeln("New symbol must be of a size " + ALLOWED_SIZE + ".");
 			} else {
 				changeSymbol(parts[0], parts[1].charAt(0), env);
 			}
@@ -84,7 +84,7 @@ public class SymbolShellCommand implements ShellCommand {
 			env.setMultilineSymbol(charAt);
 			break;
 		default:
-			env.writeln("Invalid symbol given.");
+			env.writeln("Invalid symbol type given.");
 			break;
 
 		}

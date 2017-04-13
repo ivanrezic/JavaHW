@@ -15,15 +15,15 @@ public class CharsetsShellCommand implements ShellCommand {
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
 		if (!arguments.equals("")) {
-			System.out.printf("Command \"charsets\" takes no arguments.%n");
+			env.writeln("Command \"charsets\" takes no arguments.");
 			return ShellStatus.CONTINUE;
 		}
-		SortedMap<String, Charset> charset = Charset.availableCharsets();
 		
+		SortedMap<String, Charset> charset = Charset.availableCharsets();
 		for (String key : charset.keySet()) {
 			env.writeln(charset.get(key).toString());
 		}
-		
+
 		return ShellStatus.CONTINUE;
 
 	}
