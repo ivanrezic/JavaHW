@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Lexer {
 
-	private static final String OPERATORS_WITHOUT_XOR = "\\*|\\+|\\!|,";
 	private int index;
 	private int tokenIndex;
 	private char[] expression;
@@ -22,8 +21,7 @@ public class Lexer {
 	}
 
 	public Token nextToken() {
-
-		return null;
+		return tokens.get(tokenIndex++);
 	}
 
 	private void extractTokens() {
@@ -57,23 +55,47 @@ public class Lexer {
 	}
 
 	private void extractIdentificator() {
+		int counter = 0;
 
+		while (index < expression.length) {
+			if (Character.isLetterOrDigit(expression[index]) || expression[index] == '_') {
+				index++;
+				counter++;
+			} else {
+				break;
+			}
+		}
+
+		getProperIdentificator(counter);
+		index++;
+	}
+
+	private void getProperIdentificator(int counter) {
+		String help = new String(expression, index - counter, counter).toLowerCase();
+
+		if (help.equals("and") || help.equals("xor") || help.equals("or") || help.equals("not")) {
+			tokens.add(new Token(TokenType.OPERATOR, help));
+		} else if (help.equals("true") || help.equals("false")) {
+			tokens.add(new Token(TokenType.CONSTANT, Boolean.parseBoolean(help)));
+		} else {
+			tokens.add(new Token(TokenType.VARIABLE, help.toUpperCase()));
+		}
 	}
 
 	private void extractNumberArray() {
 		if (index < expression.length - 1 && Character.isDigit(expression[index + 1])) {
 			throw new IllegalArgumentException("Only one digit is allowed per number");
 		}
-		
+
 		char current = expression[index];
 		if (current == '1') {
 			tokens.add(new Token(TokenType.CONSTANT, true));
-		}else if (current == '0') {
+		} else if (current == '0') {
 			tokens.add(new Token(TokenType.CONSTANT, false));
-		}else {
+		} else {
 			throw new IllegalArgumentException("Allowed numbers are '1' and '0'.");
 		}
-		
+
 		index++;
 	}
 
@@ -110,16 +132,5 @@ public class Lexer {
 
 		return false;
 	}
-
-	// private boolean regexMatcher(String string, String pattern) {
-	// Pattern p = Pattern.compile(pattern);
-	// Matcher m = p.matcher(string);
-	//
-	// if (m.find()) {
-	// return true;
-	// }
-	//
-	// return false;
-	// }
 
 }

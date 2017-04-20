@@ -23,14 +23,20 @@ public class Token {
 		
 		token.append("Type: ").append(tokenType);
 		token.append(", Value: ").append(tokenValue);
-		token.append(", Value is instance of: ").append(tokenValue.getClass().getCanonicalName());
+		if (tokenValue != null) {
+			token.append(", Value is instance of: ").append(tokenValue.getClass().getCanonicalName());
+		}
 		
 		return token.toString();
 	}
 	
 	public static void main(String[] args) {
 		char[] bzvz = new char[]{'a','b','c',':','+',':','o','p'};
-		System.out.println(new String(bzvz, 6, 3));
+		System.out.println(new String(bzvz, 6-3, 3));
+		
+		if (Boolean.parseBoolean("true")) {
+			System.out.println("saasd");
+		}
 	}
 
 }
