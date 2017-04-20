@@ -1,14 +1,9 @@
 package hr.fer.zemris.bf.lexer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Lexer {
 
 	private int index;
-	private int tokenIndex;
 	private char[] expression;
-	private List<Token> tokens;
 
 	public Lexer(String expression) {
 		if (expression == null) {
@@ -16,121 +11,107 @@ public class Lexer {
 		}
 
 		this.expression = expression.toCharArray();
-		this.tokens = new ArrayList<>();
-		extractTokens();
 	}
 
 	public Token nextToken() {
-		return tokens.get(tokenIndex++);
+		return extractToken();
 	}
 
-	private void extractTokens() {
+	private Token extractToken() {
 		while (index < expression.length) {
 			char current = expression[index];
 
-			try {
-				checkCurrent(current);
-			} catch (RuntimeException e) {
-				throw new LexerException(e.getMessage());
+			if (current == '(' || current == ')') {
+				return bracket(current);
+			} else if (Character.isLetter(current)) {
+				return identificator();
+			} else if (Character.isDigit(current)) {
+				return number(current);
+			} else if (isOperator(current)) {
+				return operator(current);
+			} else if (current != ' ') {
+				throw new LexerException("Illegal character in given expression");
 			}
+
+			index++;
 		}
 
-		tokens.add(new Token(TokenType.EOF, null));
+		return new Token(TokenType.EOF, null);
 	}
 
-	private void checkCurrent(char current) {
-		if (current == '(') {
-			tokens.add(new Token(TokenType.OPEN_BRACKET, current));
-		} else if (current == ')') {
-			tokens.add(new Token(TokenType.CLOSED_BRACKET, current));
-		} else if (Character.isLetter(current)) {
-			extractIdentificator();
-		} else if (Character.isDigit(current)) {
-			extractNumberArray();
-		} else if (currentIsOperator(current)) {
-			extractOperator();
-		} else {
-			throw new IllegalArgumentException("Illegal character in given expression");
-		}
-	}
-
-	private void extractIdentificator() {
-		int counter = 0;
+	private Token identificator() {
+		StringBuilder identificator = new StringBuilder();
 
 		while (index < expression.length) {
-			if (Character.isLetterOrDigit(expression[index]) || expression[index] == '_') {
+			char current = expression[index];
+
+			if (Character.isLetterOrDigit(current) || current == '_') {
+				identificator.append(current);
 				index++;
-				counter++;
 			} else {
 				break;
 			}
 		}
 
-		getProperIdentificator(counter);
-		index++;
+		return properIdentificator(identificator.toString().toLowerCase());
 	}
 
-	private void getProperIdentificator(int counter) {
-		String help = new String(expression, index - counter, counter).toLowerCase();
-
-		if (help.equals("and") || help.equals("xor") || help.equals("or") || help.equals("not")) {
-			tokens.add(new Token(TokenType.OPERATOR, help));
-		} else if (help.equals("true") || help.equals("false")) {
-			tokens.add(new Token(TokenType.CONSTANT, Boolean.parseBoolean(help)));
+	private Token properIdentificator(String word) {
+		if (word.equals("and") || word.equals("xor") || word.equals("or") || word.equals("not")) {
+			return new Token(TokenType.OPERATOR, word);
+		} else if (word.equals("true") || word.equals("false")) {
+			return new Token(TokenType.CONSTANT, Boolean.parseBoolean(word));
 		} else {
-			tokens.add(new Token(TokenType.VARIABLE, help.toUpperCase()));
+			return new Token(TokenType.VARIABLE, word.toUpperCase());
 		}
 	}
 
-	private void extractNumberArray() {
-		if (index < expression.length - 1 && Character.isDigit(expression[index + 1])) {
-			throw new IllegalArgumentException("Only one digit is allowed per number");
-		}
-
-		char current = expression[index];
-		if (current == '1') {
-			tokens.add(new Token(TokenType.CONSTANT, true));
-		} else if (current == '0') {
-			tokens.add(new Token(TokenType.CONSTANT, false));
-		} else {
-			throw new IllegalArgumentException("Allowed numbers are '1' and '0'.");
-		}
-
+	private Token number(char current) {
 		index++;
-	}
 
-	private void extractOperator() {
-		char current = expression[index];
-
-		switch (current) {
-		case '*':
-			tokens.add(new Token(TokenType.OPERATOR, "and"));
-			break;
-		case '+':
-			tokens.add(new Token(TokenType.OPERATOR, "or"));
-			break;
-		case '!':
-			tokens.add(new Token(TokenType.OPERATOR, "not"));
-			break;
-		case ':':
-			if (expression[index + 1] == '+' && expression[index + 2] == ':') {
-				tokens.add(new Token(TokenType.OPERATOR, "xor"));
-				index += 2;
-			} else {
-				throw new IllegalArgumentException("':' should be followed with '+:'");
-			}
-			break;
+		if (index < expression.length && Character.isDigit(expression[index])) {
+			throw new LexerException("Unexpected number: " + current + expression[index] + ".");
+		} else if (current == '1') {
+			return new Token(TokenType.CONSTANT, true);
 		}
 
-		index++;
+		return new Token(TokenType.CONSTANT, false);
 	}
 
-	private boolean currentIsOperator(char current) {
+	private boolean isOperator(char current) {
 		if (current == '*' || current == '+' || current == '!' || current == ':') {
 			return true;
 		}
 
 		return false;
+	}
+
+	private Token operator(char current) {
+		index++;
+
+		switch (current) {
+		case '*':
+			return new Token(TokenType.OPERATOR, "and");
+		case '+':
+			return new Token(TokenType.OPERATOR, "or");
+		case '!':
+			return new Token(TokenType.OPERATOR, "not");
+		}
+		if (index < expression.length - 1 && expression[index++] == '+' && expression[index++] == ':') {
+			return new Token(TokenType.OPERATOR, "xor");
+		}
+
+		throw new LexerException("':' should be followed with '+:'");
+	}
+
+	private Token bracket(char current) {
+		index++;
+
+		if (current == '(') {
+			return new Token(TokenType.OPEN_BRACKET, current);
+		}
+
+		return new Token(TokenType.CLOSED_BRACKET, current);
 	}
 
 }

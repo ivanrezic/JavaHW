@@ -37,6 +37,9 @@ public class Token {
 		if (Boolean.parseBoolean("true")) {
 			System.out.println("saasd");
 		}
+		
+		String help = new String(bzvz, 7 - 0, 1).toLowerCase();
+		System.err.println(help);
 	}
 
 }
