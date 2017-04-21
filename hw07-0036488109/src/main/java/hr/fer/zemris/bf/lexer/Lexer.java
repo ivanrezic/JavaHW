@@ -4,17 +4,23 @@ public class Lexer {
 
 	private int index;
 	private char[] expression;
+	private Token currentToken;
 
 	public Lexer(String expression) {
 		if (expression == null) {
-			throw new IllegalArgumentException("Valid expression must be delivered.");
+			throw new LexerException("Valid expression must be delivered.");
 		}
 
 		this.expression = expression.toCharArray();
 	}
+	
+	public Token getCurrentToken() {
+		return currentToken;
+	}
 
 	public Token nextToken() {
-		return extractToken();
+		currentToken = extractToken();
+		return currentToken;
 	}
 
 	private Token extractToken() {
@@ -73,6 +79,8 @@ public class Lexer {
 			throw new LexerException("Unexpected number: " + current + expression[index] + ".");
 		} else if (current == '1') {
 			return new Token(TokenType.CONSTANT, true);
+		}else if (current != '0') {
+			throw new LexerException("Unexpected number: " + current + ".");
 		}
 
 		return new Token(TokenType.CONSTANT, false);
@@ -113,5 +121,4 @@ public class Lexer {
 
 		return new Token(TokenType.CLOSED_BRACKET, current);
 	}
-
 }

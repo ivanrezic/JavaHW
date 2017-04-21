@@ -6,6 +6,10 @@ public class Token {
 	private Object tokenValue;
 
 	public Token(TokenType tokenType, Object tokenValue) {
+		if (tokenType == null) {
+			throw new LexerException("Token type can not be null");
+		}
+		
 		this.tokenType = tokenType;
 		this.tokenValue = tokenValue;
 	}
