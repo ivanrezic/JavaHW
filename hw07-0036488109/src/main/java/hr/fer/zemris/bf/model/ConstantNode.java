@@ -11,6 +11,7 @@ public class ConstantNode implements Node {
 
 	@Override
 	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	public boolean getValue() {
