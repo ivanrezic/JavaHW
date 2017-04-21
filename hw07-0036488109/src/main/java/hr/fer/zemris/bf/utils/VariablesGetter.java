@@ -1,5 +1,7 @@
 package hr.fer.zemris.bf.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,8 +16,8 @@ public class VariablesGetter implements NodeVisitor {
 
 	private Set<String> variables = new TreeSet<>();
 
-	public Set<String> getVariables() {
-		return variables;
+	public List<String> getVariables() {
+		return new ArrayList<String>(variables);
 	}
 
 	@Override
