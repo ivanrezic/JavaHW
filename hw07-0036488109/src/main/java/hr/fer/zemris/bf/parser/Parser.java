@@ -35,42 +35,81 @@ public class Parser {
 	}
 
 	private Node e1(Token current) {
-		Node node = e2(current);
 		List<Node> nodes = new ArrayList<>();
-		nodes.add(node);
+		nodes.add(e2(current));
 
-		if ("or".equals(lexer.getCurrentToken().getTokenValue())) {
-			nodes.add(e1(lexer.nextToken()));
-			node = new BinaryOperatorNode("or", nodes, (a, b) -> a || b);
+		while ("or".equals(lexer.getCurrentToken().getTokenValue())) {
+			Node node = e1(lexer.nextToken());
+
+			if (node instanceof BinaryOperatorNode) {
+				BinaryOperatorNode help = (BinaryOperatorNode) node;
+				if ("or".equals(help.getName())) {
+					nodes.addAll(((BinaryOperatorNode) node).getChildren());
+				} else {
+					nodes.add(node);
+				}
+			} else {
+				nodes.add(node);
+			}
 		}
 
-		return node;
+		if (nodes.size() > 1) {
+			return new BinaryOperatorNode("or", nodes, (a, b) -> a || b);
+		}
+
+		return nodes.get(0);
 	}
 
 	private Node e2(Token current) {
-		Node node = e3(current);
 		List<Node> nodes = new ArrayList<>();
-		nodes.add(node);
+		nodes.add(e3(current));
 
-		if ("xor".equals(lexer.getCurrentToken().getTokenValue())) {
-			nodes.add(e2(lexer.nextToken()));
-			node = new BinaryOperatorNode("xor", nodes, (a, b) -> a ^ b);
+		while ("xor".equals(lexer.getCurrentToken().getTokenValue())) {
+			Node node = e1(lexer.nextToken());
+
+			if (node instanceof BinaryOperatorNode) {
+				BinaryOperatorNode help = (BinaryOperatorNode) node;
+				if ("xor".equals(help.getName())) {
+					nodes.addAll(help.getChildren());
+				} else {
+					nodes.add(node);
+				}
+			} else {
+				nodes.add(node);
+			}
 		}
 
-		return node;
+		if (nodes.size() > 1) {
+			return new BinaryOperatorNode("xor", nodes, (a, b) -> a ^ b);
+		}
+
+		return nodes.get(0);
 	}
 
 	private Node e3(Token current) {
-		Node node = e4(current);
 		List<Node> nodes = new ArrayList<>();
-		nodes.add(node);
+		nodes.add(e4(current));
 
-		if ("and".equals(lexer.getCurrentToken().getTokenValue())) {
-			nodes.add(e3(lexer.nextToken()));
-			node = new BinaryOperatorNode("and", nodes, (a, b) -> a && b);
+		while ("and".equals(lexer.getCurrentToken().getTokenValue())) {
+			Node node = e1(lexer.nextToken());
+
+			if (node instanceof BinaryOperatorNode) {
+				BinaryOperatorNode help = (BinaryOperatorNode) node;
+				if ("and".equals(help.getName())) {
+					nodes.addAll(((BinaryOperatorNode) node).getChildren());
+				} else {
+					nodes.add(node);
+				}
+			} else {
+				nodes.add(node);
+			}
 		}
 
-		return node;
+		if (nodes.size() > 1) {
+			return new BinaryOperatorNode("and", nodes, (a, b) -> a && b);
+		}
+
+		return nodes.get(0);
 
 	}
 
@@ -94,20 +133,23 @@ public class Parser {
 			node = new VariableNode(currentTokenValue);
 		} else if (isTokenOfType(TokenType.CONSTANT)) {
 			node = new ConstantNode(Boolean.parseBoolean(currentTokenValue));
-		}else if (isTokenOfType(TokenType.OPEN_BRACKET)) {
-			node = e1(current);
-		}else {
-			throw new ParserException("Given expression is not valid.");
+		} else if (isTokenOfType(TokenType.OPEN_BRACKET)) {
+			node = e1(lexer.nextToken());
+			if (!isTokenOfType(TokenType.CLOSED_BRACKET)) {
+				throw new ParserException("Expected ')' but found " + lexer.getCurrentToken() + ".");
+			}
+		} else {
+			throw new ParserException("Unexpected token found: {" + lexer.getCurrentToken() + "}.");
 		}
-		
+
 		lexer.nextToken();
 		return node;
 	}
-	
+
 	public static void main(String[] args) {
-		Parser parser = new Parser("a or b or c or d");
+		Parser parser = new Parser("(d or b) xor not (a or c)");
 		Node list = parser.getExpression();
-		
+
 		System.out.println(list.toString());
 	}
 }

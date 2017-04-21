@@ -19,7 +19,7 @@ public class VariableNode implements Node {
 
 	@Override
 	public String toString() {
-		return "name";
+		return name;
 	}
 
 }
