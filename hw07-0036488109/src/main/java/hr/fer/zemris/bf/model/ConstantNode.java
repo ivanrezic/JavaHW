@@ -17,4 +17,8 @@ public class ConstantNode implements Node {
 		return value;
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
 }

@@ -1,6 +1,6 @@
 package hr.fer.zemris.bf.model;
 
-public class VariableNode implements Node{
+public class VariableNode implements Node {
 
 	private String name;
 
@@ -8,13 +8,18 @@ public class VariableNode implements Node{
 		super();
 		this.name = name;
 	}
-	
+
 	@Override
 	public void accept(NodeVisitor visitor) {
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "name";
+	}
+
 }

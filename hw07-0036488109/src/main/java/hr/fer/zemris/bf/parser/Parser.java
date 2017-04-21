@@ -39,7 +39,7 @@ public class Parser {
 		List<Node> nodes = new ArrayList<>();
 		nodes.add(node);
 
-		if ("or".equals(lexer.nextToken().getTokenValue())) {
+		if ("or".equals(lexer.getCurrentToken().getTokenValue())) {
 			nodes.add(e1(lexer.nextToken()));
 			node = new BinaryOperatorNode("or", nodes, (a, b) -> a || b);
 		}
@@ -52,7 +52,7 @@ public class Parser {
 		List<Node> nodes = new ArrayList<>();
 		nodes.add(node);
 
-		if ("xor".equals(lexer.nextToken().getTokenValue())) {
+		if ("xor".equals(lexer.getCurrentToken().getTokenValue())) {
 			nodes.add(e2(lexer.nextToken()));
 			node = new BinaryOperatorNode("xor", nodes, (a, b) -> a ^ b);
 		}
@@ -65,7 +65,7 @@ public class Parser {
 		List<Node> nodes = new ArrayList<>();
 		nodes.add(node);
 
-		if ("and".equals(lexer.nextToken().getTokenValue())) {
+		if ("and".equals(lexer.getCurrentToken().getTokenValue())) {
 			nodes.add(e3(lexer.nextToken()));
 			node = new BinaryOperatorNode("and", nodes, (a, b) -> a && b);
 		}
@@ -94,10 +94,20 @@ public class Parser {
 			node = new VariableNode(currentTokenValue);
 		} else if (isTokenOfType(TokenType.CONSTANT)) {
 			node = new ConstantNode(Boolean.parseBoolean(currentTokenValue));
-		}else if (!isTokenOfType(TokenType.OPEN_BRACKET)) {
+		}else if (isTokenOfType(TokenType.OPEN_BRACKET)) {
+			node = e1(current);
+		}else {
 			throw new ParserException("Given expression is not valid.");
 		}
-
+		
+		lexer.nextToken();
 		return node;
+	}
+	
+	public static void main(String[] args) {
+		Parser parser = new Parser("a or b or c or d");
+		Node list = parser.getExpression();
+		
+		System.out.println(list.toString());
 	}
 }
