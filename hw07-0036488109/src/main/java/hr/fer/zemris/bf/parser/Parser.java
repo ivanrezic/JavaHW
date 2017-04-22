@@ -16,6 +16,7 @@ public class Parser {
 
 	private Lexer lexer;
 	private Node node;
+
 	public Parser(String expression) {
 		if (expression == null) {
 			throw new ParserException("Expression mustn't be null");
@@ -31,39 +32,41 @@ public class Parser {
 		}
 	}
 
+	private boolean isTokenOfType(TokenType type) {
+		return getCurrentTokenType() == type;
+	}
+
 	private void parse() {
 
 		lexer.nextToken();
-		node = startParsing();
+		node = e1();
 
-		if (lexer.getCurrentToken().getTokenType() != TokenType.EOF) {
+		if (!isTokenOfType(TokenType.EOF)) {
 
 			String message = String.format("Unexpected token: Type: %s, Value: %s, Value is instance of: %s",
-					lexer.getCurrentToken().getTokenType(), lexer.getCurrentToken().getTokenValue(),
-					lexer.getCurrentToken().getTokenValue().getClass().getName());
+					getCurrentTokenType(), getCurrentTokenValue(),
+					getCurrentTokenValue().getClass().getName());
 
 			throw new ParserException(message);
 		}
 	}
 
-	private Node startParsing() {
-
-		node = e1();
-		return node;
-	}
-
 	private Node e1() {
 		Node node = e2();
 
-		if (lexer.getCurrentToken().getTokenValue() == null) {
+		if (getCurrentTokenValue() == null) {
 			return node;
 		}
 
 		ArrayList<Node> children = new ArrayList<>();
 		children.add(node);
-		while (lexer.getCurrentToken().getTokenValue().equals("or")) {
+		while (getCurrentTokenValue().equals("or")) {
+			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
+				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
+						getCurrentTokenType(), getCurrentTokenValue());
 
-			checkIfEOF();
+				throw new ParserException(message);
+			}
 			children.add(e2());
 
 			BinaryOperatorNode orNode = new BinaryOperatorNode("or", children, (t, s) -> Boolean.logicalOr(t, s));
@@ -80,14 +83,18 @@ public class Parser {
 	private Node e2() {
 		Node node = e3();
 
-		if (lexer.getCurrentToken().getTokenValue() == null) {
+		if (getCurrentTokenValue() == null) {
 			return node;
 		}
 		ArrayList<Node> children = new ArrayList<>();
 		children.add(node);
-		while (lexer.getCurrentToken().getTokenValue().equals("xor")) {
+		while (getCurrentTokenValue().equals("xor")) {
+			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
+				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
+						getCurrentTokenType(), getCurrentTokenValue());
 
-			checkIfEOF();
+				throw new ParserException(message);
+			}
 			children.add(e3());
 
 			BinaryOperatorNode xorNode = new BinaryOperatorNode("xor", children, (t, s) -> Boolean.logicalXor(t, s));
@@ -103,17 +110,20 @@ public class Parser {
 	private Node e3() {
 		Node node = e4();
 
-		if (lexer.getCurrentToken().getTokenType() == TokenType.EOF) {
+		if (getCurrentTokenType() == TokenType.EOF) {
 			return node;
 		}
 
 		ArrayList<Node> children = new ArrayList<>();
 		children.add(node);
-		while (lexer.getCurrentToken().getTokenValue().equals("and")) {
+		while (getCurrentTokenValue().equals("and")) {
+			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
+				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
+						getCurrentTokenType(), getCurrentTokenValue());
 
-			checkIfEOF();
+				throw new ParserException(message);
+			}
 			children.add(e4());
-
 			BinaryOperatorNode andNode = new BinaryOperatorNode("and", children, (t, s) -> Boolean.logicalAnd(t, s));
 
 			if (endOfOperator("and")) {
@@ -125,9 +135,14 @@ public class Parser {
 
 	private Node e4() {
 
-		if (lexer.getCurrentToken().getTokenValue().equals("not")) {
+		if (getCurrentTokenValue().equals("not")) {
+			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
+				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
+						getCurrentTokenType(), getCurrentTokenValue());
 
-			checkIfEOF();
+				throw new ParserException(message);
+			}
+			
 			Node node = e4();
 			UnaryOperatorNode notNode = new UnaryOperatorNode("not", node, t -> Boolean.logicalXor(t, true));
 
@@ -155,14 +170,14 @@ public class Parser {
 			lexer.nextToken();
 			node = e1();
 
-			if (lexer.getCurrentToken().getTokenType() != TokenType.CLOSED_BRACKET) {
-				throw new ParserException("Expected ')' but found " + lexer.getCurrentToken().getTokenType() + ".");
+			if (getCurrentTokenType() != TokenType.CLOSED_BRACKET) {
+				throw new ParserException("Expected ')' but found " + getCurrentTokenType() + ".");
 			}
 			break;
 
 		default:
 			String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
-					lexer.getCurrentToken().getTokenType(), lexer.getCurrentToken().getTokenValue());
+					getCurrentTokenType(), getCurrentTokenValue());
 			throw new ParserException(message);
 
 		}
@@ -173,19 +188,12 @@ public class Parser {
 
 	}
 
-	/**
-	 * Private method used for checking if next token is of type EOF, and if it
-	 * is, that means that given logical expression was wrong because we
-	 * expected more tokens different from EOF.
-	 */
-	private void checkIfEOF() {
+	private Object getCurrentTokenValue() {
+		return lexer.getCurrentToken().getTokenValue();
+	}
 
-		if (lexer.nextToken().getTokenType() == TokenType.EOF) {
-			String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
-					lexer.getCurrentToken().getTokenType(), lexer.getCurrentToken().getTokenValue());
-
-			throw new ParserException(message);
-		}
+	private TokenType getCurrentTokenType() {
+		return lexer.getCurrentToken().getTokenType();
 	}
 
 	/**
@@ -201,8 +209,8 @@ public class Parser {
 	 *         <code>false</code> otherwise
 	 */
 	private boolean endOfOperator(String operatorValue) {
-		return lexer.getCurrentToken().getTokenType() == TokenType.EOF
-				|| !lexer.getCurrentToken().getTokenValue().equals(operatorValue);
+		return getCurrentTokenType() == TokenType.EOF
+				|| !getCurrentTokenValue().equals(operatorValue);
 	}
 
 	/**
@@ -212,12 +220,6 @@ public class Parser {
 	 */
 	public Node getExpression() {
 		return node;
-	}
-	
-	public static void main(String[] args) {
-		Parser parser = new Parser("a xor b or c xor d");
-		Node liNode = parser.getExpression();
-		System.out.println(liNode);
 	}
 
 }
