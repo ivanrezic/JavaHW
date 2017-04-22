@@ -1,11 +1,10 @@
-package hr.fer.zemris.bf.lexer.demo;
+package hr.fer.zemris.bf.demo;
 
-import hr.fer.zemris.bf.lexer.Lexer;
-import hr.fer.zemris.bf.lexer.LexerException;
-import hr.fer.zemris.bf.lexer.Token;
-import hr.fer.zemris.bf.lexer.TokenType;
+import hr.fer.zemris.bf.parser.Parser;
+import hr.fer.zemris.bf.parser.ParserException;
+import hr.fer.zemris.bf.utils.ExpressionTreePrinter;
 
-public class Izrazi1 {
+public class Izrazi2 {
 
 	public static void main(String[] args) {
 		String[] expressions = new String[] {
@@ -37,14 +36,10 @@ public class Izrazi1 {
 			System.out.println("==================================");
 			
 			try {
-				System.out.println("Tokenizacija:");
-				Lexer lexer = new Lexer(expr);
-				Token token = null;
-				do {
-					token = lexer.nextToken();
-					System.out.println(token);
-				} while(token.getTokenType()!=TokenType.EOF);
-			} catch(LexerException ex) {
+				System.out.println("Stablo:");
+				Parser parser = new Parser(expr);
+				parser.getExpression().accept(new ExpressionTreePrinter());
+			} catch(ParserException ex) {
 				System.out.println("Iznimka: " + ex.getClass()+" - " + ex.getMessage());
 			}
 			System.out.println();

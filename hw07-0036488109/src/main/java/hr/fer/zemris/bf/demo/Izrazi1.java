@@ -1,11 +1,11 @@
-package hr.fer.zemris.bf.utils.demo;
+package hr.fer.zemris.bf.demo;
 
+import hr.fer.zemris.bf.lexer.Lexer;
 import hr.fer.zemris.bf.lexer.LexerException;
-import hr.fer.zemris.bf.parser.Parser;
-import hr.fer.zemris.bf.parser.ParserException;
-import hr.fer.zemris.bf.utils.VariablesGetter;
+import hr.fer.zemris.bf.lexer.Token;
+import hr.fer.zemris.bf.lexer.TokenType;
 
-public class Izrazi3 {
+public class Izrazi1 {
 
 	public static void main(String[] args) {
 		String[] expressions = new String[] {
@@ -37,12 +37,14 @@ public class Izrazi3 {
 			System.out.println("==================================");
 			
 			try {
-				System.out.println("Varijable:");
-				Parser parser = new Parser(expr);
-				VariablesGetter getter = new VariablesGetter();
-				parser.getExpression().accept(getter);
-				System.out.println(getter.getVariables());
-			} catch(ParserException | LexerException ex) {
+				System.out.println("Tokenizacija:");
+				Lexer lexer = new Lexer(expr);
+				Token token = null;
+				do {
+					token = lexer.nextToken();
+					System.out.println(token);
+				} while(token.getTokenType()!=TokenType.EOF);
+			} catch(LexerException ex) {
 				System.out.println("Iznimka: " + ex.getClass()+" - " + ex.getMessage());
 			}
 			System.out.println();

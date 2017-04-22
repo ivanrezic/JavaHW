@@ -1,4 +1,4 @@
-package hr.fer.zemris.bf.utils.demo;
+package hr.fer.zemris.bf.demo;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,10 +1,11 @@
-package hr.fer.zemris.bf.utils.demo;
+package hr.fer.zemris.bf.demo;
 
+import hr.fer.zemris.bf.lexer.LexerException;
 import hr.fer.zemris.bf.parser.Parser;
 import hr.fer.zemris.bf.parser.ParserException;
-import hr.fer.zemris.bf.utils.ExpressionTreePrinter;
+import hr.fer.zemris.bf.utils.VariablesGetter;
 
-public class Izrazi2 {
+public class Izrazi3 {
 
 	public static void main(String[] args) {
 		String[] expressions = new String[] {
@@ -36,10 +37,12 @@ public class Izrazi2 {
 			System.out.println("==================================");
 			
 			try {
-				System.out.println("Stablo:");
+				System.out.println("Varijable:");
 				Parser parser = new Parser(expr);
-				parser.getExpression().accept(new ExpressionTreePrinter());
-			} catch(ParserException ex) {
+				VariablesGetter getter = new VariablesGetter();
+				parser.getExpression().accept(getter);
+				System.out.println(getter.getVariables());
+			} catch(ParserException | LexerException ex) {
 				System.out.println("Iznimka: " + ex.getClass()+" - " + ex.getMessage());
 			}
 			System.out.println();
