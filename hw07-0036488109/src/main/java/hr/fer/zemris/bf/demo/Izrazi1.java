@@ -5,8 +5,19 @@ import hr.fer.zemris.bf.lexer.LexerException;
 import hr.fer.zemris.bf.lexer.Token;
 import hr.fer.zemris.bf.lexer.TokenType;
 
+/**
+ * <code>Izrazi1</code> is demonstration class. It demonstrates how each expression is disjointed into tokens.
+ * 
+ *
+ * @author Ivan Rezic
+ */
 public class Izrazi1 {
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args the arguments from command line, not used here
+	 */
 	public static void main(String[] args) {
 		String[] expressions = new String[] {
 			"0",

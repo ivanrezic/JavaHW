@@ -5,8 +5,19 @@ import hr.fer.zemris.bf.parser.Parser;
 import hr.fer.zemris.bf.parser.ParserException;
 import hr.fer.zemris.bf.utils.VariablesGetter;
 
+/**
+ * <code>Izrazi3</code> is demonstration class. It prints to standard output all variables
+ * used in expression.
+ *
+ * @author Ivan Rezic
+ */
 public class Izrazi3 {
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args the arguments from command line, not used here
+	 */
 	public static void main(String[] args) {
 		String[] expressions = new String[] {
 			"0",

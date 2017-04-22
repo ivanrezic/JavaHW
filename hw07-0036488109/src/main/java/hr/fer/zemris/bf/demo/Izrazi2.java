@@ -4,8 +4,19 @@ import hr.fer.zemris.bf.parser.Parser;
 import hr.fer.zemris.bf.parser.ParserException;
 import hr.fer.zemris.bf.utils.ExpressionTreePrinter;
 
+/**
+ * <code>Izrazi2</code> is demonstration class. It demonstrates how each token from lexic
+ * analysis relates to another. Each relation is demonstrated through parser tree.
+ *
+ * @author Ivan Rezic
+ */
 public class Izrazi2 {
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args the arguments from command line, not used here
+	 */
 	public static void main(String[] args) {
 		String[] expressions = new String[] {
 			"0",
