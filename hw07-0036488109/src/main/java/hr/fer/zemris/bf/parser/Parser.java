@@ -58,8 +58,8 @@ public class Parser {
 			return node;
 		}
 
-		ArrayList<Node> children = new ArrayList<>();
-		children.add(node);
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.add(node);
 		while (getCurrentTokenValue().equals("or")) {
 			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
 				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
@@ -67,9 +67,9 @@ public class Parser {
 
 				throw new ParserException(message);
 			}
-			children.add(e2());
+			nodes.add(e2());
 
-			BinaryOperatorNode orNode = new BinaryOperatorNode("or", children, (t, s) -> Boolean.logicalOr(t, s));
+			BinaryOperatorNode orNode = new BinaryOperatorNode("or", nodes, (t, s) -> t || s);
 
 			if (endOfOperator("or")) {
 				return orNode;
@@ -86,8 +86,8 @@ public class Parser {
 		if (getCurrentTokenValue() == null) {
 			return node;
 		}
-		ArrayList<Node> children = new ArrayList<>();
-		children.add(node);
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.add(node);
 		while (getCurrentTokenValue().equals("xor")) {
 			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
 				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
@@ -95,9 +95,9 @@ public class Parser {
 
 				throw new ParserException(message);
 			}
-			children.add(e3());
+			nodes.add(e3());
 
-			BinaryOperatorNode xorNode = new BinaryOperatorNode("xor", children, (t, s) -> Boolean.logicalXor(t, s));
+			BinaryOperatorNode xorNode = new BinaryOperatorNode("xor", nodes, (t, s) -> t ^ s);
 
 			if (endOfOperator("xor")) {
 				return xorNode;
@@ -114,8 +114,8 @@ public class Parser {
 			return node;
 		}
 
-		ArrayList<Node> children = new ArrayList<>();
-		children.add(node);
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.add(node);
 		while (getCurrentTokenValue().equals("and")) {
 			if (lexer.nextToken().getTokenType() == TokenType.EOF) {
 				String message = String.format("Unexpected token found: {Type: %s, Value: %s}.",
@@ -123,8 +123,8 @@ public class Parser {
 
 				throw new ParserException(message);
 			}
-			children.add(e4());
-			BinaryOperatorNode andNode = new BinaryOperatorNode("and", children, (t, s) -> Boolean.logicalAnd(t, s));
+			nodes.add(e4());
+			BinaryOperatorNode andNode = new BinaryOperatorNode("and", nodes, (t, s) -> t && s);
 
 			if (endOfOperator("and")) {
 				return andNode;
@@ -144,7 +144,7 @@ public class Parser {
 			}
 			
 			Node node = e4();
-			UnaryOperatorNode notNode = new UnaryOperatorNode("not", node, t -> Boolean.logicalXor(t, true));
+			UnaryOperatorNode notNode = new UnaryOperatorNode("not", node, t -> !t);
 
 			return notNode;
 		} else {
