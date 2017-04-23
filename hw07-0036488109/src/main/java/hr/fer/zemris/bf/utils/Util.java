@@ -131,4 +131,82 @@ public class Util {
 
 		return set.stream().map(Util::booleanArrayToInt).collect(Collectors.toSet());
 	}
+
+	/**
+	 * Transforms integer number to binary, using wanted byte array size.
+	 *
+	 * @param x
+	 *            integer number, number must be in range [-2147483647,2147483647]
+	 * @param n
+	 *            wanted size of byte array used for storing number
+	 * @return binary number in wanted byte size array, first index represents
+	 *         bit with most significance.
+	 */
+	public static byte[] indexToByteArray(int x, int n) {
+		if (n <= 0) {
+			throw new IllegalArgumentException("Byte array size can not be zero or less.");
+		}else if (x < -2147483647) {
+			throw new IllegalArgumentException("Integer is out of range.");
+		}
+		int k = (n <= 32 ? 32 : n);
+		byte[] bytes = new byte[k];
+
+		int number = Math.abs(x);
+		for (int i = k - 1; number != 0; i--) {
+			bytes[i] = (byte) (number % 2);
+			number = number / 2;
+			if (i < 0)
+				break;
+		}
+
+		return x < 0 ? saveInNSizeRegister(n, twoComplement(bytes), k) : saveInNSizeRegister(n, bytes, k);
+	}
+
+	/**
+	 * Helper method which takes binary number and saves first n digits into
+	 * byte array, starting from the lowest significance to the most.
+	 *
+	 * @param n
+	 *            byte array size
+	 * @param binary
+	 *            binary number to be truncated
+	 * @param k
+	 *            temporary byte size array(before truncating)
+	 * @return truncated binary saved in byte array
+	 */
+	private static byte[] saveInNSizeRegister(int n, byte[] binary, int k) {
+		byte[] help = new byte[n];
+
+		for (int i = n - 1; i >= 0; i--) {
+			help[i] = binary[--k];
+		}
+
+		return help;
+	}
+
+	/**
+	 * Helper method which transform binary number to two's complement.
+	 *
+	 * @param bytes
+	 *            the bytes
+	 * @return binary number in two's complement
+	 */
+	private static byte[] twoComplement(byte[] bytes) {
+		byte[] help = bytes;
+
+		for (int i = 0; i < help.length; i++) {
+			help[i] = (byte) (help[i] == 1 ? 0 : 1);
+		}
+
+		for (int i = help.length - 1; i >= 0; i--) {
+			if (help[i] == 1) {
+				help[i] = 0;
+			} else {
+				help[i] = 1;
+				break;
+			}
+		}
+
+		return help;
+	}
 }
