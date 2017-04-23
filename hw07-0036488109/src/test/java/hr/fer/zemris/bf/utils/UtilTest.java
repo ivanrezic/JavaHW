@@ -34,8 +34,6 @@ public class UtilTest {
 	public void maxIntegerArgument() throws Exception {
 		assertArrayEquals(new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 				1, 1, 1, 1, 1 }, Util.indexToByteArray(2147483647, 32));
-		assertArrayEquals(new byte[] { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 1 }, Util.indexToByteArray(2147483647, 33));
 
 	}
 
@@ -51,6 +49,6 @@ public class UtilTest {
 	public void overflowArguments() throws Exception {
 		assertArrayEquals(new byte[] { 0, 0, 1, 1 }, Util.indexToByteArray(19, 4));
 		assertArrayEquals(new byte[] { 1, 0, 0, 0 }, Util.indexToByteArray(-120, 4));
-		
+
 	}
 }
