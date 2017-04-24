@@ -68,7 +68,7 @@ public class Util {
 	}
 
 	/**
-	 * Calculates row position of given values in trutha table.
+	 * Calculates row position of given values in truth table.
 	 *
 	 * @param values
 	 *            The values we search for in truth table.
