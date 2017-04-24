@@ -1,7 +1,6 @@
 package hr.fer.zemris.bf.qmc;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,7 +10,7 @@ import hr.fer.zemris.bf.utils.Util;
 public class Mask {
 
 	private byte[] values;
-	private Set<Integer> indexes;
+	private final Set<Integer> indexes;
 	private boolean dontCare;
 
 	private boolean combined;
@@ -40,7 +39,7 @@ public class Mask {
 		}
 
 		this.values = values;
-		this.indexes = Collections.unmodifiableSet(indexes);
+		this.indexes = indexes;
 		this.dontCare = dontCare;
 
 		this.hashCode = Arrays.hashCode(values); // mozda treba dodati jos nesto
@@ -55,10 +54,11 @@ public class Mask {
 	public boolean equals(Object obj) {// mozda nije ovako
 		if (obj instanceof Mask) {
 			Mask help = (Mask) obj;
-			if (this.hashCode == obj.hashCode()) {
-				return true;
-			} else if (Arrays.equals(this.values, help.values)) {
-				return true;
+			if (this.hashCode != obj.hashCode()) {
+				if (Arrays.equals(this.values, help.values)) {
+					return true;
+				}
+				return false;
 			}
 		}
 
@@ -95,7 +95,15 @@ public class Mask {
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder(new String(values).replace('2', '-'));
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 0; i < values.length; i++) {
+			if (values[i] == 2) {
+				stringBuilder.append('-');
+			} else {
+				stringBuilder.append(values[i]);
+			}
+		}
 
 		if (isDontCare()) {
 			stringBuilder.append(" D");
@@ -117,41 +125,60 @@ public class Mask {
 		if (other == null || values.length != other.values.length) {
 			throw new IllegalArgumentException("Second mask is null or does not have correct values length.");
 		}
-		
+
 		if (!isCombinable(other.values)) {
-			return null;//provjeriti
+			return Optional.empty();
 		}
-		
+
 		byte[] help = values;
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] != other.values[i]) {
 				help[i] = 2;
+				break;
 			}
 		}
-		
-		return null;//TODO: popraviti na OptionalDouble sta vraca!!
+
+		Set<Integer> newSet = indexes;
+		newSet.addAll(other.indexes);
+		return Optional.of(new Mask(help, newSet, true));//ne znam jel odi treba true
 	}
 
 	private boolean isCombinable(byte[] values2) {
 		boolean flag = true;
 		int count = 0;
-		
+
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] == 2) {
 				if (values2[i] != 2) {
 					flag = false;
 					break;
 				}
-			}else if (values[i] != values2[i]) {
-				count ++;
+			} else if (values[i] != values2[i]) {
+				count++;
 			}
 		}
-		
+
 		if (count > 1) {
 			return false;
 		}
-		
+
 		return flag;
+	}
+
+	public static void main(String[] args) {
+		Set<Integer> set1 = new TreeSet<>();
+		set1.add(13);
+		set1.add(6);
+		Set<Integer> set2 = new TreeSet<>();
+		set2.add(12);
+		set2.add(8);
+		Mask asd1 = new Mask(new byte[] { 2, 1, 1, 0 }, set1, true);
+		Mask asd2 = new Mask(new byte[] { 2, 1, 0, 0 }, set2, true);
+		System.out.println(asd1);
+		System.out.println(asd2);
+		System.out.println();
+		System.out.println(asd2.combineWith(asd1));
+
 	}
 
 }
