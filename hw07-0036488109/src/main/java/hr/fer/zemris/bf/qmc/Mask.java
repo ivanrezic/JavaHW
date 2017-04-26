@@ -138,9 +138,13 @@ public class Mask {
 			}
 		}
 
+		
+		setCombined(true);
+		other.setCombined(true);
 		Set<Integer> newSet = indexes;
 		newSet.addAll(other.indexes);
-		return Optional.of(new Mask(help, newSet, true));//ne znam jel odi treba true
+		
+		return Optional.of(new Mask(help, newSet, dontCare == other.dontCare));
 	}
 
 	private boolean isCombinable(byte[] values2) {
