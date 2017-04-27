@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -42,47 +43,61 @@ public class Minimizer {
 
 	private Set<Mask> findPrimaryImplicants() {
 		Set<Mask> primaryImplicants = new LinkedHashSet<>();
-		
+
 		List<Set<Mask>> column = createFirstColumn();
 		while (column.size() != 0) {
 			List<Set<Mask>> nextColumn = getNextColumn(column);
-			
+			logColumn(column);
+
 			for (Set<Mask> set : column) {
-				set.stream().filter(e -> !e.isCombined()).forEach(primaryImplicants::add);
+				for (Mask mask : set) {
+					if (!mask.isCombined() && !mask.isDontCare()) {
+						primaryImplicants.add(mask);
+						LOG.log(Level.FINEST, "Pronašao primarni implikant: " + mask.toString());
+					}
+				}
 			}
-			for (Mask set : primaryImplicants) {
-				LOG.log(Level.FINEST, set.toString());
-			}
-			
+
 			column = nextColumn;
 		}
 
 		return primaryImplicants;
 	}
 
+	private void logColumn(List<Set<Mask>> column) {
+		LOG.log(Level.FINER, "Stupac tablice:");
+		LOG.log(Level.FINER, "=================================");
+		for (Set<Mask> set : column) {
+			for (Mask mask : set) {
+				LOG.log(Level.FINER, mask.toString());
+			}
+			LOG.log(Level.FINER, "-------------------------------");
+		}
+	}
+
 	private List<Set<Mask>> getNextColumn(List<Set<Mask>> column) {
 		List<Set<Mask>> newColumn = new ArrayList<>();
-		
+
 		Iterator<Set<Mask>> iterator = column.iterator();
 		Set<Mask> current = iterator.next();
 		while (iterator.hasNext()) {
 			Set<Mask> next = iterator.next();
-			newColumn.add(combine(current,next));
+			newColumn.add(combine(current, next));
 			current = next;
 		}
-		
+
 		return newColumn;
 	}
 
 	private Set<Mask> combine(Set<Mask> current, Set<Mask> next) {
 		Set<Mask> combined = new LinkedHashSet<>();
-		
+
 		for (Mask first : current) {
 			for (Mask second : next) {
 				first.combineWith(second).ifPresent(combined::add);
 			}
 		}
-		
+
 		return combined;
 	}
 
@@ -92,19 +107,15 @@ public class Minimizer {
 		Set<Mask> minterms;
 		Set<Mask> dontcares;
 
-		minterms = mintermSet.stream()
-				.map(e -> new Mask(e, size, false))
+		minterms = mintermSet.stream().map(e -> new Mask(e, size, false))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
-		dontcares = dontCareSet.stream()
-				.map(e -> new Mask(e, size, true))
+		dontcares = dontCareSet.stream().map(e -> new Mask(e, size, true))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
-		
-		
+
 		minterms.addAll(dontcares);
 		mapByOnes = minterms.stream()
 				.collect(Collectors.groupingBy(Mask::countOfOnes, Collectors.toCollection(LinkedHashSet::new)));
-		
-		
+
 		return new ArrayList<>(mapByOnes.values());
 	}
 
@@ -117,15 +128,15 @@ public class Minimizer {
 		Set<Integer> minterms = new HashSet<>(Arrays.asList(0, 1, 3, 10, 11, 14, 15));
 		Set<Integer> dontcares = new HashSet<>(Arrays.asList(4, 6));
 		Minimizer m = new Minimizer(minterms, dontcares, Arrays.asList("A", "B", "C", "D"));
-//		List<Set<Mask>> mList = m.createFirstColumn();
-//
-//		for (Set<Mask> elem : mList) {
-//			System.out.println("======================================");
-//			for (Mask mask : elem) {
-//				System.out.println(mask);
-//			}
-//		}
-		
+		// List<Set<Mask>> mList = m.createFirstColumn();
+		//
+		// for (Set<Mask> elem : mList) {
+		// System.out.println("======================================");
+		// for (Mask mask : elem) {
+		// System.out.println(mask);
+		// }
+		// }
+
 		Set<Mask> implik = m.findPrimaryImplicants();
 		for (Mask mask : implik) {
 			System.out.println(mask);

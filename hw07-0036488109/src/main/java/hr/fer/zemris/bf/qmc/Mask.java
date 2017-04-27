@@ -1,6 +1,8 @@
 package hr.fer.zemris.bf.qmc;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -130,7 +132,7 @@ public class Mask {
 			return Optional.empty();
 		}
 
-		byte[] help = values;
+		byte[] help = Arrays.copyOf(values, values.length);
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] != other.values[i]) {
 				help[i] = 2;
@@ -141,10 +143,11 @@ public class Mask {
 		
 		setCombined(true);
 		other.setCombined(true);
-		Set<Integer> newSet = indexes;
+		Set<Integer> newSet = new HashSet<>();
+		newSet.addAll(indexes);
 		newSet.addAll(other.indexes);
 		
-		return Optional.of(new Mask(help, newSet, dontCare == other.dontCare));
+		return Optional.of(new Mask(help, newSet, dontCare && other.dontCare));
 	}
 
 	private boolean isCombinable(byte[] values2) {
