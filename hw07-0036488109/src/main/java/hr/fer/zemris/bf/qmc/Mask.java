@@ -47,7 +47,7 @@ public class Mask {
 
 	@Override
 	public int hashCode() {
-		return this.hashCode();
+		return this.hashCode;
 	}
 
 	@Override

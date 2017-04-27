@@ -114,7 +114,7 @@ public class Util {
 	}
 
 	/**
-	 * Helper method used for calculating minter or maxterm, depends on last
+	 * Helper method used for calculating minterm or maxterm, depends on last
 	 * argument.
 	 *
 	 * @param variables
