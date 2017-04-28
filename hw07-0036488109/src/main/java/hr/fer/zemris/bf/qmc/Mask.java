@@ -53,18 +53,19 @@ public class Mask {
 	}
 
 	@Override
-	public boolean equals(Object obj) {// mozda nije ovako
-		if (obj instanceof Mask) {
-			Mask help = (Mask) obj;
-			if (this.hashCode != obj.hashCode()) {
-				if (Arrays.equals(this.values, help.values)) {
-					return true;
-				}
-				return false;
-			}
-		}
-
-		return false;
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Mask))
+			return false;
+		Mask other = (Mask) obj;
+		if (hashCode != other.hashCode)
+			return false;
+		if (!Arrays.equals(values, other.values))
+			return false;
+		return true;
 	}
 
 	public boolean isCombined() {
@@ -140,13 +141,12 @@ public class Mask {
 			}
 		}
 
-		
 		setCombined(true);
 		other.setCombined(true);
 		Set<Integer> newSet = new HashSet<>();
 		newSet.addAll(indexes);
 		newSet.addAll(other.indexes);
-		
+
 		return Optional.of(new Mask(help, newSet, dontCare && other.dontCare));
 	}
 

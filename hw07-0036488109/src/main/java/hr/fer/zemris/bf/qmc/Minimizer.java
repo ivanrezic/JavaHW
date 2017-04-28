@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -80,9 +80,13 @@ public class Minimizer {
 
 		Iterator<Set<Mask>> iterator = column.iterator();
 		Set<Mask> current = iterator.next();
-		while (iterator.hasNext()) {
+		while (iterator.hasNext() && current.size() != 0) {
 			Set<Mask> next = iterator.next();
-			newColumn.add(combine(current, next));
+			
+			Set<Mask> help = combine(current, next);
+			if (help.size() != 0) {				
+				newColumn.add(help);
+			}
 			current = next;
 		}
 
@@ -128,19 +132,6 @@ public class Minimizer {
 		Set<Integer> minterms = new HashSet<>(Arrays.asList(0, 1, 3, 10, 11, 14, 15));
 		Set<Integer> dontcares = new HashSet<>(Arrays.asList(4, 6));
 		Minimizer m = new Minimizer(minterms, dontcares, Arrays.asList("A", "B", "C", "D"));
-		// List<Set<Mask>> mList = m.createFirstColumn();
-		//
-		// for (Set<Mask> elem : mList) {
-		// System.out.println("======================================");
-		// for (Mask mask : elem) {
-		// System.out.println(mask);
-		// }
-		// }
-
-		Set<Mask> implik = m.findPrimaryImplicants();
-		for (Mask mask : implik) {
-			System.out.println(mask);
-		}
 	}
 
 }
