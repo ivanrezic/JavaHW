@@ -1,9 +1,13 @@
 package hr.fer.zemris.bf.qmc;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -140,9 +144,7 @@ public class Mask {
 				break;
 			}
 		}
-
-		setCombined(true);
-		other.setCombined(true);
+		
 		Set<Integer> newSet = new HashSet<>();
 		newSet.addAll(indexes);
 		newSet.addAll(other.indexes);
@@ -172,20 +174,32 @@ public class Mask {
 		return flag;
 	}
 
+//	public static void main(String[] args) {
+//		Set<Integer> set1 = new TreeSet<>();
+//		set1.add(13);
+//		set1.add(6);
+//		Set<Integer> set2 = new TreeSet<>();
+//		set2.add(12);
+//		set2.add(8);
+//		Mask asd1 = new Mask(new byte[] { 2, 1, 1, 0 }, set1, true);
+//		Mask asd2 = new Mask(new byte[] { 2, 1, 0, 0 }, set2, true);
+//		System.out.println(asd1);
+//		System.out.println(asd2);
+//		System.out.println();
+//		System.out.println(asd2.combineWith(asd1));
+//
+//	}
+	
 	public static void main(String[] args) {
-		Set<Integer> set1 = new TreeSet<>();
-		set1.add(13);
-		set1.add(6);
-		Set<Integer> set2 = new TreeSet<>();
-		set2.add(12);
-		set2.add(8);
-		Mask asd1 = new Mask(new byte[] { 2, 1, 1, 0 }, set1, true);
-		Mask asd2 = new Mask(new byte[] { 2, 1, 0, 0 }, set2, true);
-		System.out.println(asd1);
-		System.out.println(asd2);
-		System.out.println();
-		System.out.println(asd2.combineWith(asd1));
-
+	
+		Queue<Integer> ne = new ArrayDeque<>();
+		ne.add(1);
+		ne.add(2);
+		ne.add(3);
+		
+		System.out.println(ne.poll());
+		System.out.println(ne.poll());
+		System.out.println(ne.poll());
+		
 	}
-
 }
