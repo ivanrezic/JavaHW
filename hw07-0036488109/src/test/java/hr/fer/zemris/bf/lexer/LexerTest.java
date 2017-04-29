@@ -4,28 +4,50 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * <code>LexerTest</code>.
+ *
+ * @author Ivan Rezic
+ */
 public class LexerTest {
 
+	/**
+	 * Null expression.
+	 */
 	@Test(expected = LexerException.class)
 	public void nullExpression() {
 		new Lexer(null);
 	}
 
+	/**
+	 * Illegal char in expression.
+	 */
 	@Test(expected = LexerException.class)
 	public void illegalCharInExpression() {
 		new Lexer("?").nextToken();
 	}
 	
+	/**
+	 * Incoplete xor in expression.
+	 */
 	@Test(expected = LexerException.class)
 	public void incopleteXorInExpression() {
 		new Lexer(":+").nextToken();
 	}
 	
+	/**
+	 * Incoplete identificator in expression.
+	 */
 	@Test(expected = LexerException.class)
 	public void incopleteIdentificatorInExpression() {
 		new Lexer("5").nextToken();
 	}
 	
+	/**
+	 * Two operators one after other.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Test
 	public void twoOperatorsOneAfterOther() throws Exception {
 		Lexer lexer = new Lexer("**");
@@ -38,6 +60,11 @@ public class LexerTest {
 		assertEquals(null, lexer2.nextToken().getTokenValue());
 	}
 	
+	/**
+	 * Identificator concatenated with operator.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Test
 	public void identificatorConcatenatedWithOperator() throws Exception {
 		Lexer lexer = new Lexer("*true");
@@ -52,6 +79,11 @@ public class LexerTest {
 		assertEquals("JANE_DOE", lexer3.nextToken().getTokenValue());
 	}
 	
+	/**
+	 * Valied identificators.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Test
 	public void valiedIdentificators() throws Exception {
 		Lexer lexer = new Lexer("And xOR Or NoT tRUE fALSE b42 ana_22");
@@ -66,6 +98,11 @@ public class LexerTest {
 		assertEquals("ANA_22", lexer.nextToken().getTokenValue());
 	}
 	
+	/**
+	 * Emty expression.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Test
 	public void emtyExpression() throws Exception {
 		Lexer lexer = new Lexer("     ");

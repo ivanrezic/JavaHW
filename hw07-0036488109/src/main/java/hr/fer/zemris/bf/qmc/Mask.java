@@ -1,44 +1,60 @@
 package hr.fer.zemris.bf.qmc;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
 import hr.fer.zemris.bf.utils.Util;
 
+/**
+ * <code>Mask</code> encapsulates all product specifications. Each mask could be
+ * combined with other mask.
+ *
+ * @author Ivan Rezic
+ */
 public class Mask {
 
+	/** Values. */
 	private byte[] values;
+
+	/** Indexes. */
 	private final Set<Integer> indexes;
+
+	/** Dont cares. */
 	private boolean dontCare;
 
+	/** Is mask combined. */
 	private boolean combined;
 
+	/** Mask hash code. */
 	private int hashCode;
 
-	// public Mask(int index, int numberOfVariables, boolean dontCare) {
-	// if (numberOfVariables < 1 || index < 0 || index >= Math.pow(2,
-	// numberOfVariables)) {
-	// throw new IllegalArgumentException("Invalid arguments given.");
-	// }
-	//
-	// this.values = Util.indexToByteArray(index, numberOfVariables);
-	// this.indexes = new TreeSet<>(Arrays.asList(index));
-	// this.dontCare = dontCare;
-	//
-	// }
-
+	/**
+	 * Constructor which instantiates new mask.
+	 *
+	 * @param index
+	 *            the index
+	 * @param numberOfVariables
+	 *            the number of variables
+	 * @param dontCare
+	 *            the dont care
+	 */
 	public Mask(int index, int numberOfVariables, boolean dontCare) {
 		this(Util.indexToByteArray(index, numberOfVariables), new TreeSet<>(Arrays.asList(index)), dontCare);
 	}
 
+	/**
+	 * Constructor which instantiates new mask.
+	 *
+	 * @param values
+	 *            the values
+	 * @param indexes
+	 *            the indexes
+	 * @param dontCare
+	 *            the dont care
+	 */
 	public Mask(byte[] values, Set<Integer> indexes, boolean dontCare) {
 		if (values == null || indexes == null || indexes.size() == 0) {
 			throw new IllegalArgumentException("Invalid arguments given.");
@@ -48,7 +64,7 @@ public class Mask {
 		this.indexes = indexes;
 		this.dontCare = dontCare;
 
-		this.hashCode = Arrays.hashCode(values); // mozda treba dodati jos nesto
+		this.hashCode = Arrays.hashCode(values);
 	}
 
 	@Override
@@ -72,22 +88,72 @@ public class Mask {
 		return true;
 	}
 
+	/**
+	 * Checks if is combined.
+	 *
+	 * @return true, if it is combined, false otherwise
+	 */
 	public boolean isCombined() {
 		return combined;
 	}
 
+	/**
+	 * Method which sets new value as combined.
+	 *
+	 * @param combined
+	 *            the new combined
+	 */
 	public void setCombined(boolean combined) {
 		this.combined = combined;
 	}
 
+	/**
+	 * Checks if is don't care.
+	 *
+	 * @return true, if it is dontcare, false otherwise
+	 */
 	public boolean isDontCare() {
 		return dontCare;
 	}
 
+	/**
+	 * Method used for getting property <code>indexes</code>.
+	 *
+	 * @return indexes
+	 */
 	public Set<Integer> getIndexes() {
 		return indexes;
 	}
 
+	/**
+	 * Returns size of values byte array stored.
+	 *
+	 * @return the size
+	 */
+	public int size() {
+		return values.length;
+	}
+
+	/**
+	 * Method used for getting byte value at given position.
+	 *
+	 * @param position
+	 *            the position
+	 * @return value
+	 */
+	public byte getValueAt(int position) {
+		if (position < 0 || position >= size()) {
+			throw new IllegalArgumentException("Given position out of bounds.");
+		}
+
+		return values[position];
+	}
+
+	/**
+	 * Method which counts byte values with value equals one.
+	 *
+	 * @return number of ones
+	 */
 	public int countOfOnes() {
 		int sum = 0;
 
@@ -128,6 +194,13 @@ public class Mask {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * Method which combines two masks if they have corresponding values and size.
+	 *
+	 * @param other
+	 *            mask to be combined with
+	 * @return empty if not combined, new mask if combined
+	 */
 	public Optional<Mask> combineWith(Mask other) {
 		if (other == null || values.length != other.values.length) {
 			throw new IllegalArgumentException("Second mask is null or does not have correct values length.");
@@ -144,7 +217,7 @@ public class Mask {
 				break;
 			}
 		}
-		
+
 		Set<Integer> newSet = new HashSet<>();
 		newSet.addAll(indexes);
 		newSet.addAll(other.indexes);
@@ -152,6 +225,13 @@ public class Mask {
 		return Optional.of(new Mask(help, newSet, dontCare && other.dontCare));
 	}
 
+	/**
+	 * Checks if masks are combinable.
+	 *
+	 * @param values2
+	 *            the values 2
+	 * @return true, if it is combinable, false otherwise
+	 */
 	private boolean isCombinable(byte[] values2) {
 		boolean flag = true;
 		int count = 0;
@@ -172,34 +252,5 @@ public class Mask {
 		}
 
 		return flag;
-	}
-
-//	public static void main(String[] args) {
-//		Set<Integer> set1 = new TreeSet<>();
-//		set1.add(13);
-//		set1.add(6);
-//		Set<Integer> set2 = new TreeSet<>();
-//		set2.add(12);
-//		set2.add(8);
-//		Mask asd1 = new Mask(new byte[] { 2, 1, 1, 0 }, set1, true);
-//		Mask asd2 = new Mask(new byte[] { 2, 1, 0, 0 }, set2, true);
-//		System.out.println(asd1);
-//		System.out.println(asd2);
-//		System.out.println();
-//		System.out.println(asd2.combineWith(asd1));
-//
-//	}
-	
-	public static void main(String[] args) {
-	
-		Queue<Integer> ne = new ArrayDeque<>();
-		ne.add(1);
-		ne.add(2);
-		ne.add(3);
-		
-		System.out.println(ne.poll());
-		System.out.println(ne.poll());
-		System.out.println(ne.poll());
-		
 	}
 }

@@ -7,29 +7,59 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import hr.fer.zemris.bf.model.ConstantNode;
 import hr.fer.zemris.bf.model.Node;
+import hr.fer.zemris.bf.parser.Parser;
 
+/**
+ * <code>Minimizer</code> represents Quine-McCluskey minimizer with
+ * Pyne-McCluskey approach. It is used to retrieve all minimal forms from given
+ * expression.
+ *
+ * @author Ivan Rezic
+ */
 public class Minimizer {
 
+	/** Constant LOG which represents out logger. */
 	private static final Logger LOG = Logger.getLogger("hr.fer.zemris.bf.qmc");
 
+	/** Minterm set. */
 	private Set<Integer> mintermSet;
+
+	/** Dontcare set. */
 	private Set<Integer> dontCareSet;
+
+	/** Expression variables. */
 	private List<String> variables;
 
+	/** Minimal forms. */
 	private List<Set<Mask>> minimalForms;
 
+	/** Primary implicants. */
+	private Set<Mask> primCover;
+
+	/**
+	 * Constructor which instantiates new minimizer and initializes minimization
+	 * process.
+	 *
+	 * @param mintermSet
+	 *            the minterm set
+	 * @param dontCareSet
+	 *            the dont care set
+	 * @param variables
+	 *            the variables
+	 */
 	public Minimizer(Set<Integer> mintermSet, Set<Integer> dontCareSet, List<String> variables) {
 		double size = Math.pow(2, variables.size());
 
@@ -40,28 +70,50 @@ public class Minimizer {
 		this.mintermSet = mintermSet;
 		this.dontCareSet = dontCareSet;
 		this.variables = variables;
-		
+
 		if (mintermSet.size() > 0) {
 			if (mintermSet.size() == size) {
-				Set<Mask> primCover = findPrimaryImplicants();
+				primCover = findPrimaryImplicants();
 				minimalForms = new ArrayList<>(Arrays.asList(primCover));
-				logMinimalForms(minimalForms);
-			}else {
-				Set<Mask> primCover = findPrimaryImplicants();
+			} else {
+				primCover = findPrimaryImplicants();
 				minimalForms = chooseMinimalCover(primCover);
 			}
+
+			if (LOG.isLoggable(Level.FINE)) {
+				logMinimalForms(minimalForms);
+			}
 		}
-		
+
 	}
 
+	/**
+	 * Method used for getting property <code>MinimalForms</code>.
+	 *
+	 * @return minimal forms
+	 */
 	public List<Set<Mask>> getMinimalForms() {
 		return minimalForms;
 	}
 
+	/**
+	 * Checks if two sets overlap.
+	 *
+	 * @param mintermSet
+	 *            the minterm set
+	 * @param dontCareSet
+	 *            the dont care set
+	 * @return true, if it is successful, false otherwise
+	 */
 	private boolean checkNonOverlapping(Set<Integer> mintermSet, Set<Integer> dontCareSet) {
 		return Collections.disjoint(mintermSet, dontCareSet);
 	}
 
+	/**
+	 * Method which finds all primary implicants.
+	 *
+	 * @return The set of primary implicants.
+	 */
 	private Set<Mask> findPrimaryImplicants() {
 		Set<Mask> primaryImplicants = new LinkedHashSet<>();
 
@@ -78,6 +130,14 @@ public class Minimizer {
 		return primaryImplicants;
 	}
 
+	/**
+	 * Helper method which gets the all primary implicants from given column and
+	 * logs them.
+	 *
+	 * @param column
+	 *            the column
+	 * @return the all primary implicants
+	 */
 	private Collection<? extends Mask> getAllPrimaryImplicants(List<Set<Mask>> column) {
 		Set<Mask> primary = new LinkedHashSet<>();
 
@@ -98,6 +158,12 @@ public class Minimizer {
 
 	}
 
+	/**
+	 * Helper method which logs all primary implicants.
+	 *
+	 * @param primaryImplicants
+	 *            the primary implicants
+	 */
 	private void logAllPrimary(Set<Mask> primaryImplicants) {
 		LOG.log(Level.FINE, () -> "");
 		LOG.log(Level.FINE, () -> "Svi primarni implikanti:");
@@ -107,6 +173,12 @@ public class Minimizer {
 		}
 	}
 
+	/**
+	 * Helper method which logs given column.
+	 *
+	 * @param column
+	 *            the column
+	 */
 	private void logColumn(List<Set<Mask>> column) {
 		if (!LOG.isLoggable(Level.FINER))
 			return;
@@ -130,6 +202,14 @@ public class Minimizer {
 		LOG.log(Level.FINER, "");
 	}
 
+	/**
+	 * Method used for getting next column made from all combinations from
+	 * previous column.
+	 *
+	 * @param column
+	 *            the column
+	 * @return next column
+	 */
 	private List<Set<Mask>> getNextColumn(List<Set<Mask>> column) {
 		List<Set<Mask>> newColumn = new ArrayList<>();
 
@@ -148,6 +228,15 @@ public class Minimizer {
 		return newColumn;
 	}
 
+	/**
+	 * Helper method which combines two mask and sets them as combined.
+	 *
+	 * @param current
+	 *            the current mask
+	 * @param next
+	 *            the next mask
+	 * @return the set containing new combinations
+	 */
 	private Set<Mask> combine(Set<Mask> current, Set<Mask> next) {
 		Set<Mask> combined = new LinkedHashSet<>();
 
@@ -166,6 +255,11 @@ public class Minimizer {
 		return combined;
 	}
 
+	/**
+	 * Helper method which creates new column from given minterms and dontcares.
+	 *
+	 * @return the list of sets of masks
+	 */
 	private List<Set<Mask>> createFirstColumn() {
 		int size = variables.size();
 		Map<Integer, Set<Mask>> mapByOnes;
@@ -184,7 +278,20 @@ public class Minimizer {
 		return new ArrayList<>(mapByOnes.values());
 	}
 
+	/**
+	 * Method which finds and picks all minimal covers from primary implicants
+	 * leftovers.
+	 *
+	 * @param primCover
+	 *            all primary implicants
+	 * @return the list of minimal covers
+	 */
 	private List<Set<Mask>> chooseMinimalCover(Set<Mask> primCover) {
+		if (primCover.size() == 1) {
+			return new ArrayList<>(Arrays.asList(primCover));
+
+		}
+
 		// Izgradi polja implikanata i minterma (rub tablice):
 		Mask[] implicants = primCover.toArray(new Mask[primCover.size()]);
 		Integer[] minterms = mintermSet.toArray(new Integer[mintermSet.size()]);
@@ -220,13 +327,15 @@ public class Minimizer {
 			minimalForms.add(set);
 		}
 
-		if (LOG.isLoggable(Level.FINE)) {
-			logMinimalForms(minimalForms);
-		}
-
 		return minimalForms;
 	}
 
+	/**
+	 * Helper method which logs minimal covers.
+	 *
+	 * @param minimalForms
+	 *            the minimal forms
+	 */
 	private void logMinimalForms(List<Set<Mask>> minimalForms) {
 		LOG.log(Level.FINE, "");
 		LOG.log(Level.FINE, "Minimalni oblici funkcije su:");
@@ -237,6 +346,13 @@ public class Minimizer {
 		}
 	}
 
+	/**
+	 * Helper method which finds minimal set from given p function.
+	 *
+	 * @param pFunction
+	 *            the function made by Pyne-McCluskey approach
+	 * @return the sets the
+	 */
 	private Set<BitSet> findMinimalSet(List<Set<BitSet>> pFunction) {
 		ArrayDeque<Set<BitSet>> newSet = new ArrayDeque<>(pFunction);
 
@@ -256,13 +372,20 @@ public class Minimizer {
 		}
 
 		if (LOG.isLoggable(Level.FINER)) {
-			logSumOfProduts(newSet);
+			logSumOfProducts(newSet);
 		}
 
 		return filterNewSet(newSet.poll());
 	}
 
-	private Set<BitSet> filterNewSet(Set<BitSet> set) {	
+	/**
+	 * Helper method which returns minimal size minimal covers.
+	 *
+	 * @param set
+	 *            the set of minimal covers
+	 * @return the set of filtered ones
+	 */
+	private Set<BitSet> filterNewSet(Set<BitSet> set) {
 		Integer min = set.stream().min((a, b) -> Integer.compare(a.cardinality(), b.cardinality()))
 				.map(BitSet::cardinality).get();
 		Set<BitSet> result = set.stream().filter(e -> e.cardinality() == min)
@@ -277,12 +400,27 @@ public class Minimizer {
 		return result;
 	}
 
-	private void logSumOfProduts(ArrayDeque<Set<BitSet>> newSet) {
+	/**
+	 * Helper method which logs sum of products.
+	 *
+	 * @param newSet
+	 *            sum of products
+	 */
+	private void logSumOfProducts(ArrayDeque<Set<BitSet>> newSet) {
 		LOG.log(Level.FINER, "");
 		LOG.log(Level.FINER, "Nakon prevorbe p-funkcije u sumu produkata:");
 		LOG.log(Level.FINER, newSet.toString());
 	}
 
+	/**
+	 * Helper method which builds the P function.
+	 *
+	 * @param table
+	 *            the table
+	 * @param coveredMinterms
+	 *            the covered minterms
+	 * @return the list which represents Pyne-McCluskey function
+	 */
 	private List<Set<BitSet>> buildPFunction(boolean[][] table, boolean[] coveredMinterms) {
 		List<Set<BitSet>> pFunction = new ArrayList<>();
 
@@ -310,10 +448,29 @@ public class Minimizer {
 		return pFunction;
 	}
 
+	/**
+	 * Helper method which logs Pyne-McCluskey function.
+	 *
+	 * @param pFunction
+	 *            the function
+	 */
 	private void logPFunction(List<Set<BitSet>> pFunction) {
 		LOG.log(Level.FINER, pFunction.toString());
 	}
 
+	/**
+	 * Helper method which selects important primary implicants.
+	 *
+	 * @param implicants
+	 *            the implicants
+	 * @param mintermToColumnMap
+	 *            the minterm to column map
+	 * @param table
+	 *            the table
+	 * @param coveredMinterms
+	 *            the covered minterms
+	 * @return the set of important primary implicants
+	 */
 	private Set<Mask> selectImportantPrimaryImplicants(Mask[] implicants, Map<Integer, Integer> mintermToColumnMap,
 			boolean[][] table, boolean[] coveredMinterms) {
 
@@ -337,7 +494,12 @@ public class Minimizer {
 			if (count == 1) {
 				important.add(implicant);
 				for (Integer index : implicant.getIndexes()) {
-					coveredMinterms[mintermToColumnMap.get(index)] = true;
+					Integer minterm = mintermToColumnMap.get(index);
+					if (minterm == null) {
+						continue;
+					} else {
+						coveredMinterms[minterm] = true;
+					}
 				}
 			}
 		}
@@ -349,6 +511,12 @@ public class Minimizer {
 		return important;
 	}
 
+	/**
+	 * Helper method which logs important implicants.
+	 *
+	 * @param important
+	 *            the important
+	 */
 	private void logImportant(Set<Mask> important) {
 		LOG.log(Level.FINE, "");
 		LOG.log(Level.FINE, "Bitni primarni implikanti su:");
@@ -358,6 +526,17 @@ public class Minimizer {
 		}
 	}
 
+	/**
+	 * Builds the cover table.
+	 *
+	 * @param implicants
+	 *            the implicants
+	 * @param minterms
+	 *            the minterms
+	 * @param mintermToColumnMap
+	 *            the minterm to column map
+	 * @return covered table
+	 */
 	private boolean[][] buildCoverTable(Mask[] implicants, Integer[] minterms,
 			Map<Integer, Integer> mintermToColumnMap) {
 
@@ -373,15 +552,83 @@ public class Minimizer {
 
 		return table;
 	}
-	
-//	public List<Node> getMinimalFormsAsExpressions(){
-//		
-//	}
 
-	public static void main(String[] args) {
-		Set<Integer> minterms = new HashSet<>(Arrays.asList(0,1,3,10,11,14,15));
-		Set<Integer> dontcares = new HashSet<>(Arrays.asList(4,6));
-		Minimizer minimizer = new Minimizer(minterms, dontcares, Arrays.asList("A", "B", "C","D"));
+	/**
+	 * Method used for getting minimal forms as expression.
+	 *
+	 * @return minimal forms as expressions
+	 */
+	public List<Node> getMinimalFormsAsExpressions() {
+		List<Node> nodes = new ArrayList<>();
+		if (mintermSet.size() == 0) {
+			nodes.add(new ConstantNode(false));
+			return nodes;
+		}
+
+		if (mintermSet.size() + dontCareSet.size() == Math.pow(variables.size(), 2)) {
+			nodes.add(new ConstantNode(true));
+			return nodes;
+		}
+
+		List<String> expressions = getMinimalFormsAsString();
+
+		for (String expression : expressions) {
+			Parser parser = new Parser(expression);
+			nodes.add(parser.getExpression());
+		}
+
+		return nodes;
+	}
+
+	/**
+	 * Method used for getting minimal forms as string.
+	 *
+	 * @return minimal forms as string
+	 */
+	public List<String> getMinimalFormsAsString() {
+		List<String> formsAsString = new ArrayList<>();
+
+		if (mintermSet.size() == 0) {
+			formsAsString.add("Funkcija je kontradikcija.");
+			return formsAsString;
+		}
+
+		if (mintermSet.size() + dontCareSet.size() == Math.pow(variables.size(), 2)) {
+			formsAsString.add("Funkcija je tautologija.");
+			return formsAsString;
+		}
+
+		for (Set<Mask> form : minimalForms) {
+			StringJoiner string = new StringJoiner(" OR ");
+			for (Mask mask : form) {
+				string.add(maskAsString(mask));
+			}
+			formsAsString.add(string.toString());
+		}
+
+		return formsAsString;
+	}
+
+	/**
+	 * Helper method which transforms mask into string.
+	 *
+	 * @param mask
+	 *            the mask
+	 * @return the char sequence representing mask
+	 */
+	private CharSequence maskAsString(Mask mask) {
+		StringJoiner string = new StringJoiner(" AND ");
+
+		for (int i = 0; i < variables.size(); i++) {
+			byte bit = mask.getValueAt(i);
+			if (bit == 1) {
+				string.add(variables.get(i));
+			} else if (bit == 0) {
+				string.add("NOT " + variables.get(i));
+			}
+
+		}
+		return string.toString();
 	}
 
 }
