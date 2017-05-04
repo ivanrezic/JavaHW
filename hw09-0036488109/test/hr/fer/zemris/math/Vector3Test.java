@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+
 public class Vector3Test {
 	private static final double PRECISION = 0.001;
 
@@ -27,7 +28,7 @@ public class Vector3Test {
 	public void normalizeZeroVector() throws Exception {
 		new Vector3(0, 0, 0).normalized();
 	}
-
+	
 	@Test
 	public void normalizedVector() throws Exception {
 		assertEquals(new Vector3(0.99855, 0, -0.053835).getX(), second.normalized().getX(), PRECISION);

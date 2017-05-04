@@ -3,10 +3,24 @@ package hr.fer.zemris.math;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
+/**
+ * <code>ComplexRootedPolynomial</code> class represents polynomial with complex
+ * number roots. Polynomial has form of: <i>f(z) = (z-z1)*(z-z2)*...*(z-zn)</i>
+ * in which z1 to zn are polynomial roots.
+ *
+ * @author Ivan Rezic
+ */
 public class ComplexRootedPolynomial {
 
+	/** Polynomial roots. */
 	private Complex[] roots;
 
+	/**
+	 * Constructor which instantiates new complex rooted polynomial.
+	 *
+	 * @param roots
+	 *            the roots
+	 */
 	public ComplexRootedPolynomial(Complex... roots) {
 		if (roots == null) {
 			throw new IllegalArgumentException("Roots can not be null");
@@ -18,6 +32,15 @@ public class ComplexRootedPolynomial {
 		this.roots = Arrays.copyOf(roots, roots.length);
 	}
 
+	/**
+	 * Applies given complex number as x to the function.
+	 *
+	 * @param z
+	 *            Complex number to be applied.
+	 * @return Complex number as result.
+	 * @throws IllegalArgumentException
+	 *             if given argument is null.
+	 */
 	public Complex apply(Complex z) {
 		if (z == null) {
 			throw new IllegalArgumentException("Given complex number can not be null.");
@@ -31,7 +54,11 @@ public class ComplexRootedPolynomial {
 		return result;
 	}
 
-	// converts this representation to ComplexPolynomial type
+	/**
+	 * Converts this representation to {@linkplain ComplexPolynomial} type.
+	 *
+	 * @return the complex polynomial
+	 */
 	public ComplexPolynomial toComplexPolynom() {
 		ComplexPolynomial newPolynomial = new ComplexPolynomial(roots[0].negate(), Complex.ONE);
 
@@ -53,8 +80,16 @@ public class ComplexRootedPolynomial {
 		return joiner.toString();
 	}
 
-	// finds index of closest root for given complex number z that is within
-	// treshold; if there is no such root, returns -1
+	/**
+	 * Finds index of closest root for given complex number z that is within
+	 * treshold; if there is no such root, returns -1
+	 *
+	 * @param z
+	 *            complex number to be checked
+	 * @param treshold
+	 *            the treshold
+	 * @return result
+	 */
 	public int indexOfClosestRootFor(Complex z, double treshold) {
 		if (z == null) {
 			throw new IllegalArgumentException("Given complex number can not be null.");
@@ -74,6 +109,6 @@ public class ComplexRootedPolynomial {
 			}
 		}
 
-		return distance <= treshold ? index + 1 : -1;
+		return distance > treshold ? -1 : index + 1;
 	}
 }

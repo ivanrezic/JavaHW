@@ -43,15 +43,11 @@ public class ComplexRootedPolynomialTest {
 		assertEquals(expected, rooted2.toComplexPolynom().toString());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void nullConstructor() throws Exception {
-		new ComplexRootedPolynomial(null);
-	}
+//	@Test(expected = IllegalArgumentException.class)
+//	public void nullConstructor() throws Exception {
+//		new ComplexRootedPolynomial(null);
+//	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void noRootsGiven() throws Exception {
-		new ComplexRootedPolynomial(null);
-	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void illegalArgumentsForIndexOfClosesRoot1() throws Exception {
