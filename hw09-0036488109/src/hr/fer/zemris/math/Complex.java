@@ -260,5 +260,4 @@ public class Complex {
 			return false;
 		return true;
 	}
-
 }

@@ -40,7 +40,7 @@ public class Vector3Test {
 		assertEquals(new Vector3(0.0994517, -0.994517, 0.032342).getZ(), first.normalized().getZ(), PRECISION);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void addNullVector() throws Exception {
 		first.add(null);
 	}
@@ -52,7 +52,7 @@ public class Vector3Test {
 		assertEquals(new Vector3(14.6, -123, 3.876).getZ(), first.add(second).getZ(), PRECISION);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void subtractNullVector() throws Exception {
 		first.sub(null);
 	}
@@ -64,7 +64,7 @@ public class Vector3Test {
 		assertEquals(new Vector3(10, -123, 4.124).getZ(), first.sub(second).getZ(), PRECISION);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void dotProductNullVector() throws Exception {
 		first.dot(null);
 	}
@@ -74,7 +74,7 @@ public class Vector3Test {
 		assertEquals(27.794, first.dot(second), PRECISION);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void crossNullVector() throws Exception {
 		first.cross(null);
 	}
@@ -93,7 +93,7 @@ public class Vector3Test {
 		assertEquals(new Vector3(15.252, 10.7252, -8).getZ(), first.scale(-2).getZ(), PRECISION);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void cosAngleNull() throws Exception {
 		first.cosAngle(null);
 	}

@@ -159,7 +159,7 @@ public class Vector3 {
 	 */
 	private void checkVectorValidity(Vector3 other) {
 		if (other == null) {
-			throw new IllegalArgumentException("Given vector can not be null.");
+			throw new NullPointerException("Given vector can not be null.");
 		}
 	}
 

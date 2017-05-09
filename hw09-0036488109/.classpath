@@ -9,5 +9,6 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/Ivan/Downloads/fractal-viewer-1.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/raytracer-1.0.jar" sourcepath="C:/Users/Ivan/Downloads/raytracer-1.0-sources (1).jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

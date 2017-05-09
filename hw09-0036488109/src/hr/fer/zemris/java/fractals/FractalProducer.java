@@ -54,7 +54,11 @@ public class FractalProducer implements IFractalProducer {
 		final int numberOfFileds = 8 * Runtime.getRuntime().availableProcessors();
 		int numberOfYPerField = height / numberOfFileds;
 
-		ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), (r) ->{
+			Thread thread = new Thread(r);
+			thread.setDaemon(true);
+			return thread;
+		});
 		List<Future<Void>> results = new ArrayList<>();
 
 		for (int i = 0; i < numberOfFileds; i++) {
@@ -73,7 +77,6 @@ public class FractalProducer implements IFractalProducer {
 			} catch (InterruptedException | ExecutionException e) {
 			}
 		}
-		pool.shutdown();
 		System.out.println("Calculation done. Notifying observer ie. GUI!");
 		observer.acceptResult(data, (short) (polyinom.order() + 1), requestNo);
 	}

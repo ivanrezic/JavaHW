@@ -14,7 +14,7 @@ import hr.fer.zemris.math.ComplexRootedPolynomial;
 /**
  * <code>Newton</code> class represents main program. It requires user to
  * provide polynomial roots. User inputs each root separated with new line and
- * keeps doing it till typing done which then proceeds to draw given fractal to
+ * keeps doing it till typing 'done' which then proceeds drawing given fractal to
  * content pane.
  *
  * @author Ivan Rezic
