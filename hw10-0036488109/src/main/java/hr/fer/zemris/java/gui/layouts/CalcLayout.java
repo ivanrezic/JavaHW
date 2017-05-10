@@ -95,9 +95,11 @@ public class CalcLayout implements LayoutManager2 {
 			Dimension dimension = unary.apply(entry.getKey());
 			RCPosition component = entry.getValue();
 
-			height = max(height, dimension.height);
-			if (!component.equals(first)) {
-				width = max(width, dimension.width);
+			if (dimension != null) {
+				height = max(height, dimension.height);
+				if (!component.equals(first)) {
+					width = max(width, dimension.width);
+				}
 			}
 		}
 
@@ -160,12 +162,13 @@ public class CalcLayout implements LayoutManager2 {
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		JPanel p = new JPanel(new CalcLayout(3));
-		p.add(new JLabel("x"), new RCPosition(1, 1));
-		p.add(new JLabel("y"), new RCPosition(2, 3));
-		p.add(new JLabel("z"), new RCPosition(2, 7));
-		p.add(new JLabel("w"), new RCPosition(4, 2));
-		p.add(new JLabel("a"), new RCPosition(4, 5));
-		p.add(new JLabel("b"), new RCPosition(4, 7));
+		p.add(new JLabel("x"), "1,1");
+		p.add(new JLabel("y"), "2,3");
+		p.add(new JLabel("z"), "2,7");
+		p.add(new JLabel("w"), "4,2");
+		p.add(new JLabel("a"), "4,5");
+		p.add(new JLabel("b"), "4,7");
+
 
 		frame.add(p);
 
