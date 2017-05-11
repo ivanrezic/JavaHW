@@ -23,17 +23,16 @@ public class OperationListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Stack<String> stack = calculator.getStack();
-		Stack<Double> values = calculator.getValues();
 		if (stack.isEmpty()) return;
 		
 		
 		double value = Double.parseDouble(stack.pop());
 		if (calculator.isInverted()) {
-			values.push(inverted.apply(value));
+			value = inverted.apply(value);
 		} else {
-			values.push(normal.apply(value));
+			value = normal.apply(value);
 		}
 		
-		calculator.getScreen().setText(stack.push(values.peek().toString()));
+		calculator.getScreen().setText(stack.push(String.valueOf(value)));
 	}
 }
