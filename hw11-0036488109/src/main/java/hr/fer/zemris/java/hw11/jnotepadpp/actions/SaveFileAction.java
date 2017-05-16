@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
 import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
 
-public class SaveFileAction extends MyAction {
+public class SaveFileAction extends MyAction{
 
 	private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,12 @@ public class SaveFileAction extends MyAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
-		if (panel == null) return;
+		if (panel == null) {
+			return;
+		}else if (panel.fileNotSaved()) {
+			JOptionPane.showMessageDialog(container, "Click 'Save as' option first!");	
+			return;
+		}	
 		Path openedFilePath = panel.getOpenedFilePath();
 		
 		try {
@@ -35,6 +40,8 @@ public class SaveFileAction extends MyAction {
 		}
 
 		JOptionPane.showMessageDialog(container, "File saved.", "Information", JOptionPane.INFORMATION_MESSAGE);
+		setCurrentTabIcon(loadIconFrom("icons/save_green.png"));
+		panel.setEdited(false);
 		return;
 	}
 }

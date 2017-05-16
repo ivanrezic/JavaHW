@@ -12,8 +12,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
 import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
@@ -21,6 +19,7 @@ import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
 public abstract class MyAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
+	private static final int MAX_ICON_SIZE = 3000;
 	protected JNotepadPP container;
 	protected JTabbedPane tabbedPane;
 
@@ -38,46 +37,27 @@ public abstract class MyAction extends AbstractAction {
 	public abstract void actionPerformed(ActionEvent e);
 
 	protected void addTab(File file, String tooltip) {
-		if (alreadyOpened(file)) return;
+		if (alreadyOpened(file))
+			return;
+
 		MyPanel panel = new MyPanel(file);
-		
+
 		String title = "New";
-		if(file != null){
+		if (file != null) {
 			title = file.getName();
 		}
 
 		tabbedPane.addTab(title, loadIconFrom("icons/save_green.png"), panel, tooltip);
-		panel.getTextArea().getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				changeIcon();
-			}
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				changeIcon();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				changeIcon();
-			}
-
-			private void changeIcon() {
-				tabbedPane.setIconAt(tabbedPane.getSelectedIndex(), loadIconFrom("icons/save_red.png"));
-			}
-		});
-
 		tabbedPane.setSelectedComponent(panel);
 	}
 
-	public Icon loadIconFrom(String string) {
-		InputStream is = container.getClass().getResourceAsStream(string);
-		if (is == null)
-			System.err.println("Missing icon with provided path.");
+	public static Icon loadIconFrom(String imageLocation) {
+		InputStream is = JNotepadPP.class.getResourceAsStream(imageLocation);
+		if (is == null) {
+			System.err.println("Missing icon with provided path or icon size > " + MAX_ICON_SIZE + " bytes.");
+		}
 
-		byte[] bytes = new byte[10000];
+		byte[] bytes = new byte[MAX_ICON_SIZE];
 		try (BufferedInputStream reader = new BufferedInputStream(is)) {
 			reader.read(bytes);
 		} catch (IOException e) {
@@ -93,11 +73,16 @@ public abstract class MyAction extends AbstractAction {
 
 		for (int i = 0; i < count; i++) {
 			MyPanel panel = (MyPanel) tabbedPane.getComponentAt(i);
-			
+
 			flag = panel.hasFile(file);
-			if (flag) break;
+			if (flag)
+				break;
 		}
 
 		return flag;
+	}
+
+	protected void setCurrentTabIcon(Icon icon) {
+		tabbedPane.setIconAt(tabbedPane.getSelectedIndex(), icon);
 	}
 }

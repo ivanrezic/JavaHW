@@ -47,7 +47,7 @@ public class OpenFileAction extends MyAction {
 		}
 		String text = new String(data, StandardCharsets.UTF_8);
 
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();//provjera je li null?
+		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
 		panel.setText(text);
 	}
 

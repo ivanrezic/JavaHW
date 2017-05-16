@@ -34,11 +34,11 @@ public class SaveAsAction extends MyAction {
 					JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-		if (fc.getSelectedFile() != null) {
-			int choose = JOptionPane.showConfirmDialog(container, "Do you want to overwrite existing file?");
-			if (choose == JOptionPane.NO_OPTION || choose == JOptionPane.CANCEL_OPTION) return;
+		if (fc.getSelectedFile().exists()) {
+			int choose = JOptionPane.showConfirmDialog(container, "Do you want to overwrite existing file?", "", JOptionPane.YES_NO_OPTION);
+			if (choose != JOptionPane.YES_OPTION) return;
 		}
-		
+
 		Path openedFilePath = fc.getSelectedFile().toPath();
 		try {
 			Files.write(openedFilePath, panel.getTextArea().getText().getBytes(StandardCharsets.UTF_8));
@@ -50,8 +50,10 @@ public class SaveAsAction extends MyAction {
 
 		JOptionPane.showMessageDialog(container, "File saved.", "Information", JOptionPane.INFORMATION_MESSAGE);
 		changeTabInfo(openedFilePath);
+		setCurrentTabIcon(loadIconFrom("icons/save_green.png"));
+		panel.setEdited(false);
 	}
-
+	
 	private void changeTabInfo(Path openedFilePath) {
 		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
 		panel.setFile(openedFilePath);
@@ -60,5 +62,4 @@ public class SaveAsAction extends MyAction {
 		tabbedPane.setTitleAt(index, openedFilePath.getFileName().toString());
 		tabbedPane.setToolTipTextAt(index, openedFilePath.toString());
 	}
-
 }
