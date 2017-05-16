@@ -52,13 +52,7 @@ public class JNotepadPP extends JFrame {
 
 		createActions();
 		addActions();
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				ExitAppAction action = (ExitAppAction) actions.get("exitApp");
-				action.exitIfPossible();
-			}
-		});
+		addCloseOperationAction();
 	}
 
 	private void createActions() {
@@ -72,8 +66,10 @@ public class JNotepadPP extends JFrame {
 				new NewFileAction(this, "New file", "control N", KeyEvent.VK_N, "Used to create new document on disk."));
 		actions.put("closeFile",
 				new CloseFileAction(this, "Close file", "control W", KeyEvent.VK_L, "Used to close current document."));
+		actions.put("stats",
+				new FileStatsAction(this, "File stats", "control shift S", KeyEvent.VK_T, "Show current file statistics."));
 		actions.put("exitApp",
-				new ExitAppAction(this, "Exit", "control X", KeyEvent.VK_X, "Used exit application."));
+				new ExitAppAction(this, "Exit", "control X", KeyEvent.VK_X, "Used to exit application."));
 	}
 
 	private void addActions() {
@@ -99,10 +95,11 @@ public class JNotepadPP extends JFrame {
 		toolBar.add(createToolbarButton(toolBar, "icons/new_file.png", "newFile"));
 		fileMenu.add(new JMenuItem(actions.get("closeFile")));
 		toolBar.add(createToolbarButton(toolBar, "icons/close_file.png", "closeFile"));
+		fileMenu.add(new JMenuItem(actions.get("stats")));
+		toolBar.add(createToolbarButton(toolBar, "icons/stats.png", "stats"));
 		fileMenu.addSeparator();
 		fileMenu.add(new JMenuItem(actions.get("exitApp")));
 		toolBar.add(createToolbarButton(toolBar, "icons/exit_app.png", "exitApp"));
-
 	}
 
 	private JButton createToolbarButton(Container container, String imagePath, String actionName) {
@@ -115,11 +112,25 @@ public class JNotepadPP extends JFrame {
 		return button;
 	}
 
+	private void addCloseOperationAction() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				ExitAppAction action = (ExitAppAction) actions.get("exitApp");
+				action.exitIfPossible();
+			}
+		});
+	}
+	
 	// private void createStatusBar() {
 	// }
 
 	public JTabbedPane getTabbedPane() {
 		return tabbedPane;
+	}
+	
+	public HashMap<String, MyAction> getActions() {
+		return actions;
 	}
 
 	public static void main(String[] args) {

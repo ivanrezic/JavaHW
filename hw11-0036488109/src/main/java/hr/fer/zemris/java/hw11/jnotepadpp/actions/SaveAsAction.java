@@ -24,6 +24,10 @@ public class SaveAsAction extends MyAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		saveFileAs(panel);
+	}
+	
+	protected void saveFileAs(MyPanel panel) {
 		if (panel == null)
 			return;
 
@@ -53,7 +57,7 @@ public class SaveAsAction extends MyAction {
 		setCurrentTabIcon(loadIconFrom("icons/save_green.png"));
 		panel.setEdited(false);
 	}
-	
+
 	private void changeTabInfo(Path openedFilePath) {
 		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
 		panel.setFile(openedFilePath);

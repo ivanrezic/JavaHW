@@ -23,6 +23,10 @@ public class SaveFileAction extends MyAction{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		saveFile(panel);
+	}
+
+	protected void saveFile(MyPanel panel) {
 		if (panel == null) {
 			return;
 		}else if (panel.fileNotSaved()) {
@@ -42,6 +46,5 @@ public class SaveFileAction extends MyAction{
 		JOptionPane.showMessageDialog(container, "File saved.", "Information", JOptionPane.INFORMATION_MESSAGE);
 		setCurrentTabIcon(loadIconFrom("icons/save_green.png"));
 		panel.setEdited(false);
-		return;
 	}
 }

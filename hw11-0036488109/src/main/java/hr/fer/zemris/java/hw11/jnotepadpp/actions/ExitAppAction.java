@@ -22,18 +22,29 @@ public class ExitAppAction extends MyAction {
 	}
 
 	public void exitIfPossible() {
-		int count = tabbedPane.getComponentCount();
+		int count = tabbedPane.getComponentCount() - 1;
 
-		for (int i = 0; i < count; i++) {
-			MyPanel panel = (MyPanel) tabbedPane.getComponentAt(i);
+		while (count >= 0) {
+			MyPanel panel = (MyPanel) tabbedPane.getComponentAt(count);
 			if (panel.isEdited()) {
-				int choice = JOptionPane.showConfirmDialog(container, "There are unsaved files, proceed?");
-				if (choice != JOptionPane.YES_OPTION) {
+				tabbedPane.setSelectedComponent(panel);
+				int choice = JOptionPane.showConfirmDialog(container, "Do you want to save this file?",
+						"File is not saved yet!", JOptionPane.YES_NO_CANCEL_OPTION);
+
+				if (choice == JOptionPane.YES_OPTION) {
+					if (panel.fileNotSaved()) {
+						SaveAsAction saveAs = (SaveAsAction) container.getActions().get("saveAs");
+						saveAs.saveFileAs(panel);
+					} else {
+						SaveFileAction save = (SaveFileAction) container.getActions().get("saveFile");
+						save.saveFile(panel);
+					}
+				} else if (choice == JOptionPane.CANCEL_OPTION) {
 					return;
-				} else {
-					break;
 				}
 			}
+
+			tabbedPane.remove(count--);
 		}
 
 		System.exit(0);
