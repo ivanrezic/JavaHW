@@ -1,10 +1,27 @@
 package hr.fer.zemris.java.gui.layouts;
 
+/**
+ * <code>RCPosition</code> class which represents component position in
+ * calculator layout.
+ *
+ * @author Ivan Rezic
+ */
 public class RCPosition {
 
+	/** Row position. */
 	private final int row;
+
+	/** Column position. */
 	private final int column;
 
+	/**
+	 * Constructor which instantiates new RC position.
+	 *
+	 * @param row
+	 *            the row
+	 * @param column
+	 *            the column
+	 */
 	public RCPosition(int row, int column) {
 		if (row <= 0 || column <= 0) {
 			throw new IllegalArgumentException("Number of rows and columns must be greater than zero.");
@@ -14,10 +31,20 @@ public class RCPosition {
 		this.column = column;
 	}
 
+	/**
+	 * Method used for getting property <code>Row</code>.
+	 *
+	 * @return row
+	 */
 	public int getRow() {
 		return row;
 	}
 
+	/**
+	 * Method used for getting property <code>Column</code>.
+	 *
+	 * @return column
+	 */
 	public int getColumn() {
 		return column;
 	}

@@ -7,18 +7,41 @@ import java.util.Stack;
 
 import javax.swing.JButton;
 
-import hr.fer.zemris.java.gui.layouts.Calculator;
+import hr.fer.zemris.java.gui.calc.Calculator;
 
+/**
+ * The listener interface for receiving command events.
+ * The class that is interested in processing a command
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addActionListener<code> method. When
+ * the command event occurs, that object's appropriate
+ * method is invoked.
+ *
+ * @see CommandEvent
+ */
 public class CommandListener implements ActionListener {
 
+	/** calculator. */
 	private Calculator calculator;
+	
+	/** command. */
 	private String command;
 
+	/**
+	 * Constructor which instantiates new command listener.
+	 *
+	 * @param calculator the calculator
+	 * @param command the command
+	 */
 	public CommandListener(Calculator calculator, String command) {
 		this.calculator = calculator;
 		this.command = command;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (command) {
@@ -43,6 +66,9 @@ public class CommandListener implements ActionListener {
 		}
 	}
 
+	/**
+	 * Inverts text and invertible buttons.
+	 */
 	private void invert() {
 		Component[] components = calculator.getCalcContainer().getComponents();
 		for (Component component : components) {
@@ -53,6 +79,9 @@ public class CommandListener implements ActionListener {
 		}
 	}
 
+	/**
+	 * Displays result of given expression.
+	 */
 	private void equalsCmd() {
 		Stack<String> number = calculator.getStack();
 		
@@ -67,6 +96,9 @@ public class CommandListener implements ActionListener {
 		calculator.getScreen().setText(number.push(result));
 	}
 
+	/**
+	 * Cleares last number imput.
+	 */
 	private void clr() {
 		Stack<String> number = calculator.getStack();
 
@@ -77,6 +109,9 @@ public class CommandListener implements ActionListener {
 		calculator.getScreen().setText("");
 	}
 
+	/**
+	 * Restores caluclator to default.
+	 */
 	private void res() {
 		Stack<String> number = calculator.getStack();
 
@@ -88,12 +123,18 @@ public class CommandListener implements ActionListener {
 		calculator.setExpression(null);
 	}
 
+	/**
+	 * Pushes to stack last number given.
+	 */
 	private void pushCmd() {
 		Stack<String> number = calculator.getStack();
 		if(number.isEmpty()) return;
 		calculator.setPush(number.peek());
 	}
 
+	/**
+	 * Pops from stack last number pushed.
+	 */
 	private void popCmd() {
 		Stack<String> number = calculator.getStack();
 		if(number.isEmpty()) return;
@@ -101,6 +142,11 @@ public class CommandListener implements ActionListener {
 		number.push(calculator.getPush());
 	}
 
+	/**
+	 * Helper method which executes name chaning for {@link #invert()};
+	 *
+	 * @param button the button
+	 */
 	private void changeName(JButton button) {
 		String text = button.getText();
 

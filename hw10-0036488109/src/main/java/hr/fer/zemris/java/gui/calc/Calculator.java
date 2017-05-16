@@ -1,4 +1,4 @@
-package hr.fer.zemris.java.gui.layouts;
+package hr.fer.zemris.java.gui.calc;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -15,12 +15,20 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
+import hr.fer.zemris.java.gui.layouts.CalcLayout;
+import hr.fer.zemris.java.gui.layouts.RCPosition;
 import hr.fer.zemris.java.gui.layouts.listeners.BiOperationListener;
 import hr.fer.zemris.java.gui.layouts.listeners.CommandListener;
 import hr.fer.zemris.java.gui.layouts.listeners.DotListener;
 import hr.fer.zemris.java.gui.layouts.listeners.NegationListener;
 import hr.fer.zemris.java.gui.layouts.listeners.NumberListener;
 import hr.fer.zemris.java.gui.layouts.listeners.OperationListener;
+
+/*
+ * README: Krivo sam shvatio zadatak no kako sam u zadnji cas radio, nisam stigao popravit. 
+ * Uglavnom, meni kalkulator ne izracuna trenutnu vrijednost prilikom ponovnog pritiska na operator, vec nakon svakok izraza
+ * treba stisnuti '='.
+ */
 
 /**
  * <code>Calculator</code> is program which interacts with user and calculates
@@ -33,22 +41,22 @@ public class Calculator extends JFrame {
 	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	/** container. */
+	/** Conatiner which contains all components. */
 	private Container container;
 
-	/** stack. */
+	/** Stack used for storing input numbers. */
 	private Stack<String> stack;
 
-	/** push. */
+	/** Stored number when pressed push. */
 	private String push;
 
-	/** expression. */
+	/** Expression built after providing 2 values and operator between. */
 	private String expression;
 
-	/** screen. */
+	/** Text displayed on screen. */
 	private JLabel screen;
 
-	/** invert. */
+	/** Tells us if calculator is in invert mode */
 	private JCheckBox invert;
 
 	/**
@@ -87,7 +95,7 @@ public class Calculator extends JFrame {
 	 * Method which sets new value as push.
 	 *
 	 * @param push
-	 *            the new push
+	 *            pushed number
 	 */
 	public void setPush(String push) {
 		this.push = push;
@@ -115,7 +123,7 @@ public class Calculator extends JFrame {
 	 * Method which sets new value as expression.
 	 *
 	 * @param expression
-	 *            the new expression
+	 *            Built expression.
 	 */
 	public void setExpression(String expression) {
 		this.expression = expression;
@@ -140,7 +148,7 @@ public class Calculator extends JFrame {
 	}
 
 	/**
-	 * Inits the GUI.
+	 * Initializes the GUI.
 	 */
 	private void initGUI() {
 		container.setLayout(new CalcLayout(1));
@@ -154,7 +162,7 @@ public class Calculator extends JFrame {
 	}
 
 	/**
-	 * Adds the invert.
+	 * Adds the invert checkbox.
 	 */
 	private void addInvert() {
 		invert = new JCheckBox("Inv");
@@ -197,7 +205,7 @@ public class Calculator extends JFrame {
 	}
 
 	/**
-	 * Adds the bi operations.
+	 * Adds the binary operations.
 	 */
 	private void addBiOperations() {
 		createButton("divide", "/", new RCPosition(2, 6), new BiOperationListener(this, "/"));
@@ -239,7 +247,8 @@ public class Calculator extends JFrame {
 	}
 
 	/**
-	 * Creates the button.
+	 * Helper method which for given arguments creates new button and connects
+	 * it with listener.
 	 *
 	 * @param name
 	 *            the name
@@ -248,7 +257,7 @@ public class Calculator extends JFrame {
 	 * @param position
 	 *            the position
 	 * @param action
-	 *            the action
+	 *            the action listener
 	 */
 	private void createButton(String name, String text, RCPosition position, ActionListener action) {
 		JButton button = new JButton(text);

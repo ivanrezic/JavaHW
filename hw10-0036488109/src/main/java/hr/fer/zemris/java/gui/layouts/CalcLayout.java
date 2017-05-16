@@ -12,23 +12,42 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-
+/**
+ * <code>CalcLayout</code> represents out calculator layout, it consists of one
+ * position saved for screen and 29 others for buttons and one for checkboxes.
+ *
+ * @author Ivan Rezic
+ */
 public class CalcLayout implements LayoutManager2 {
+
+	/** Max components in layout. */
 	private final int MAX_COMPONENTS = 31;
+
+	/** Number of columns. */
 	private final int COLUMNS = 7;
+
+	/** Number of rows */
 	private final int ROWS = 5;
 
+	/** Spacing between components. */
 	private int spacing;
+
+	/** Component positions. */
 	private Map<Component, RCPosition> componentPosition;
 
+	/**
+	 * Constructor which instantiates new calcLayout.
+	 */
 	public CalcLayout() {
 		this(0);
 	}
 
+	/**
+	 * Constructor which instantiates new calcLayout.
+	 *
+	 * @param spacing
+	 *            the spacing
+	 */
 	public CalcLayout(int spacing) {
 		if (spacing < 0) {
 			throw new IllegalArgumentException("Spacing can not be less than zero.");
@@ -38,10 +57,21 @@ public class CalcLayout implements LayoutManager2 {
 		this.componentPosition = new HashMap<>();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String,
+	 * java.awt.Component)
+	 */
 	@Override
 	public void addLayoutComponent(String name, Component comp) {
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
+	 */
 	@Override
 	public void layoutContainer(Container parent) {
 		Dimension dimension = dimensionForEach(parent);
@@ -63,6 +93,14 @@ public class CalcLayout implements LayoutManager2 {
 		}
 	}
 
+	/**
+	 * Helper method which get prefered dimension for each component except
+	 * first one.
+	 *
+	 * @param parent
+	 *            the parent container
+	 * @return the dimension
+	 */
 	private Dimension dimensionForEach(Container parent) {
 		Dimension dimension = preferredLayoutSize(parent);
 		Insets insets = parent.getInsets();
@@ -76,16 +114,35 @@ public class CalcLayout implements LayoutManager2 {
 		return new Dimension(width, height);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
+	 */
 	@Override
 	public Dimension minimumLayoutSize(Container parent) {
 		return getDimension(parent, Component::getMinimumSize);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
+	 */
 	@Override
 	public Dimension preferredLayoutSize(Container parent) {
 		return getDimension(parent, Component::getPreferredSize);
 	}
 
+	/**
+	 * Helper method which gets wanted size for given container.
+	 *
+	 * @param parent
+	 *            the parent container
+	 * @param unary
+	 *            the unary operator
+	 * @return dimension
+	 */
 	private Dimension getDimension(Container parent, Function<Component, Dimension> unary) {
 		RCPosition first = new RCPosition(1, 1);
 		int height = 0;
@@ -108,11 +165,22 @@ public class CalcLayout implements LayoutManager2 {
 				ROWS * height + insets.top + insets.bottom + (ROWS - 1) * spacing);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
+	 */
 	@Override
 	public void removeLayoutComponent(Component comp) {
 		componentPosition.remove(comp);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager2#addLayoutComponent(java.awt.Component,
+	 * java.lang.Object)
+	 */
 	@Override
 	public void addLayoutComponent(Component comp, Object constraints) {
 		Objects.requireNonNull(comp, "Null component given.");
@@ -135,44 +203,42 @@ public class CalcLayout implements LayoutManager2 {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager2#getLayoutAlignmentX(java.awt.Container)
+	 */
 	@Override
 	public float getLayoutAlignmentX(Container target) {
 		return 0.5f;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager2#getLayoutAlignmentY(java.awt.Container)
+	 */
 	@Override
 	public float getLayoutAlignmentY(Container target) {
 		return 0.5f;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager2#invalidateLayout(java.awt.Container)
+	 */
 	@Override
 	public void invalidateLayout(Container target) {
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.LayoutManager2#maximumLayoutSize(java.awt.Container)
+	 */
 	@Override
 	public Dimension maximumLayoutSize(Container target) {
 		return getDimension(target, Component::getMaximumSize);
-	}
-
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("CalcLayout");
-
-		frame.setLocation(20, 20);
-		frame.setSize(200, 200);
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-		JPanel p = new JPanel(new CalcLayout(3));
-		p.add(new JLabel("x"), "1,1");
-		p.add(new JLabel("y"), "2,3");
-		p.add(new JLabel("z"), "2,7");
-		p.add(new JLabel("w"), "4,2");
-		p.add(new JLabel("a"), "4,5");
-		p.add(new JLabel("b"), "4,7");
-
-
-		frame.add(p);
-
-		frame.setVisible(true);
-
 	}
 }
