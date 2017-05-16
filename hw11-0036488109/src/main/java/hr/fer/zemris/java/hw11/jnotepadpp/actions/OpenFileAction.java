@@ -6,14 +6,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
-import hr.fer.zemris.java.hw11.jnotepadpp.Util;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
 
 public class OpenFileAction extends MyAction {
 
@@ -26,26 +24,19 @@ public class OpenFileAction extends MyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Map<Integer, Path> openedFilePaths = container.getOpenedFilePaths();
-		Map<Integer, JTextArea> openedEditors = container.getOpenedEditors();
 		JFileChooser fc = new JFileChooser();
 		
 		fc.setDialogTitle("Open file");
-		if (fc.showOpenDialog(container) != JFileChooser.APPROVE_OPTION) {
-			return;
-		}
-
-		File fileName = fc.getSelectedFile();
-		Path filePath = fileName.toPath();
-		if(openedFilePaths.containsValue(filePath)) return;
-		JTextArea editor = Util.addTab(container, fileName.getName(), fileName.getPath());
+		if (fc.showOpenDialog(container) != JFileChooser.APPROVE_OPTION) return;
+		File file = fc.getSelectedFile();
+		Path filePath = file.toPath();
+		addTab(file, file.getPath());
 
 		if (!Files.isReadable(filePath)) {
 			JOptionPane.showMessageDialog(container, "File" + filePath + "is not readable!", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-
 		byte[] data = null;
 		try {
 			data = Files.readAllBytes(filePath);
@@ -54,13 +45,10 @@ public class OpenFileAction extends MyAction {
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-
 		String text = new String(data, StandardCharsets.UTF_8);
 
-		editor.setText(text);
-		int index = container.getTabbedPane().getSelectedIndex();
-		openedEditors.put(index, editor);
-		openedFilePaths.put(index, filePath);
+		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();//provjera je li null?
+		panel.setText(text);
 	}
 
 }

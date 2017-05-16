@@ -6,11 +6,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
 
 public class SaveFileAction extends MyAction {
 
@@ -23,23 +22,12 @@ public class SaveFileAction extends MyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		int index = container.getTabbedPane().getSelectedIndex();
-		Path openedFilePath = container.getOpenedFilePaths().get(index);
-		JTextArea editor = container.getOpenedEditors().get(index);
-
-		if (openedFilePath == null) {
-			JFileChooser fc = new JFileChooser();
-			fc.setDialogTitle("Save file");
-			if (fc.showSaveDialog(container) != JFileChooser.APPROVE_OPTION) {
-				JOptionPane.showMessageDialog(container, "Saving aborted.", "Information",
-						JOptionPane.INFORMATION_MESSAGE);
-				return;
-			}
-			openedFilePath = fc.getSelectedFile().toPath();
-		}
-
+		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		if (panel == null) return;
+		Path openedFilePath = panel.getOpenedFilePath();
+		
 		try {
-			Files.write(openedFilePath, editor.getText().getBytes(StandardCharsets.UTF_8));
+			Files.write(openedFilePath, panel.getTextArea().getText().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e1) {
 			JOptionPane.showMessageDialog(container, "Saving aborted! File status not clear.", "Error",
 					JOptionPane.ERROR_MESSAGE);
