@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
-import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
 public class CloseFileAction extends MyAction {
 
@@ -18,13 +18,36 @@ public class CloseFileAction extends MyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		if (panel == null) return;
 
+		closeTab(panel);
+	}
+
+	protected void closeTab(MyTextArea panel) {
 		if (panel.isEdited()) {
-			JOptionPane.showMessageDialog(container, "Please save file before closing it.");
-		} else {
-			tabbedPane.removeTabAt(tabbedPane.getSelectedIndex());
+			tabbedPane.setSelectedComponent(panel);
+			int choice = JOptionPane.showConfirmDialog(container, "Do you want to save this file?",
+					"File is not saved yet!", JOptionPane.YES_NO_CANCEL_OPTION);
+
+			if (choice == JOptionPane.YES_OPTION) {
+				if (panel.isFileUnsaved()) {
+					SaveAsAction saveAs = (SaveAsAction) container.getActions().get("saveAs");
+					saveAs.saveFileAs(panel);
+				} else {
+					SaveFileAction save = (SaveFileAction) container.getActions().get("saveFile");
+					save.saveFile(panel);
+				}
+			} else if (choice == JOptionPane.CANCEL_OPTION) {
+				return;
+			}
+		}
+				
+		tabbedPane.remove(panel);
+		
+		//set status bar on default if there are no tabs opened
+		if (tabbedPane.getTabCount() == 0){
+			container.getStatusBar().setDefaultValues();	
 		}
 	}
 }

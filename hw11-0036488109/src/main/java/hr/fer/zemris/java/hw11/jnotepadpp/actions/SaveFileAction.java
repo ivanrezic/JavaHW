@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import javax.swing.JOptionPane;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
-import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
 public class SaveFileAction extends MyAction{
 
@@ -22,11 +22,11 @@ public class SaveFileAction extends MyAction{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		saveFile(panel);
 	}
 
-	protected void saveFile(MyPanel panel) {
+	protected void saveFile(MyTextArea panel) {
 		if (panel == null) {
 			return;
 		}else if (panel.isFileUnsaved()) {

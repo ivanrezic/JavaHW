@@ -17,7 +17,7 @@ public class FileStatsAction extends MyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		if (panel == null) return;
 		int[] stats = panel.getStats();
 

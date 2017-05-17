@@ -3,7 +3,7 @@ package hr.fer.zemris.java.hw11.jnotepadpp.actions;
 import java.awt.event.ActionEvent;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
-import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
 public class NewFileAction extends MyAction {
 
@@ -17,7 +17,7 @@ public class NewFileAction extends MyAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		addTab(null, "Not saved yet");
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		panel.setText("");
 	}
 

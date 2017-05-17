@@ -10,7 +10,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
-import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
 public class SaveAsAction extends MyAction {
 
@@ -23,11 +23,11 @@ public class SaveAsAction extends MyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		saveFileAs(panel);
 	}
 	
-	protected void saveFileAs(MyPanel panel) {
+	protected void saveFileAs(MyTextArea panel) {
 		if (panel == null)
 			return;
 
@@ -59,7 +59,7 @@ public class SaveAsAction extends MyAction {
 	}
 
 	private void changeTabInfo(Path openedFilePath) {
-		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		panel.setFile(openedFilePath);
 		
 		int index = tabbedPane.getSelectedIndex();

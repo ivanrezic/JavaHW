@@ -5,16 +5,18 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.UnaryOperator;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
-import hr.fer.zemris.java.hw11.jnotepadpp.MyPanel;
+import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
 public abstract class MyAction extends AbstractAction {
 
@@ -40,13 +42,14 @@ public abstract class MyAction extends AbstractAction {
 		if (alreadyOpened(file))
 			return;
 
-		MyPanel panel = new MyPanel(file);
+		MyTextArea panel = new MyTextArea(file,container);
 
 		String title = "New";
 		if (file != null) {
 			title = file.getName();
 		}
 
+		
 		tabbedPane.addTab(title, loadIconFrom("icons/save_green.png"), panel, tooltip);
 		tabbedPane.setSelectedComponent(panel);
 	}
@@ -72,7 +75,7 @@ public abstract class MyAction extends AbstractAction {
 		int count = tabbedPane.getTabCount();
 
 		for (int i = 0; i < count; i++) {
-			MyPanel panel = (MyPanel) tabbedPane.getComponentAt(i);
+			MyTextArea panel = (MyTextArea) tabbedPane.getComponentAt(i);
 
 			flag = panel.hasFile(file);
 			if (flag)
@@ -84,5 +87,17 @@ public abstract class MyAction extends AbstractAction {
 
 	protected void setCurrentTabIcon(Icon icon) {
 		tabbedPane.setIconAt(tabbedPane.getSelectedIndex(), icon);
+	}
+	
+	protected void toolAction(UnaryOperator<String> action){
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
+		if(panel == null) return;
+		JTextArea text = panel.getTextArea();
+		
+		int start = text.getSelectionStart();
+		int end = text.getSelectionEnd();
+		StringBuilder strBuilder = new StringBuilder(text.getText());
+		strBuilder.replace(start, end, action.apply(text.getSelectedText()));
+		text.setText(strBuilder.toString());
 	}
 }

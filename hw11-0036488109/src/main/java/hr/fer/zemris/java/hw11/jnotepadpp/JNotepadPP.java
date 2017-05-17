@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -28,6 +29,7 @@ import hr.fer.zemris.java.hw11.jnotepadpp.actions.NewFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.OpenFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.SaveAsAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.SaveFileAction;
+import hr.fer.zemris.java.hw11.jnotepadpp.actions.ToolsAction;
 
 public class JNotepadPP extends JFrame {
 
@@ -35,6 +37,7 @@ public class JNotepadPP extends JFrame {
 
 	private JTabbedPane tabbedPane;
 	private JMenuBar menuBar;
+	private MyStatusBar statusBar;
 	private HashMap<String, Action> actions;
 
 	public JNotepadPP() {
@@ -49,11 +52,15 @@ public class JNotepadPP extends JFrame {
 	private void initGUI() {
 		Container container = getContentPane();
 		container.setLayout(new BorderLayout());
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		container.add(mainPanel, BorderLayout.CENTER);
 
 		tabbedPane = new JTabbedPane();
-		container.add(tabbedPane, BorderLayout.CENTER);
+		mainPanel.add(tabbedPane, BorderLayout.CENTER);
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
+		statusBar = new MyStatusBar();
+		mainPanel.add(statusBar, BorderLayout.PAGE_END);
 
 		createActions();
 		addActions();
@@ -71,16 +78,22 @@ public class JNotepadPP extends JFrame {
 				"Used to create new document on disk."));
 		actions.put("closeFile",
 				new CloseFileAction(this, "Close file", "control W", KeyEvent.VK_L, "Used to close current document."));
-		actions.put("stats", new FileStatsAction(this, "File stats", "control shift S", KeyEvent.VK_T,
+		actions.put("stats", new FileStatsAction(this, "File stats", "control shift S", KeyEvent.VK_I,
 				"Show current file statistics."));
 		actions.put("exitApp",
 				new ExitAppAction(this, "Exit", "control alt X", KeyEvent.VK_X, "Used to exit application."));
 		actions.put("cut",
-				editPremadeAction(new CutAction(), "Cut", "Used to cut selected text.", KeyEvent.VK_U, "control X"));
+				editPremadeAction(new CutAction(), "Cut", "Used to cut selected text.", KeyEvent.VK_T, "control X"));
 		actions.put("copy",
 				editPremadeAction(new CopyAction(), "Copy", "Used to copy selected text.", KeyEvent.VK_Y, "control C"));
-		actions.put("paste", 
-				editPremadeAction(new PasteAction(), "Paste", "Used to paste copied/cut text.", KeyEvent.VK_P, "control V"));
+		actions.put("paste", editPremadeAction(new PasteAction(), "Paste", "Used to paste copied/cut text.",
+				KeyEvent.VK_P, "control V"));
+		actions.put("uppercase",
+				new ToolsAction("uppercase",this, "To uppercase", "control U", KeyEvent.VK_U, "Used to set uppercase for selected text."));
+		actions.put("lowercase",
+				new ToolsAction("lowercase",this, "To lowercase", "control L", KeyEvent.VK_R, "Used to set lowercase for selected text."));
+		actions.put("invert",
+				new ToolsAction("invert",this, "Invert", "control I", KeyEvent.VK_I, "Used to invert selected text."));
 	}
 
 	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
@@ -91,7 +104,7 @@ public class JNotepadPP extends JFrame {
 
 		return action;
 	}
-	
+
 	private void addActions() {
 		JToolBar toolBar = new JToolBar("Alatna traka");
 		getContentPane().add(toolBar, BorderLayout.PAGE_START);
@@ -118,9 +131,14 @@ public class JNotepadPP extends JFrame {
 		addToolbarAndMenuItem(actions.get("copy"), editMenu, toolBar, "icons/copy.png");
 		addToolbarAndMenuItem(actions.get("cut"), editMenu, toolBar, "icons/cut.png");
 		addToolbarAndMenuItem(actions.get("paste"), editMenu, toolBar, "icons/paste.png");
+		
+		toolBar.addSeparator();
+		addToolbarAndMenuItem(actions.get("uppercase"), toolsMenu, toolBar, "icons/uppercase.png");
+		addToolbarAndMenuItem(actions.get("lowercase"), toolsMenu, toolBar, "icons/lowercase.png");
+		addToolbarAndMenuItem(actions.get("invert"), toolsMenu, toolBar, "icons/invert.png");
 	}
-	
-	private void addToolbarAndMenuItem(Action action, JMenu menu , JToolBar toolBar, String imagePath){
+
+	private void addToolbarAndMenuItem(Action action, JMenu menu, JToolBar toolBar, String imagePath) {
 		menu.add(new JMenuItem(action));
 		toolBar.add(createToolbarButton(imagePath, action));
 	}
@@ -145,11 +163,12 @@ public class JNotepadPP extends JFrame {
 		});
 	}
 
-	// private void createStatusBar() {
-	// }
-
 	public JTabbedPane getTabbedPane() {
 		return tabbedPane;
+	}
+
+	public MyStatusBar getStatusBar() {
+		return statusBar;
 	}
 
 	public HashMap<String, Action> getActions() {
