@@ -94,6 +94,12 @@ public class JNotepadPP extends JFrame {
 				new ToolsAction("lowercase",this, "To lowercase", "control L", KeyEvent.VK_R, "Used to set lowercase for selected text."));
 		actions.put("invert",
 				new ToolsAction("invert",this, "Invert", "control I", KeyEvent.VK_I, "Used to invert selected text."));
+		actions.put("unique",
+				new ToolsAction("unique",this, "Unique", "control Q", KeyEvent.VK_Q, "Used to filter unique line from selected text."));
+		actions.put("descending",
+				new ToolsAction("descending",this, "Descending", "control D", KeyEvent.VK_D, "Used to sort descending lines from selected text."));
+		actions.put("ascending",
+				new ToolsAction("ascending",this, "Ascending", "control G", KeyEvent.VK_G, "Used to sort ascending lines from selected text."));
 	}
 
 	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
@@ -136,6 +142,11 @@ public class JNotepadPP extends JFrame {
 		addToolbarAndMenuItem(actions.get("uppercase"), toolsMenu, toolBar, "icons/uppercase.png");
 		addToolbarAndMenuItem(actions.get("lowercase"), toolsMenu, toolBar, "icons/lowercase.png");
 		addToolbarAndMenuItem(actions.get("invert"), toolsMenu, toolBar, "icons/invert.png");
+		addToolbarAndMenuItem(actions.get("unique"), toolsMenu, toolBar, "icons/unique.png");
+		JMenu subMenu = new JMenu("Sort");
+		toolsMenu.add(subMenu);
+		addToolbarAndMenuItem(actions.get("ascending"), subMenu, toolBar, "icons/descending.png");
+		addToolbarAndMenuItem(actions.get("descending"), subMenu, toolBar, "icons/ascending.png");
 	}
 
 	private void addToolbarAndMenuItem(Action action, JMenu menu, JToolBar toolBar, String imagePath) {

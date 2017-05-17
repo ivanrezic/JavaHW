@@ -30,7 +30,7 @@ public class OpenFileAction extends MyAction {
 		if (fc.showOpenDialog(container) != JFileChooser.APPROVE_OPTION) return;
 		File file = fc.getSelectedFile();
 		Path filePath = file.toPath();
-		addTab(file, file.getPath());
+		if(!addTab(file, file.getPath())) return;
 
 		if (!Files.isReadable(filePath)) {
 			JOptionPane.showMessageDialog(container, "File" + filePath + "is not readable!", "Error",

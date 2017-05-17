@@ -1,6 +1,13 @@
 package hr.fer.zemris.java.hw11.jnotepadpp.actions;
 
 import java.awt.event.ActionEvent;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
 
@@ -25,14 +32,21 @@ public class ToolsAction extends MyAction {
 			toolAction(String::toLowerCase);
 			break;
 		case "invert":
-			toolAction(ToolsAction::invertText);
+			toolAction((text) -> invertText(text));
 			break;			
-		default:
-			break;
+		case "descending":
+			toolAction2((list) -> sort("desc" , list));
+			break;			
+		case "ascending":
+			toolAction2((list) -> sort("asc" , list));
+			break;			
+		case "unique":
+			toolAction2((list) -> unique(list));
+			break;			
 		}
 	}
 
-	private static String invertText(String text) {
+	private String invertText(String text) {
 		StringBuilder sb = new StringBuilder(text.length());
 		for (char c : text.toCharArray()) {
 			if (Character.isUpperCase(c)) {
@@ -44,5 +58,26 @@ public class ToolsAction extends MyAction {
 			}
 		}
 		return sb.toString();
+	}
+	
+	private List<String> sort(String order , List<String> list){
+		Locale hrLocale = new Locale("hr");
+		Collator hrCollator = Collator.getInstance(hrLocale);
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		if("desc".equals(order)){
+			Collections.sort(list, hrCollator.reversed());
+		}else {
+			Collections.sort(list, hrCollator);
+		}
+		list.forEach((e) -> stringBuilder.append(e));
+		
+		return list;
+	}
+	
+	private List<String> unique(List<String> list){
+		Set<String> set = new LinkedHashSet<>(list);
+		
+		return new ArrayList<>(set);
 	}
 }

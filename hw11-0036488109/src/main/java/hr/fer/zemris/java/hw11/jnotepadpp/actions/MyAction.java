@@ -5,6 +5,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import javax.swing.AbstractAction;
@@ -14,6 +17,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
 import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
@@ -38,9 +43,9 @@ public abstract class MyAction extends AbstractAction {
 	@Override
 	public abstract void actionPerformed(ActionEvent e);
 
-	protected void addTab(File file, String tooltip) {
+	protected boolean addTab(File file, String tooltip) {
 		if (alreadyOpened(file))
-			return;
+			return false;
 
 		MyTextArea panel = new MyTextArea(file,container);
 
@@ -52,6 +57,7 @@ public abstract class MyAction extends AbstractAction {
 		
 		tabbedPane.addTab(title, loadIconFrom("icons/save_green.png"), panel, tooltip);
 		tabbedPane.setSelectedComponent(panel);
+		return true;
 	}
 
 	public static Icon loadIconFrom(String imageLocation) {
@@ -75,9 +81,7 @@ public abstract class MyAction extends AbstractAction {
 		int count = tabbedPane.getTabCount();
 
 		for (int i = 0; i < count; i++) {
-			MyTextArea panel = (MyTextArea) tabbedPane.getComponentAt(i);
-
-			flag = panel.hasFile(file);
+			flag = file.getName().equals(tabbedPane.getTitleAt(i));
 			if (flag)
 				break;
 		}
@@ -92,12 +96,41 @@ public abstract class MyAction extends AbstractAction {
 	protected void toolAction(UnaryOperator<String> action){
 		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
 		if(panel == null) return;
-		JTextArea text = panel.getTextArea();
+		JTextArea textArea = panel.getTextArea();
 		
-		int start = text.getSelectionStart();
-		int end = text.getSelectionEnd();
-		StringBuilder strBuilder = new StringBuilder(text.getText());
-		strBuilder.replace(start, end, action.apply(text.getSelectedText()));
-		text.setText(strBuilder.toString());
+		int start = textArea.getSelectionStart();
+		int end = textArea.getSelectionEnd();
+		StringBuilder strBuilder = new StringBuilder(textArea.getText());
+		
+		String newText = textArea.getSelectedText();
+		if(newText == null) return;
+		strBuilder.replace(start, end, action.apply(newText));
+		textArea.setText(strBuilder.toString());
+	}
+	
+	protected void toolAction2(Function<List<String>, List<String>> action){
+		MyTextArea panel = (MyTextArea) tabbedPane.getSelectedComponent();
+		if(panel == null) return;
+		JTextArea textArea = panel.getTextArea();
+		Document doc = textArea.getDocument();
+		
+		int len = Math.abs(textArea.getCaret().getDot() - textArea.getCaret().getMark());
+		int offset = len != 0 ? Math.min(textArea.getCaret().getDot(), textArea.getCaret().getMark()) : doc.getLength();
+		
+		try {
+			offset = textArea.getLineStartOffset(textArea.getLineOfOffset(offset));
+			len = textArea.getLineEndOffset(textArea.getLineOfOffset(len + offset));
+			
+			String text = doc.getText(offset, len - offset);
+			List<String> list = action.apply(Arrays.asList(text.split("\\r?\\n")));
+			
+			int lines = list.size();
+			doc.remove(offset, len - offset);
+			for (String string : list) {
+				doc.insertString(offset, string + (--lines > 0 ? "\n" : ""), null);
+				offset += string.length() + 1;
+			}
+		} catch (BadLocationException ignorable) {
+		}
 	}
 }
