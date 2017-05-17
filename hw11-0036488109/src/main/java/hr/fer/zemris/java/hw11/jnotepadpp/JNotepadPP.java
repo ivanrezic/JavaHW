@@ -2,13 +2,11 @@ package hr.fer.zemris.java.hw11.jnotepadpp;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -37,13 +35,13 @@ public class JNotepadPP extends JFrame {
 
 	private JTabbedPane tabbedPane;
 	private JMenuBar menuBar;
-	private HashMap<String, MyAction> actions;
+	private HashMap<String, Action> actions;
 
 	public JNotepadPP() {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setBounds(20, 20, 900, 600);
 		setTitle("JNotepad++");
-		
+
 		actions = new HashMap<>();
 		initGUI();
 	}
@@ -77,8 +75,23 @@ public class JNotepadPP extends JFrame {
 				"Show current file statistics."));
 		actions.put("exitApp",
 				new ExitAppAction(this, "Exit", "control alt X", KeyEvent.VK_X, "Used to exit application."));
+		actions.put("cut",
+				editPremadeAction(new CutAction(), "Cut", "Used to cut selected text.", KeyEvent.VK_U, "control X"));
+		actions.put("copy",
+				editPremadeAction(new CopyAction(), "Copy", "Used to copy selected text.", KeyEvent.VK_Y, "control C"));
+		actions.put("paste", 
+				editPremadeAction(new PasteAction(), "Paste", "Used to paste copied/cut text.", KeyEvent.VK_P, "control V"));
 	}
 
+	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
+		action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keyStroke));
+		action.putValue(Action.NAME, name);
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.MNEMONIC_KEY, mnemonic);
+
+		return action;
+	}
+	
 	private void addActions() {
 		JToolBar toolBar = new JToolBar("Alatna traka");
 		getContentPane().add(toolBar, BorderLayout.PAGE_START);
@@ -92,59 +105,29 @@ public class JNotepadPP extends JFrame {
 		menuBar.add(toolsMenu);
 		menuBar.add(languagesMenu);
 
-		fileMenu.add(new JMenuItem(actions.get("openFile")));
-		toolBar.add(createToolbarButton("icons/open_file.png", "openFile"));
-		fileMenu.add(new JMenuItem(actions.get("saveFile")));
-		toolBar.add(createToolbarButton("icons/save_blue.png", "saveFile"));
-		fileMenu.add(new JMenuItem(actions.get("saveAs")));
-		toolBar.add(createToolbarButton("icons/saveAs.png", "saveAs"));
-		fileMenu.add(new JMenuItem(actions.get("newFile")));
-		toolBar.add(createToolbarButton("icons/new_file.png", "newFile"));
-		fileMenu.add(new JMenuItem(actions.get("closeFile")));
-		toolBar.add(createToolbarButton("icons/close_file.png", "closeFile"));
-		fileMenu.add(new JMenuItem(actions.get("stats")));
-		toolBar.add(createToolbarButton("icons/stats.png", "stats"));
+		addToolbarAndMenuItem(actions.get("newFile"), fileMenu, toolBar, "icons/new_file.png");
+		addToolbarAndMenuItem(actions.get("openFile"), fileMenu, toolBar, "icons/open_file.png");
+		addToolbarAndMenuItem(actions.get("saveFile"), fileMenu, toolBar, "icons/save_blue.png");
+		addToolbarAndMenuItem(actions.get("saveAs"), fileMenu, toolBar, "icons/saveAs.png");
+		addToolbarAndMenuItem(actions.get("closeFile"), fileMenu, toolBar, "icons/close_file.png");
 		fileMenu.addSeparator();
-		fileMenu.add(new JMenuItem(actions.get("exitApp")));
-		toolBar.add(createToolbarButton("icons/exit_app.png", "exitApp"));
+		addToolbarAndMenuItem(actions.get("stats"), fileMenu, toolBar, "icons/stats.png");
+		addToolbarAndMenuItem(actions.get("exitApp"), fileMenu, toolBar, "icons/exit_app.png");
+
 		toolBar.addSeparator();
-		
-		//adding premade actions
-		Action cut = editPremadeAction(new CutAction(), "Cut","Used to cut selected text.",KeyEvent.VK_U, "control X");
-		editMenu.add(new JMenuItem(cut));
-		toolBar.add(createToolbarButton("icons/cut.png",cut));
-		
-		Action copy = editPremadeAction(new CopyAction(), "Copy","Used to copy selected text.",KeyEvent.VK_Y, "control C");
-		editMenu.add(new JMenuItem(copy));
-		toolBar.add(createToolbarButton("icons/copy.png",copy));
-		
-		Action paste = editPremadeAction(new PasteAction(), "Paste","Used to paste copied/cut text.",KeyEvent.VK_P, "control V");
-		editMenu.add(new JMenuItem(paste));
-		toolBar.add(createToolbarButton("icons/paste.png",paste));
+		addToolbarAndMenuItem(actions.get("copy"), editMenu, toolBar, "icons/copy.png");
+		addToolbarAndMenuItem(actions.get("cut"), editMenu, toolBar, "icons/cut.png");
+		addToolbarAndMenuItem(actions.get("paste"), editMenu, toolBar, "icons/paste.png");
 	}
-
-	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
-		action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keyStroke));
-		action.putValue(Action.NAME, name);
-		action.putValue(Action.SHORT_DESCRIPTION, description);
-		action.putValue(Action.MNEMONIC_KEY, mnemonic);
-		
-		return action;
-	}
-
-	private JButton createToolbarButton(String imagePath, String actionName) {
-		JButton button = new JButton();
-
-		button.setAction(actions.get(actionName));
-		button.setHideActionText(true);
-		button.setIcon(MyAction.loadIconFrom(imagePath));
-
-		return button;
+	
+	private void addToolbarAndMenuItem(Action action, JMenu menu , JToolBar toolBar, String imagePath){
+		menu.add(new JMenuItem(action));
+		toolBar.add(createToolbarButton(imagePath, action));
 	}
 
 	private JButton createToolbarButton(String imagePath, Action action) {
 		JButton button = new JButton();
-		
+
 		button.setAction(action);
 		button.setHideActionText(true);
 		button.setIcon(MyAction.loadIconFrom(imagePath));
@@ -169,7 +152,7 @@ public class JNotepadPP extends JFrame {
 		return tabbedPane;
 	}
 
-	public HashMap<String, MyAction> getActions() {
+	public HashMap<String, Action> getActions() {
 		return actions;
 	}
 
