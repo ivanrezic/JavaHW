@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.text.DefaultEditorKit.CopyAction;
 import javax.swing.text.DefaultEditorKit.CutAction;
@@ -109,12 +110,26 @@ public class JNotepadPP extends JFrame {
 		toolBar.addSeparator();
 		
 		//adding premade actions
-		editMenu.add(new JMenuItem());
-		toolBar.add(createToolbarButton("icons/cut.png",new CutAction(), "Cut","Used to cut selected text.",KeyEvent.VK_T));
-		editMenu.add(new JMenuItem());
-		toolBar.add(createToolbarButton("icons/paste.png",new PasteAction(), "Paste","Used to paste copied/cut text.",KeyEvent.VK_P));
-		editMenu.add(new JMenuItem());
-		toolBar.add(createToolbarButton("icons/copy.png",new CopyAction(), "Copy","Used to copy selected text.",KeyEvent.VK_Y));
+		Action cut = editPremadeAction(new CutAction(), "Cut","Used to cut selected text.",KeyEvent.VK_U, "control X");
+		editMenu.add(new JMenuItem(cut));
+		toolBar.add(createToolbarButton("icons/cut.png",cut));
+		
+		Action copy = editPremadeAction(new CopyAction(), "Copy","Used to copy selected text.",KeyEvent.VK_Y, "control C");
+		editMenu.add(new JMenuItem(copy));
+		toolBar.add(createToolbarButton("icons/copy.png",copy));
+		
+		Action paste = editPremadeAction(new PasteAction(), "Paste","Used to paste copied/cut text.",KeyEvent.VK_P, "control V");
+		editMenu.add(new JMenuItem(paste));
+		toolBar.add(createToolbarButton("icons/paste.png",paste));
+	}
+
+	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
+		action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keyStroke));
+		action.putValue(Action.NAME, name);
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.MNEMONIC_KEY, mnemonic);
+		
+		return action;
 	}
 
 	private JButton createToolbarButton(String imagePath, String actionName) {
@@ -127,13 +142,9 @@ public class JNotepadPP extends JFrame {
 		return button;
 	}
 
-	private JButton createToolbarButton(String imagePath, Action action, String name, String description,
-			int mnemonic) {
+	private JButton createToolbarButton(String imagePath, Action action) {
 		JButton button = new JButton();
 		
-		action.putValue(Action.NAME, name);
-		action.putValue(Action.SHORT_DESCRIPTION, description);
-		action.putValue(Action.MNEMONIC_KEY, mnemonic);
 		button.setAction(action);
 		button.setHideActionText(true);
 		button.setIcon(MyAction.loadIconFrom(imagePath));
