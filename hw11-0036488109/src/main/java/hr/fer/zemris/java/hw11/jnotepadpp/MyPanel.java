@@ -69,7 +69,7 @@ public class MyPanel extends JPanel {
 		setTextAreaListener(tabbedPane, MyAction.loadIconFrom("icons/save_red.png"));
 	}
 
-	public boolean fileNotSaved() {
+	public boolean isFileUnsaved() {
 		return file == null;
 	}
 
@@ -95,5 +95,20 @@ public class MyPanel extends JPanel {
 	
 	public void setEdited(boolean edited) {
 		this.edited = edited;
+	}
+	
+	public int[] getStats(){
+		int[] stats = new int[]{0,0,0};
+		String text = textArea.getText();
+		
+		if ("".equals(text)) {
+			stats[2] = 0;
+		}else {			
+			stats[2] = textArea.getLineCount();
+		}	
+		stats[0] = text.replaceAll("\\n", "").length();
+		stats[1] = text.replaceAll("\\s*", "").length();
+		
+		return stats;
 	}
 }

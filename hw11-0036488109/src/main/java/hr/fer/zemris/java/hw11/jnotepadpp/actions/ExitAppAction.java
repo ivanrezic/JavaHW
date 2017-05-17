@@ -32,7 +32,7 @@ public class ExitAppAction extends MyAction {
 						"File is not saved yet!", JOptionPane.YES_NO_CANCEL_OPTION);
 
 				if (choice == JOptionPane.YES_OPTION) {
-					if (panel.fileNotSaved()) {
+					if (panel.isFileUnsaved()) {
 						SaveAsAction saveAs = (SaveAsAction) container.getActions().get("saveAs");
 						saveAs.saveFileAs(panel);
 					} else {

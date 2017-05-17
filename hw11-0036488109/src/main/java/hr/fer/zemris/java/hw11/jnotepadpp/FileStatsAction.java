@@ -2,6 +2,8 @@ package hr.fer.zemris.java.hw11.jnotepadpp;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JOptionPane;
+
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.MyAction;
 
 public class FileStatsAction extends MyAction {
@@ -15,6 +17,14 @@ public class FileStatsAction extends MyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
+		if (panel == null) return;
+		int[] stats = panel.getStats();
+
+		String stat = String.format("This file has:%n%d characters%n%d characters that are not blank%n%d lines",
+				stats[0], stats[1], stats[2]);
+
+		JOptionPane.showMessageDialog(container, stat);
 	}
 
 }

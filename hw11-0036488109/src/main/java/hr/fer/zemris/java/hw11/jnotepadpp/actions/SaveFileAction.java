@@ -29,7 +29,7 @@ public class SaveFileAction extends MyAction{
 	protected void saveFile(MyPanel panel) {
 		if (panel == null) {
 			return;
-		}else if (panel.fileNotSaved()) {
+		}else if (panel.isFileUnsaved()) {
 			JOptionPane.showMessageDialog(container, "Click 'Save as' option first!");	
 			return;
 		}	

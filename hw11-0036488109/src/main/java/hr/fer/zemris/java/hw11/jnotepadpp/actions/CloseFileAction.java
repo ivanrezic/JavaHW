@@ -19,8 +19,7 @@ public class CloseFileAction extends MyAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		MyPanel panel = (MyPanel) tabbedPane.getSelectedComponent();
-		if (panel == null)
-			return;
+		if (panel == null) return;
 
 		if (panel.isEdited()) {
 			JOptionPane.showMessageDialog(container, "Please save file before closing it.");
