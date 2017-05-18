@@ -3,10 +3,21 @@ package hr.fer.zemris.java.hw11.jnotepadpp.local;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <code>AbstractLocalizationProvider</code> is abstract class that enables
+ * LocalizatonProvider to add listeners and to notify them when language change
+ * occurs.
+ *
+ * @author Ivan Rezic
+ */
 public abstract class AbstractLocalizationProvider implements ILocalizationProvider {
 
+	/** LocalizationProvider listeners. */
 	private List<ILocalizationListener> listeners = new ArrayList<>();
 
+	/**
+	 * Constructor which instantiates new abstract localization provider.
+	 */
 	public AbstractLocalizationProvider() {
 	}
 
@@ -19,8 +30,11 @@ public abstract class AbstractLocalizationProvider implements ILocalizationProvi
 	public void removeLocalizationListener(ILocalizationListener listener) {
 		listeners.remove(listener);
 	}
-	
-	public void fire(){
+
+	/**
+	 * Notifies all connected listeners.
+	 */
+	public void fire() {
 		for (ILocalizationListener listener : listeners) {
 			listener.localizationChanged();
 		}

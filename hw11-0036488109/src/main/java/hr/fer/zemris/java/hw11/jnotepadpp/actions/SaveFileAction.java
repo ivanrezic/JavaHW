@@ -11,10 +11,30 @@ import javax.swing.JOptionPane;
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
 import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
+/**
+ * <code>SaveFileAction</code> saves current file if it is edit.
+ *
+ * @author Ivan Rezic
+ */
 public class SaveFileAction extends MyAction{
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor which instantiates new save file action.
+	 *
+	 * @param container
+	 *            {@linkplain JNotepadPP}
+	 * @param actionName
+	 *            The action name.
+	 * @param keyStroke
+	 *            Action key stroke.
+	 * @param keyEvent
+	 *            Action accelerator keys.
+	 * @param shortDescription
+	 *            Action short description.
+	 */
 	public SaveFileAction(JNotepadPP container, String actionName, String keyStroke, int keyEvent,
 			String shortDescription) {
 		super(container, actionName, keyStroke, keyEvent, shortDescription);
@@ -26,6 +46,11 @@ public class SaveFileAction extends MyAction{
 		saveFile(panel);
 	}
 
+	/**
+	 * Saves edited file to chosen path.
+	 *
+	 * @param Opened text area.
+	 */
 	protected void saveFile(MyTextArea panel) {
 		if (panel == null) {
 			return;

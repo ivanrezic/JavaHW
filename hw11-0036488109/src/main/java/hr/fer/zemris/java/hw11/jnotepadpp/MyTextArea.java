@@ -17,29 +17,65 @@ import javax.swing.text.BadLocationException;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.MyAction;
 
+/**
+ * <code>MyTextArea</code> represents editable area of {@linkplain JNotepadPP}
+ * editor. It provides usefull insights about file opened, text added and other
+ * simple methods.
+ *
+ * @author Ivan Rezic
+ */
 public class MyTextArea extends JPanel {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+
+	/** {@linkplain JNotepadPP} tabbed pane. */
 	private JTabbedPane tabbedPane;
 
+	/** Was this file edited. */
 	private boolean edited = false;
+
+	/** {@linkplain JNotepadPP} editor text area. */
 	private JTextArea textArea;
+
+	/** {@linkplain JNotepadPP} status bar. */
 	private MyStatusBar statusBar;
+
+	/** Current file opened. */
 	private File file;
 
+	/**
+	 * Constructor which instantiates new MyTextArea.
+	 *
+	 * @param file
+	 *            Wanted file.
+	 * @param container
+	 *            {@linkplain JNotepadPP}
+	 */
 	public MyTextArea(File file, JNotepadPP container) {
 		this.file = file;
 		this.tabbedPane = container.getTabbedPane();
 		this.statusBar = container.getStatusBar();
-		
+
 		statusBar.setDefaultValues();
 		setLayout(new BorderLayout());
 	}
 
+	/**
+	 * Method used for getting property <code>TextArea</code>.
+	 *
+	 * @return Text area.
+	 */
 	public JTextArea getTextArea() {
 		return textArea;
 	}
 
+	/**
+	 * Method which sets new value as text.
+	 *
+	 * @param text
+	 *            New text for text area.
+	 */
 	public void setText(String text) {
 		initTextArea(text);
 
@@ -47,12 +83,24 @@ public class MyTextArea extends JPanel {
 		setCaretListener();
 	}
 
+	/**
+	 * Initializes text area.
+	 *
+	 * @param text
+	 *            Text to be added in text area.
+	 */
 	private void initTextArea(String text) {
 		this.textArea = new JTextArea(text);
 		JScrollPane scroll = new JScrollPane(textArea);
 		add(scroll, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Method which initializes text area listener.
+	 *
+	 * @param icon
+	 *            Icon which tells us that file has changed.
+	 */
 	public void setTextAreaListener(Icon icon) {
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -78,6 +126,9 @@ public class MyTextArea extends JPanel {
 		});
 	}
 
+	/**
+	 * Method which initializes caret listener.
+	 */
 	private void setCaretListener() {
 		textArea.addCaretListener(new CaretListener() {
 
@@ -100,14 +151,31 @@ public class MyTextArea extends JPanel {
 		});
 	}
 
+	/**
+	 * Checks if file is not saved.
+	 *
+	 * @return True, if it is file unsaved, false otherwise.
+	 */
 	public boolean isFileUnsaved() {
 		return file == null;
 	}
 
+	/**
+	 * Method used for getting property <code>OpenedFilePath</code>.
+	 *
+	 * @return Opened file path.
+	 */
 	public Path getOpenedFilePath() {
 		return file.toPath();
 	}
 
+	/**
+	 * Checks if this text area is connected to given file.
+	 *
+	 * @param file
+	 *            File to be checked.
+	 * @return True, if it is successful, false otherwise.
+	 */
 	public boolean hasFile(File file) {
 		if (this.file == null) {
 			return false;
@@ -116,18 +184,40 @@ public class MyTextArea extends JPanel {
 		return this.file.equals(file);
 	}
 
+	/**
+	 * Method which sets its file as given file.
+	 *
+	 * @param file
+	 *            New file to be added.
+	 */
 	public void setFile(Path file) {
 		this.file = file.toFile();
 	}
 
+	/**
+	 * Checks if textarea is edited.
+	 *
+	 * @return True, if it is edited, false otherwise.
+	 */
 	public boolean isEdited() {
 		return edited;
 	}
 
+	/**
+	 * Method which sets new value as edited.
+	 *
+	 * @param edited
+	 *            True if edited, false otherwise.
+	 */
 	public void setEdited(boolean edited) {
 		this.edited = edited;
 	}
 
+	/**
+	 * Method used for getting property <code>stats</code>.
+	 *
+	 * @return Caret stats as string.
+	 */
 	public int[] getStats() {
 		int[] stats = new int[] { 0, 0, 0 };
 		String text = textArea.getText();

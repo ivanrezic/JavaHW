@@ -14,14 +14,34 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
+/**
+ * <code>MyStatusBar</code> represents status bar for {@linkplain JNotepadPP}
+ * editor. It provied insight to total characters count, current caret
+ * line,column and selection size. Also it show us in its right corner current
+ * date and time.
+ *
+ * @author Ivan Rezic
+ */
 public class MyStatusBar extends JPanel {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+
+	/** Status bar height. */
 	private static final int STATUS_BAR_HEIGHT = 20;
+
+	/** Total number of characters in text area. */
 	private JLabel length;
+
+	/** Caret information. */
 	private JLabel caretPosition;
+
+	/** Current date and time. */
 	private JLabel dateAndTime;
 
+	/**
+	 * Constructor which instantiates new my status bar.
+	 */
 	public MyStatusBar() {
 		setLayout(new GridLayout(1, 3));
 		setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -30,6 +50,9 @@ public class MyStatusBar extends JPanel {
 		initStatusBar();
 	}
 
+	/**
+	 * Initializes the status bar.
+	 */
 	private void initStatusBar() {
 		length = new JLabel(" length: 0");
 		length.setPreferredSize(new Dimension((int) (getWidth() / 3.0), getHeight()));
@@ -45,6 +68,9 @@ public class MyStatusBar extends JPanel {
 		initDate();
 	}
 
+	/**
+	 * Initializes the date and time.
+	 */
 	private void initDate() {
 		dateAndTime = new JLabel();
 		dateAndTime.setPreferredSize(new Dimension((int) (getWidth() / 3.0), getHeight()));
@@ -65,16 +91,31 @@ public class MyStatusBar extends JPanel {
 		timer.start();
 		add(dateAndTime);
 	}
-	
-	public void setDefaultValues(){
+
+	/**
+	 * Sets the default values for length and caret info in status bar.
+	 */
+	public void setDefaultValues() {
 		length.setText(" length: 0");
 		caretPosition.setText("Ln: 0   Col: 0   Sel: 0");
 	}
-	
+
+	/**
+	 * Sets new value as length text.
+	 *
+	 * @param text
+	 *            The new length text.
+	 */
 	public void setLengthText(String text) {
 		this.length.setText(text);
 	}
-	
+
+	/**
+	 * Sets new value as caret position text.
+	 *
+	 * @param text
+	 *            The new caret position text.
+	 */
 	public void setCaretPositionText(String text) {
 		this.caretPosition.setText(text);
 	}

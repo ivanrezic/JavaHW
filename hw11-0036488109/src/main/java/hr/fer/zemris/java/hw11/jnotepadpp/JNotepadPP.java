@@ -26,6 +26,7 @@ import javax.swing.text.DefaultEditorKit.PasteAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.CloseFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.ExitAppAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.FileStatsAction;
+import hr.fer.zemris.java.hw11.jnotepadpp.actions.LanguageAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.MyAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.NewFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.OpenFileAction;
@@ -36,16 +37,36 @@ import hr.fer.zemris.java.hw11.jnotepadpp.local.FormLocalizationProvider;
 import hr.fer.zemris.java.hw11.jnotepadpp.local.ILocalizationListener;
 import hr.fer.zemris.java.hw11.jnotepadpp.local.LocalizationProvider;
 
+/**
+ * <code>JNotepadPP</code> is a text editor and source code editor for OS
+ * independant. It supports tabbed editing, which allows working with multiple
+ * open files in a single window.
+ *
+ * @author Ivan Rezic
+ */
 public class JNotepadPP extends JFrame {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** Tabbed pane of this editor. */
 	private JTabbedPane tabbedPane;
+
+	/** Menu bar of this editor. */
 	private JMenuBar menuBar;
+
+	/** Status bar of this editor. */
 	private MyStatusBar statusBar;
+
+	/** Map containing all the actions used in this editor. */
 	private HashMap<String, Action> actions;
+
+	/** It provides dynamic editor localization. */
 	private FormLocalizationProvider flp;
 
+	/**
+	 * Constructor which instantiates new JNotepadPP.
+	 */
 	public JNotepadPP() {
 		flp = new FormLocalizationProvider(LocalizationProvider.getInstance(), this);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -56,6 +77,9 @@ public class JNotepadPP extends JFrame {
 		initGUI();
 	}
 
+	/**
+	 * Inits the GUI.
+	 */
 	private void initGUI() {
 		Container container = getContentPane();
 		container.setLayout(new BorderLayout());
@@ -75,6 +99,9 @@ public class JNotepadPP extends JFrame {
 		addLocalizationListener();
 	}
 
+	/**
+	 * Creates the actions.
+	 */
 	private void createActions() {
 		actions.put("openFile", new OpenFileAction(this, "openFile", "control O", KeyEvent.VK_O, "openFileDesc"));
 		actions.put("saveFile", new SaveFileAction(this, "saveFile", "control S", KeyEvent.VK_S, "saveFileDesc"));
@@ -83,23 +110,44 @@ public class JNotepadPP extends JFrame {
 		actions.put("closeFile", new CloseFileAction(this, "closeFile", "control W", KeyEvent.VK_L, "closeFileDesc"));
 		actions.put("stats", new FileStatsAction(this, "stats", "control shift S", KeyEvent.VK_I, "statsDesc"));
 		actions.put("exitApp", new ExitAppAction(this, "exitApp", "control alt X", KeyEvent.VK_X, "exitAppDesc"));
-		
+
 		actions.put("cut", editPremadeAction(new CutAction(), "cut", "cutDesc", KeyEvent.VK_T, "control X"));
 		actions.put("copy", editPremadeAction(new CopyAction(), "copy", "copyDesc", KeyEvent.VK_Y, "control C"));
 		actions.put("paste", editPremadeAction(new PasteAction(), "paste", "pasteDesc", KeyEvent.VK_P, "control V"));
-		
-		actions.put("uppercase", new ToolsAction("uppercase", this, "uppercase", "control U", KeyEvent.VK_U, "uppercaseDesc"));
-		actions.put("lowercase", new ToolsAction("lowercase", this, "lowercase", "control L", KeyEvent.VK_R, "lowercaseDesc"));
+
+		actions.put("uppercase",
+				new ToolsAction("uppercase", this, "uppercase", "control U", KeyEvent.VK_U, "uppercaseDesc"));
+		actions.put("lowercase",
+				new ToolsAction("lowercase", this, "lowercase", "control L", KeyEvent.VK_R, "lowercaseDesc"));
 		actions.put("invert", new ToolsAction("invert", this, "invert", "control I", KeyEvent.VK_I, "invertDesc"));
 		actions.put("unique", new ToolsAction("unique", this, "unique", "control Q", KeyEvent.VK_Q, "uniqueDesc"));
-		actions.put("descending", new ToolsAction("descending", this, "descending", "control D", KeyEvent.VK_D, "descendingDesc"));
-		actions.put("ascending", new ToolsAction("ascending", this, "ascending", "control G", KeyEvent.VK_G, "ascendingDesc"));
-		
-		actions.put("english", new LanguageAction("en", this, "english", "control alt H", KeyEvent.VK_H, "englishDesc"));
-		actions.put("croatian", new LanguageAction("hr", this, "croatian", "control alt C", KeyEvent.VK_C, "croatianDesc"));
+		actions.put("descending",
+				new ToolsAction("descending", this, "descending", "control D", KeyEvent.VK_D, "descendingDesc"));
+		actions.put("ascending",
+				new ToolsAction("ascending", this, "ascending", "control G", KeyEvent.VK_G, "ascendingDesc"));
+
+		actions.put("english",
+				new LanguageAction("en", this, "english", "control alt H", KeyEvent.VK_H, "englishDesc"));
+		actions.put("croatian",
+				new LanguageAction("hr", this, "croatian", "control alt C", KeyEvent.VK_C, "croatianDesc"));
 		actions.put("german", new LanguageAction("de", this, "german", "control alt D", KeyEvent.VK_E, "germanDesc"));
 	}
 
+	/**
+	 * Edits the premade actions.
+	 *
+	 * @param action
+	 *            Premade action.
+	 * @param name
+	 *            New wanted name for premade action.
+	 * @param description
+	 *            New short description for premade action.
+	 * @param mnemonic
+	 *            New mnemonic key for premade action.
+	 * @param keyStroke
+	 *            New key stroke for premade action.
+	 * @return Edited premade action.
+	 */
 	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
 		action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keyStroke));
 		action.putValue(Action.NAME, flp.getString(name));
@@ -109,6 +157,9 @@ public class JNotepadPP extends JFrame {
 		return action;
 	}
 
+	/**
+	 * Adds the actions to toolbar and to menubar.
+	 */
 	private void addActions() {
 		JToolBar toolBar = new JToolBar("Alatna traka");
 		getContentPane().add(toolBar, BorderLayout.PAGE_START);
@@ -135,7 +186,7 @@ public class JNotepadPP extends JFrame {
 		addToolbarAndMenuItem(actions.get("copy"), editMenu, toolBar, "icons/copy.png");
 		addToolbarAndMenuItem(actions.get("cut"), editMenu, toolBar, "icons/cut.png");
 		addToolbarAndMenuItem(actions.get("paste"), editMenu, toolBar, "icons/paste.png");
-		
+
 		toolBar.addSeparator();
 		addToolbarAndMenuItem(actions.get("uppercase"), toolsMenu, toolBar, "icons/uppercase.png");
 		addToolbarAndMenuItem(actions.get("lowercase"), toolsMenu, toolBar, "icons/lowercase.png");
@@ -145,18 +196,42 @@ public class JNotepadPP extends JFrame {
 		toolsMenu.add(subMenu);
 		addToolbarAndMenuItem(actions.get("ascending"), subMenu, toolBar, "icons/descending.png");
 		addToolbarAndMenuItem(actions.get("descending"), subMenu, toolBar, "icons/ascending.png");
-		
+
 		toolBar.addSeparator();
 		addToolbarAndMenuItem(actions.get("english"), languagesMenu, toolBar, "icons/english.png");
 		addToolbarAndMenuItem(actions.get("croatian"), languagesMenu, toolBar, "icons/croatian.png");
 		addToolbarAndMenuItem(actions.get("german"), languagesMenu, toolBar, "icons/german.png");
 	}
 
+	/**
+	 * Helper menu for {@link #addActions()}. It enables easy adding of menu
+	 * items and toolbar buttons.
+	 *
+	 * @param action
+	 *            The action.
+	 * @param menu
+	 *            Menu wanted.
+	 * @param toolBar
+	 *            Toolbar wanted.
+	 * @param imagePath
+	 *            Image path for toolbar button image.
+	 */
 	private void addToolbarAndMenuItem(Action action, JMenu menu, JToolBar toolBar, String imagePath) {
 		menu.add(new JMenuItem(action));
 		toolBar.add(createToolbarButton(imagePath, action));
 	}
 
+	/**
+	 * Helper method for
+	 * {@link #addToolbarAndMenuItem(Action, JMenu, JToolBar, String)}. It
+	 * enables easy editing and adding button.
+	 *
+	 * @param imagePath
+	 *            Image path with icon for toolbar button.
+	 * @param action
+	 *            Action associated to out button.
+	 * @return Edited jButton.
+	 */
 	private JButton createToolbarButton(String imagePath, Action action) {
 		JButton button = new JButton();
 
@@ -167,6 +242,9 @@ public class JNotepadPP extends JFrame {
 		return button;
 	}
 
+	/**
+	 * Adds the close operation action upon editor closing.
+	 */
 	private void addCloseOperationAction() {
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -176,7 +254,10 @@ public class JNotepadPP extends JFrame {
 			}
 		});
 	}
-	
+
+	/**
+	 * Adds the localization listener.
+	 */
 	private void addLocalizationListener() {
 		flp.addLocalizationListener(new ILocalizationListener() {
 
@@ -189,26 +270,61 @@ public class JNotepadPP extends JFrame {
 					value.putValue(Action.NAME, flp.getString(name));
 					value.putValue(Action.SHORT_DESCRIPTION, flp.getString(name + "Desc"));
 				}
+
+				JMenu menu1 = (JMenu) menuBar.getComponent(0);
+				menu1.setText(flp.getString("file"));
+				JMenu menu2 = (JMenu) menuBar.getComponent(1);
+				menu2.setText(flp.getString("edit"));
+				JMenu menu3 = (JMenu) menuBar.getComponent(2);
+				menu3.setText(flp.getString("tools"));
+				JMenu menu4 = (JMenu) menuBar.getComponent(3);
+				menu4.setText(flp.getString("languages"));
 			}
 		});
 	}
 
+	/**
+	 * Method used for getting property <code>TabbedPane</code>.
+	 *
+	 * @return tabbed pane
+	 */
 	public JTabbedPane getTabbedPane() {
 		return tabbedPane;
 	}
 
+	/**
+	 * Method used for getting property <code>StatusBar</code>.
+	 *
+	 * @return status bar
+	 */
 	public MyStatusBar getStatusBar() {
 		return statusBar;
 	}
 
+	/**
+	 * Method used for getting property <code>Actions</code>.
+	 *
+	 * @return actions
+	 */
 	public HashMap<String, Action> getActions() {
 		return actions;
 	}
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args
+	 *            The arguments from command line, not used here.
+	 */
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> new JNotepadPP().setVisible(true));
 	}
-	
+
+	/**
+	 * Method used for getting property {@link #flp}.
+	 *
+	 * @return {@link #flp}
+	 */
 	public FormLocalizationProvider getFlp() {
 		return flp;
 	}

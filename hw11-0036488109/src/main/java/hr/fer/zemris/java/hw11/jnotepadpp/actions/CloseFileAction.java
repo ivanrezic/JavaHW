@@ -7,10 +7,30 @@ import javax.swing.JOptionPane;
 import hr.fer.zemris.java.hw11.jnotepadpp.JNotepadPP;
 import hr.fer.zemris.java.hw11.jnotepadpp.MyTextArea;
 
+/**
+ * <code>CloseFileAction</code> closes current tab opened.
+ *
+ * @author Ivan Rezic
+ */
 public class CloseFileAction extends MyAction {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor which instantiates new close file action.
+	 *
+	 * @param container
+	 *            {@linkplain JNotepadPP}
+	 * @param actionName
+	 *            The action name.
+	 * @param keyStroke
+	 *            Action key stroke.
+	 * @param keyEvent
+	 *            Action accelerator keys.
+	 * @param shortDescription
+	 *            Action short description.
+	 */
 	public CloseFileAction(JNotepadPP container, String actionName, String keyStroke, int keyEvent,
 			String shortDescription) {
 		super(container, actionName, keyStroke, keyEvent, shortDescription);
@@ -24,6 +44,11 @@ public class CloseFileAction extends MyAction {
 		closeTab(panel);
 	}
 
+	/**
+	 * Close tab if file is saved, if not checks first whether user wants to save it first.
+	 *
+	 * @param Opened text area.
+	 */
 	protected void closeTab(MyTextArea panel) {
 		if (panel.isEdited()) {
 			tabbedPane.setSelectedComponent(panel);
