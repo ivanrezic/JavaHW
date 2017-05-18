@@ -35,10 +35,10 @@ public abstract class MyAction extends AbstractAction {
 		this.container = container;
 		this.tabbedPane = container.getTabbedPane();
 
-		this.putValue(Action.NAME, actionName);
+		this.putValue(Action.NAME, container.getFlp().getString(actionName));
 		this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keyStroke));
 		this.putValue(Action.MNEMONIC_KEY, keyEvent);
-		this.putValue(Action.SHORT_DESCRIPTION, shortDescription);
+		this.putValue(Action.SHORT_DESCRIPTION, container.getFlp().getString(shortDescription));
 	}
 
 	@Override

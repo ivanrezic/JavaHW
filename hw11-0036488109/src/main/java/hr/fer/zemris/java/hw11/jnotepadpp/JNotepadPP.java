@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -31,6 +32,9 @@ import hr.fer.zemris.java.hw11.jnotepadpp.actions.OpenFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.SaveAsAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.SaveFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.ToolsAction;
+import hr.fer.zemris.java.hw11.jnotepadpp.local.FormLocalizationProvider;
+import hr.fer.zemris.java.hw11.jnotepadpp.local.ILocalizationListener;
+import hr.fer.zemris.java.hw11.jnotepadpp.local.LocalizationProvider;
 
 public class JNotepadPP extends JFrame {
 
@@ -40,10 +44,12 @@ public class JNotepadPP extends JFrame {
 	private JMenuBar menuBar;
 	private MyStatusBar statusBar;
 	private HashMap<String, Action> actions;
+	private FormLocalizationProvider flp;
 
 	public JNotepadPP() {
+		flp = new FormLocalizationProvider(LocalizationProvider.getInstance(), this);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		setBounds(20, 20, 900, 600);
+		setBounds(20, 20, 1000, 650);
 		setTitle("JNotepad++");
 
 		actions = new HashMap<>();
@@ -66,47 +72,38 @@ public class JNotepadPP extends JFrame {
 		createActions();
 		addActions();
 		addCloseOperationAction();
+		addLocalizationListener();
 	}
 
 	private void createActions() {
-		actions.put("openFile",
-				new OpenFileAction(this, "Open", "control O", KeyEvent.VK_O, "Used to open a document from disk."));
-		actions.put("saveFile",
-				new SaveFileAction(this, "Save", "control S", KeyEvent.VK_S, "Used to save a document to disk."));
-		actions.put("saveAs", new SaveAsAction(this, "Save As", "control alt S", KeyEvent.VK_A,
-				"Used to save new document to disk."));
-		actions.put("newFile", new NewFileAction(this, "New file", "control N", KeyEvent.VK_N,
-				"Used to create new document on disk."));
-		actions.put("closeFile",
-				new CloseFileAction(this, "Close file", "control W", KeyEvent.VK_L, "Used to close current document."));
-		actions.put("stats", new FileStatsAction(this, "File stats", "control shift S", KeyEvent.VK_I,
-				"Show current file statistics."));
-		actions.put("exitApp",
-				new ExitAppAction(this, "Exit", "control alt X", KeyEvent.VK_X, "Used to exit application."));
-		actions.put("cut",
-				editPremadeAction(new CutAction(), "Cut", "Used to cut selected text.", KeyEvent.VK_T, "control X"));
-		actions.put("copy",
-				editPremadeAction(new CopyAction(), "Copy", "Used to copy selected text.", KeyEvent.VK_Y, "control C"));
-		actions.put("paste", editPremadeAction(new PasteAction(), "Paste", "Used to paste copied/cut text.",
-				KeyEvent.VK_P, "control V"));
-		actions.put("uppercase",
-				new ToolsAction("uppercase",this, "To uppercase", "control U", KeyEvent.VK_U, "Used to set uppercase for selected text."));
-		actions.put("lowercase",
-				new ToolsAction("lowercase",this, "To lowercase", "control L", KeyEvent.VK_R, "Used to set lowercase for selected text."));
-		actions.put("invert",
-				new ToolsAction("invert",this, "Invert", "control I", KeyEvent.VK_I, "Used to invert selected text."));
-		actions.put("unique",
-				new ToolsAction("unique",this, "Unique", "control Q", KeyEvent.VK_Q, "Used to filter unique line from selected text."));
-		actions.put("descending",
-				new ToolsAction("descending",this, "Descending", "control D", KeyEvent.VK_D, "Used to sort descending lines from selected text."));
-		actions.put("ascending",
-				new ToolsAction("ascending",this, "Ascending", "control G", KeyEvent.VK_G, "Used to sort ascending lines from selected text."));
+		actions.put("openFile", new OpenFileAction(this, "openFile", "control O", KeyEvent.VK_O, "openFileDesc"));
+		actions.put("saveFile", new SaveFileAction(this, "saveFile", "control S", KeyEvent.VK_S, "saveFileDesc"));
+		actions.put("saveAs", new SaveAsAction(this, "saveAs", "control alt S", KeyEvent.VK_A, "saveAsDesc"));
+		actions.put("newFile", new NewFileAction(this, "newFile", "control N", KeyEvent.VK_N, "newFileDesc"));
+		actions.put("closeFile", new CloseFileAction(this, "closeFile", "control W", KeyEvent.VK_L, "closeFileDesc"));
+		actions.put("stats", new FileStatsAction(this, "stats", "control shift S", KeyEvent.VK_I, "statsDesc"));
+		actions.put("exitApp", new ExitAppAction(this, "exitApp", "control alt X", KeyEvent.VK_X, "exitAppDesc"));
+		
+		actions.put("cut", editPremadeAction(new CutAction(), "cut", "cutDesc", KeyEvent.VK_T, "control X"));
+		actions.put("copy", editPremadeAction(new CopyAction(), "copy", "copyDesc", KeyEvent.VK_Y, "control C"));
+		actions.put("paste", editPremadeAction(new PasteAction(), "paste", "pasteDesc", KeyEvent.VK_P, "control V"));
+		
+		actions.put("uppercase", new ToolsAction("uppercase", this, "uppercase", "control U", KeyEvent.VK_U, "uppercaseDesc"));
+		actions.put("lowercase", new ToolsAction("lowercase", this, "lowercase", "control L", KeyEvent.VK_R, "lowercaseDesc"));
+		actions.put("invert", new ToolsAction("invert", this, "invert", "control I", KeyEvent.VK_I, "invertDesc"));
+		actions.put("unique", new ToolsAction("unique", this, "unique", "control Q", KeyEvent.VK_Q, "uniqueDesc"));
+		actions.put("descending", new ToolsAction("descending", this, "descending", "control D", KeyEvent.VK_D, "descendingDesc"));
+		actions.put("ascending", new ToolsAction("ascending", this, "ascending", "control G", KeyEvent.VK_G, "ascendingDesc"));
+		
+		actions.put("english", new LanguageAction("en", this, "english", "control alt H", KeyEvent.VK_H, "englishDesc"));
+		actions.put("croatian", new LanguageAction("hr", this, "croatian", "control alt C", KeyEvent.VK_C, "croatianDesc"));
+		actions.put("german", new LanguageAction("de", this, "german", "control alt D", KeyEvent.VK_E, "germanDesc"));
 	}
 
 	private Action editPremadeAction(Action action, String name, String description, int mnemonic, String keyStroke) {
 		action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keyStroke));
-		action.putValue(Action.NAME, name);
-		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.NAME, flp.getString(name));
+		action.putValue(Action.SHORT_DESCRIPTION, flp.getString(description));
 		action.putValue(Action.MNEMONIC_KEY, mnemonic);
 
 		return action;
@@ -148,6 +145,11 @@ public class JNotepadPP extends JFrame {
 		toolsMenu.add(subMenu);
 		addToolbarAndMenuItem(actions.get("ascending"), subMenu, toolBar, "icons/descending.png");
 		addToolbarAndMenuItem(actions.get("descending"), subMenu, toolBar, "icons/ascending.png");
+		
+		toolBar.addSeparator();
+		addToolbarAndMenuItem(actions.get("english"), languagesMenu, toolBar, "icons/english.png");
+		addToolbarAndMenuItem(actions.get("croatian"), languagesMenu, toolBar, "icons/croatian.png");
+		addToolbarAndMenuItem(actions.get("german"), languagesMenu, toolBar, "icons/german.png");
 	}
 
 	private void addToolbarAndMenuItem(Action action, JMenu menu, JToolBar toolBar, String imagePath) {
@@ -174,6 +176,22 @@ public class JNotepadPP extends JFrame {
 			}
 		});
 	}
+	
+	private void addLocalizationListener() {
+		flp.addLocalizationListener(new ILocalizationListener() {
+
+			@Override
+			public void localizationChanged() {
+				for (Map.Entry<String, Action> entry : actions.entrySet()) {
+					String name = entry.getKey();
+					Action value = entry.getValue();
+
+					value.putValue(Action.NAME, flp.getString(name));
+					value.putValue(Action.SHORT_DESCRIPTION, flp.getString(name + "Desc"));
+				}
+			}
+		});
+	}
 
 	public JTabbedPane getTabbedPane() {
 		return tabbedPane;
@@ -189,5 +207,9 @@ public class JNotepadPP extends JFrame {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> new JNotepadPP().setVisible(true));
+	}
+	
+	public FormLocalizationProvider getFlp() {
+		return flp;
 	}
 }
