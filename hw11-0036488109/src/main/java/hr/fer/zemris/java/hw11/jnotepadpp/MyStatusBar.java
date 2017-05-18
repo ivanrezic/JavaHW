@@ -50,7 +50,7 @@ public class MyStatusBar extends JPanel {
 		dateAndTime.setPreferredSize(new Dimension((int) (getWidth() / 3.0), getHeight()));
 		dateAndTime.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss ");
 		Timer timer = new Timer(500, new ActionListener() {
 
 			@Override

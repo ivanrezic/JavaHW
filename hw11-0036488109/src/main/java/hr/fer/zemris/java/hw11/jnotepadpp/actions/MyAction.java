@@ -27,6 +27,7 @@ public abstract class MyAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	private static final int MAX_ICON_SIZE = 3000;
+	private static int newFiles = 0;
 	protected JNotepadPP container;
 	protected JTabbedPane tabbedPane;
 
@@ -49,7 +50,7 @@ public abstract class MyAction extends AbstractAction {
 
 		MyTextArea panel = new MyTextArea(file,container);
 
-		String title = "New";
+		String title = "New " + ++newFiles;
 		if (file != null) {
 			title = file.getName();
 		}
@@ -77,6 +78,7 @@ public abstract class MyAction extends AbstractAction {
 	}
 
 	private boolean alreadyOpened(File file) {
+		if(file == null) return false;
 		boolean flag = false;
 		int count = tabbedPane.getTabCount();
 
@@ -124,10 +126,9 @@ public abstract class MyAction extends AbstractAction {
 			String text = doc.getText(offset, len - offset);
 			List<String> list = action.apply(Arrays.asList(text.split("\\r?\\n")));
 			
-			int lines = list.size();
 			doc.remove(offset, len - offset);
 			for (String string : list) {
-				doc.insertString(offset, string + (--lines > 0 ? "\n" : ""), null);
+				doc.insertString(offset, string + "\n", null);
 				offset += string.length() + 1;
 			}
 		} catch (BadLocationException ignorable) {

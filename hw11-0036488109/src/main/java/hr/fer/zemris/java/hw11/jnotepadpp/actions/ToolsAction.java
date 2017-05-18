@@ -77,7 +77,6 @@ public class ToolsAction extends MyAction {
 	
 	private List<String> unique(List<String> list){
 		Set<String> set = new LinkedHashSet<>(list);
-		
 		return new ArrayList<>(set);
 	}
 }

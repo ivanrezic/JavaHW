@@ -24,6 +24,7 @@ import javax.swing.text.DefaultEditorKit.PasteAction;
 
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.CloseFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.ExitAppAction;
+import hr.fer.zemris.java.hw11.jnotepadpp.actions.FileStatsAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.MyAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.NewFileAction;
 import hr.fer.zemris.java.hw11.jnotepadpp.actions.OpenFileAction;

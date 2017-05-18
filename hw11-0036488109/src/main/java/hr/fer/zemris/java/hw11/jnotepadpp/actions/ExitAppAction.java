@@ -30,7 +30,7 @@ public class ExitAppAction extends MyAction {
 			count--;
 		}
 
-		container.dispose();
+		System.exit(0);
 	}
 
 }

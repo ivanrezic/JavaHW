@@ -95,7 +95,7 @@ public class MyTextArea extends JPanel {
 				} catch (BadLocationException ignorable) {
 				}
 
-				statusBar.setLengthText(String.format(" length: %d", text.length()));
+				statusBar.setLengthText(String.format(" length: %d", text.replaceAll("\\r?\n", "").length()));
 			}
 		});
 	}
