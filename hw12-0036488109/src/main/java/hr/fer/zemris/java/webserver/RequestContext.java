@@ -102,6 +102,10 @@ public class RequestContext {
 
 	/** Method that stores a value to temporaryParameters map. */
 	public void setTemporaryParameter(String name, String value) {
+		if (temporaryParameters == null) {
+			temporaryParameters = new HashMap<>();
+		}
+		
 		temporaryParameters.put(name, value);
 	}
 
@@ -118,6 +122,7 @@ public class RequestContext {
 	}
 
 	public RequestContext write(String text) throws IOException {
+		text = text.replace("\\r\\n", "\r\n");
 		Objects.requireNonNull(text, "Text given can not be null.");
 		charset = Charset.forName(encoding);
 
