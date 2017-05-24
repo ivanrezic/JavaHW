@@ -134,16 +134,15 @@ public class SmartHttpServer {
 				}
 
 				String path = null;
-				String paramString = null;
 				String requestedPath = firstLineParts[1];
 				if (requestedPath.contains("?")) {
 					String[] parts = requestedPath.split("\\?");
 					path = parts[0];
-					paramString = parts[1];
+					String paramString = parts[1];
+					parseParameters(paramString);
 				} else {
 					path = requestedPath;
 				}
-				parseParameters(paramString);
 
 				Path absPath = documentRoot.resolve(path.substring(1));;
 				if (!absPath.startsWith(documentRoot)) {
@@ -242,16 +241,7 @@ public class SmartHttpServer {
 			return bos.toByteArray();
 		}
 
-		// private List<String> readRequest() {
-		// BufferedReader reader = new BufferedReader(new
-		// InputStreamReader(istream));
-		// return reader.lines().collect(Collectors.toList());
-		// }
-
 		private void parseParameters(String paramString) {
-			if (paramString == null)
-				return;
-
 			String[] parts = paramString.split("[&]");
 			for (String part : parts) {
 				String[] keyValue = part.split("=");
