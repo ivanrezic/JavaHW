@@ -18,7 +18,7 @@ public class EngineDemo {
 	public static void main(String[] args) {
 		String documentBody = null;
 		try {
-			documentBody = new String(Files.readAllBytes(Paths.get("fibonacci.smscr")), StandardCharsets.UTF_8);
+			documentBody = new String(Files.readAllBytes(Paths.get("webroot/scripts/fibonacci.smscr")), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Wrong file path given.");
 			System.exit(-1);

@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import hr.fer.zemris.java.custom.scripting.exec.SmartScriptEngine;
+import hr.fer.zemris.java.custom.scripting.parser.SmartScriptParser;
 import hr.fer.zemris.java.webserver.RequestContext.RCCookie;
 
 public class SmartHttpServer {
@@ -32,6 +35,7 @@ public class SmartHttpServer {
 	private ServerThread serverThread;
 	private ExecutorService threadPool;
 	private Path documentRoot;
+	private Map<String, IWebWorker> workersMap;
 
 	public SmartHttpServer(String configFileName) {
 		Properties properties = new Properties();
@@ -48,15 +52,57 @@ public class SmartHttpServer {
 		this.documentRoot = Paths.get(properties.getProperty("server.documentRoot"));
 
 		Path mimeConfigFile = Paths.get(properties.getProperty("server.mimeConfig"));
+		mimeTypes = loadMimeTypes(mimeConfigFile);
+
+		Path workersConfigFile = Paths.get(properties.getProperty("server.workers"));
+		workersMap = loadWorkers(workersConfigFile);
+
+	}
+
+	private Map<String, String> loadMimeTypes(Path mimeConfigFile) {
+		Properties properties = new Properties();
+
 		try {
-			properties.clear();
 			properties.load(Files.newInputStream(mimeConfigFile));
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Given mime confige file path in main config file does not exist.");
+			throw new IllegalArgumentException("Given mime config file path in main config file does not exist.");
 		}
-		mimeTypes = properties.entrySet().stream()
-				.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
 
+		return properties.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
+	}
+
+	private Map<String, IWebWorker> loadWorkers(Path workersConfigFile) {
+		Properties properties = new Properties();
+
+		try {
+			properties.load(Files.newInputStream(workersConfigFile));
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Given workers config file path in main config file does not exist.");
+		}
+		Map<String, String> workersConfig = new HashMap<>();
+		workersConfig = properties.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
+		if (workersConfig.size() != new HashSet<>(workersConfig.values()).size()) {
+			throw new IllegalArgumentException(
+					"Multiple keys with same values(class path) in same workers configuration.");
+		}
+
+		return workersConfig.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(), e -> JVMCreateNewInstance(e.getValue())));
+	}
+
+	private IWebWorker JVMCreateNewInstance(String fqcn) {
+		Object newObject = null;
+
+		try {
+			Class<?> referenceToClass = this.getClass().getClassLoader().loadClass(fqcn);
+			newObject = referenceToClass.newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		return (IWebWorker) newObject;
 	}
 
 	protected synchronized void start() {
@@ -92,7 +138,7 @@ public class SmartHttpServer {
 		}
 	}
 
-	private class ClientWorker implements Runnable {
+	private class ClientWorker implements Runnable, IDispatcher {
 		private Socket csocket;
 		private PushbackInputStream istream;
 		private OutputStream ostream;
@@ -103,6 +149,7 @@ public class SmartHttpServer {
 		private Map<String, String> permPrams = new HashMap<String, String>();
 		private List<RCCookie> outputCookies = new ArrayList<RequestContext.RCCookie>();
 		private String SID;
+		private RequestContext context;
 
 		public ClientWorker(Socket csocket) {
 			super();
@@ -144,30 +191,94 @@ public class SmartHttpServer {
 					path = requestedPath;
 				}
 
-				Path absPath = documentRoot.resolve(path.substring(1));;
-				if (!absPath.startsWith(documentRoot)) {
-					sendError(403, "Forbidden url requested.");
-					return;
-				} else if (!Files.exists(absPath) || !Files.isRegularFile(absPath) || !Files.isReadable(absPath)) {
-					sendError(404, "Given file path is not valid.");
-					return;
-				}
-
-				String extension = "";
-				int i = path.lastIndexOf('.');
-				if (i > 0) {
-					extension = path.substring(i + 1);
-				}
-				String mimeType = mimeTypes.getOrDefault(extension, "application/octet-stream");
-
-				RequestContext rc = new RequestContext(ostream, params, permPrams, outputCookies);
-				rc.setMimeType(mimeType);
-				rc.write(Files.readAllBytes(absPath));
-				
+				internalDispatchRequest(path, true);
 				csocket.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		@Override
+		public void dispatchRequest(String urlPath) throws Exception {
+			internalDispatchRequest(urlPath, false);
+		}
+
+		public void internalDispatchRequest(String path, boolean directCall) throws Exception {
+			Path absPath = documentRoot.resolve(path.substring(1));
+			if (!absPath.startsWith(documentRoot)) {
+				sendError(403, "Forbidden url requested.");
+				return;
+			}
+
+			if (path.startsWith("/ext/")) {
+				try {
+					String fqdn = "hr.fer.zemris.java.webserver.workers." + path.substring(5);
+					Class.forName(fqdn);
+					JVMCreateNewInstance(fqdn).processRequest(getContext());
+				} catch (ClassNotFoundException e) {
+					System.out.println("Given worker doesnt exist.");
+				}
+				return;
+			}
+
+			IWebWorker worker = workersMap.get(path);
+			if (worker != null) {
+				worker.processRequest(getContext());
+				return;
+			}
+
+			String extension = "";
+			int i = path.lastIndexOf('.');
+			if (i > 0) {
+				extension = path.substring(i + 1);
+			}
+			if (extension.equals("smscr")) {
+				runScrtipt(path);
+				return;
+			}
+			String mimeType = mimeTypes.getOrDefault(extension, "application/octet-stream");
+
+			getContext().setMimeType(mimeType);
+			if (!Files.exists(absPath) || !Files.isRegularFile(absPath) || !Files.isReadable(absPath)) {
+				sendError(404, "Given file path is not valid.");
+				return;
+			}
+
+			context.write(Files.readAllBytes(absPath));
+		}
+
+		private void runScrtipt(String path) throws IOException {
+			Path scriptPath = documentRoot.resolve(path.substring(1));
+			SmartScriptParser parser = new SmartScriptParser(new String(Files.readAllBytes(scriptPath)));
+			SmartScriptEngine engine = new SmartScriptEngine(parser.getDocumentNode(), getContext());
+			engine.execute();
+		}
+
+		private RequestContext getContext() {
+			if (context == null) {
+				context = new RequestContext(ostream, params, permPrams, outputCookies, tempParams, this);
+			}
+
+			return context;
+		}
+
+		private void parseParameters(String paramString) {
+			String[] parts = paramString.split("[&]");
+			for (String part : parts) {
+				String[] keyValue = part.split("=");
+				if (keyValue.length != 2)
+					return;
+				params.put(keyValue[0], keyValue[1]);
+			}
+		}
+
+		private void sendError(int statusCode, String statusText) throws IOException {
+
+			ostream.write(("HTTP/1.1 " + statusCode + " " + statusText + "\r\n" + "Server: simple java server\r\n"
+					+ "Content-Type: text/plain;charset=UTF-8\r\n" + "Content-Length: 0\r\n" + "Connection: close\r\n"
+					+ "\r\n").getBytes(StandardCharsets.US_ASCII));
+			ostream.flush();
+
 		}
 
 		private List<String> extractHeaders() throws IOException {
@@ -239,23 +350,6 @@ public class SmartHttpServer {
 				}
 			}
 			return bos.toByteArray();
-		}
-
-		private void parseParameters(String paramString) {
-			String[] parts = paramString.split("[&]");
-			for (String part : parts) {
-				String[] keyValue = part.split("=");
-				params.put(keyValue[0], keyValue[1]);
-			}
-		}
-
-		private void sendError(int statusCode, String statusText) throws IOException {
-
-			ostream.write(("HTTP/1.1 " + statusCode + " " + statusText + "\r\n" + "Server: simple java server\r\n"
-					+ "Content-Type: text/plain;charset=UTF-8\r\n" + "Content-Length: 0\r\n" + "Connection: close\r\n"
-					+ "\r\n").getBytes(StandardCharsets.US_ASCII));
-			ostream.flush();
-
 		}
 	}
 

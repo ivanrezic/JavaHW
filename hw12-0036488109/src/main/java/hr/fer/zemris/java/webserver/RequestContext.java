@@ -22,6 +22,7 @@ public class RequestContext {
 	private Map<String, String> persistentParameters;
 	private List<RCCookie> outputCookies;
 	private boolean headerGenerated;
+	private IDispatcher dispatcher;
 
 	public String encoding;
 	public int statusCode;
@@ -40,6 +41,19 @@ public class RequestContext {
 		this.statusCode = 200;
 		this.statusText = "OK";
 		this.mimeType = "text/html";
+	}
+
+	public RequestContext(OutputStream outputStream, Map<String, String> parameters,
+			Map<String, String> persistentParameters, List<RCCookie> outputCookies,
+			Map<String, String> temporaryParameters, IDispatcher dispatcher) {
+
+		this(outputStream, parameters, persistentParameters, outputCookies);
+		this.temporaryParameters = temporaryParameters;
+		this.dispatcher = dispatcher;
+	}
+	
+	public IDispatcher getDispatcher() {
+		return dispatcher;
 	}
 
 	/**
@@ -105,7 +119,7 @@ public class RequestContext {
 		if (temporaryParameters == null) {
 			temporaryParameters = new HashMap<>();
 		}
-		
+
 		temporaryParameters.put(name, value);
 	}
 
@@ -117,7 +131,7 @@ public class RequestContext {
 	public RequestContext write(byte[] data) throws IOException {
 		writeHeader();
 		outputStream.write(data);
-		
+
 		return this;
 	}
 
@@ -130,7 +144,8 @@ public class RequestContext {
 	}
 
 	private void writeHeader() throws IOException {
-		if (headerGenerated) return;
+		if (headerGenerated)
+			return;
 		StringBuilder header = new StringBuilder();
 
 		header.append(String.format("HTTP/1.1 %d %s\r\n", statusCode, statusText));
@@ -143,22 +158,22 @@ public class RequestContext {
 
 		for (RCCookie rcCookie : outputCookies) {
 			StringJoiner joiner = new StringJoiner("; ");
-			joiner.add(String.format("Set-Cookie: %s=\"%s\"", rcCookie.name, rcCookie.value));				
-			
+			joiner.add(String.format("Set-Cookie: %s=\"%s\"", rcCookie.name, rcCookie.value));
+
 			if (rcCookie.domain != null) {
-				joiner.add(String.format("Domain=%s", rcCookie.domain));				
+				joiner.add(String.format("Domain=%s", rcCookie.domain));
 			}
 			if (rcCookie.path != null) {
-				joiner.add(String.format("Path=%s", rcCookie.path));				
+				joiner.add(String.format("Path=%s", rcCookie.path));
 			}
 			if (rcCookie.maxAge != null) {
-				joiner.add(String.format("Max-Age=%s", rcCookie.maxAge));				
+				joiner.add(String.format("Max-Age=%s", rcCookie.maxAge));
 			}
-			
+
 			header.append(joiner).append("\r\n");
 		}
 		header.append("\r\n");
-		
+
 		headerGenerated = true;
 		outputStream.write(header.toString().getBytes(StandardCharsets.ISO_8859_1));
 	}
@@ -203,7 +218,6 @@ public class RequestContext {
 	}
 
 	public void setMimeType(String mimeType) {
-		checkIfHeaderIsWritten();
 		this.mimeType = mimeType;
 	}
 
@@ -224,7 +238,7 @@ public class RequestContext {
 		public RCCookie(String name, String value, Integer maxAge, String domain, String path) {
 			Objects.requireNonNull(name, "RCCookie name can not be null.");
 			Objects.requireNonNull(value, "RCCookie value can not be null.");
-			
+
 			this.name = name;
 			this.value = value;
 			this.domain = domain;
