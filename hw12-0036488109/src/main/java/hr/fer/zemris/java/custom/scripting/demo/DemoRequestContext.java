@@ -38,8 +38,8 @@ public class DemoRequestContext {
 		rc.setMimeType("text/plain");
 		rc.setStatusCode(205);
 		rc.setStatusText("Idemo dalje");
-		rc.addRCCookie(new RCCookie("korisnik", "perica", 3600, "127.0.0.1", "/"));
-		rc.addRCCookie(new RCCookie("zgrada", "B4", null, null, "/"));
+		rc.addRCCookie(new RCCookie("korisnik", "perica", 3600, "127.0.0.1", "/", true));
+		rc.addRCCookie(new RCCookie("zgrada", "B4", null, null, "/", true));
 		// Only at this point will header be created and written...
 		rc.write("Čevapčići i Šiščevapčići.");
 		os.close();

@@ -13,6 +13,7 @@ import hr.fer.zemris.java.custom.scripting.parser.SmartScriptParser;
 import hr.fer.zemris.java.webserver.RequestContext;
 import hr.fer.zemris.java.webserver.RequestContext.RCCookie;
 
+@SuppressWarnings("unused")
 public class EngineDemo {
 
 	public static void main(String[] args) {

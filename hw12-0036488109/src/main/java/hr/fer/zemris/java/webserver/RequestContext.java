@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestContext {
 
@@ -33,9 +34,9 @@ public class RequestContext {
 			Map<String, String> persistentParameters, List<RCCookie> outputCookies) {
 		Objects.requireNonNull(outputStream, "Output stream must not be null.");
 		this.outputStream = outputStream;
-		this.parameters = new HashMap<>(parameters);
-		this.persistentParameters = new HashMap<>(persistentParameters);
-		this.outputCookies = new ArrayList<>(outputCookies);
+		this.parameters = (parameters == null) ? new HashMap<>() : parameters;
+		this.persistentParameters = (persistentParameters == null) ? new ConcurrentHashMap<>() : persistentParameters;
+		this.outputCookies = (outputCookies == null) ? new ArrayList<>() : outputCookies;
 
 		this.encoding = "UTF-8";
 		this.statusCode = 200;
@@ -131,6 +132,7 @@ public class RequestContext {
 	public RequestContext write(byte[] data) throws IOException {
 		writeHeader();
 		outputStream.write(data);
+		outputStream.flush();
 
 		return this;
 	}
@@ -144,8 +146,7 @@ public class RequestContext {
 	}
 
 	private void writeHeader() throws IOException {
-		if (headerGenerated)
-			return;
+		if (headerGenerated) return;
 		StringBuilder header = new StringBuilder();
 
 		header.append(String.format("HTTP/1.1 %d %s\r\n", statusCode, statusText));
@@ -168,6 +169,9 @@ public class RequestContext {
 			}
 			if (rcCookie.maxAge != null) {
 				joiner.add(String.format("Max-Age=%s", rcCookie.maxAge));
+			}
+			if (rcCookie.httpOnly) {
+				joiner.add("HttpOnly");
 			}
 
 			header.append(joiner).append("\r\n");
@@ -234,8 +238,9 @@ public class RequestContext {
 		private String domain;
 		private String path;
 		private Integer maxAge;
+		private boolean httpOnly;
 
-		public RCCookie(String name, String value, Integer maxAge, String domain, String path) {
+		public RCCookie(String name, String value, Integer maxAge, String domain, String path, boolean httpOnly) {
 			Objects.requireNonNull(name, "RCCookie name can not be null.");
 			Objects.requireNonNull(value, "RCCookie value can not be null.");
 
@@ -244,75 +249,15 @@ public class RequestContext {
 			this.domain = domain;
 			this.path = path;
 			this.maxAge = maxAge;
+			this.httpOnly = httpOnly;
 		}
-
+		
 		public String getName() {
 			return name;
 		}
-
+		
 		public String getValue() {
 			return value;
-		}
-
-		public String getDomain() {
-			return domain;
-		}
-
-		public String getPath() {
-			return path;
-		}
-
-		public Integer getMaxAge() {
-			return maxAge;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((domain == null) ? 0 : domain.hashCode());
-			result = prime * result + ((maxAge == null) ? 0 : maxAge.hashCode());
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			result = prime * result + ((path == null) ? 0 : path.hashCode());
-			result = prime * result + ((value == null) ? 0 : value.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (!(obj instanceof RCCookie))
-				return false;
-			RCCookie other = (RCCookie) obj;
-			if (domain == null) {
-				if (other.domain != null)
-					return false;
-			} else if (!domain.equals(other.domain))
-				return false;
-			if (maxAge == null) {
-				if (other.maxAge != null)
-					return false;
-			} else if (!maxAge.equals(other.maxAge))
-				return false;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			if (path == null) {
-				if (other.path != null)
-					return false;
-			} else if (!path.equals(other.path))
-				return false;
-			if (value == null) {
-				if (other.value != null)
-					return false;
-			} else if (!value.equals(other.value))
-				return false;
-			return true;
 		}
 	}
 

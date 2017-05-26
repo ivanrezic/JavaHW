@@ -14,8 +14,7 @@ public class EchoParams implements IWebWorker {
 		
 		try {
 			context.write("<html><body>");
-			context.write("<style>");
-			context.write("table, th, td { border: 1px solid green; } </style>");	
+			context.write("<style> table, th, td { border: 1px solid green; } </style>");	
 			context.write("<table>");
 			
 			context.write("<tr>");

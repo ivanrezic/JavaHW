@@ -17,7 +17,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -36,6 +40,8 @@ public class SmartHttpServer {
 	private ExecutorService threadPool;
 	private Path documentRoot;
 	private Map<String, IWebWorker> workersMap;
+	private Map<String, SessionMapEntry> sessions = new HashMap<>();
+	private Random sessionRandom = new Random();
 
 	public SmartHttpServer(String configFileName) {
 		Properties properties = new Properties();
@@ -108,11 +114,28 @@ public class SmartHttpServer {
 	protected synchronized void start() {
 		if (serverThread == null) {
 			serverThread = new ServerThread();
+			serverThread.setDaemon(true);
 		}
 		if (!serverThread.isAlive()) {
 			threadPool = Executors.newFixedThreadPool(workerThreads);
 			serverThread.start();
+			initSessionCleaner();
 		}
+	}
+
+	private void initSessionCleaner() {
+		Timer cleanSessions = new Timer(true);
+		cleanSessions.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				Map<String, SessionMapEntry> newMap = new HashMap<>(sessions);
+				for (Map.Entry<String, SessionMapEntry> entry : newMap.entrySet()) {
+					if (entry.getValue().validUntil > System.currentTimeMillis()/1000) {
+						sessions.remove(entry.getKey());
+					}
+				}
+			}
+		}, 0, 5*60*1000);
 	}
 
 	protected synchronized void stop() {
@@ -139,6 +162,8 @@ public class SmartHttpServer {
 	}
 
 	private class ClientWorker implements Runnable, IDispatcher {
+		private static final int SID_LENGTH = 20;
+		private static final String SID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		private Socket csocket;
 		private PushbackInputStream istream;
 		private OutputStream ostream;
@@ -147,7 +172,7 @@ public class SmartHttpServer {
 		private Map<String, String> params = new HashMap<String, String>();
 		private Map<String, String> tempParams = new HashMap<String, String>();
 		private Map<String, String> permPrams = new HashMap<String, String>();
-		private List<RCCookie> outputCookies = new ArrayList<RequestContext.RCCookie>();
+		private List<RCCookie> outputCookies = new ArrayList<RCCookie>();
 		private String SID;
 		private RequestContext context;
 
@@ -180,10 +205,14 @@ public class SmartHttpServer {
 					return;
 				}
 
+				checkSession(request);
+				outputCookies.add(new RCCookie("sid", SID, null, correctDomain(request), "/", true));
+				
 				String path = null;
 				String requestedPath = firstLineParts[1];
 				if (requestedPath.contains("?")) {
 					String[] parts = requestedPath.split("\\?");
+					if(parts.length != 2) return;
 					path = parts[0];
 					String paramString = parts[1];
 					parseParameters(paramString);
@@ -196,6 +225,69 @@ public class SmartHttpServer {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		
+		private synchronized void checkSession(List<String> headerLines) {
+			String sidCandidate = null;
+			
+			for (String line : headerLines) {
+				if (line.startsWith("Cookie: ")) {
+					String[] cookies = line.substring("Cookie: ".length()).split(";");
+					for (String cookie : cookies) {
+						String[] parts = cookie.split("=");
+						if ("sid".equals(parts[0])) {
+							sidCandidate = parts[1].replace("\"", "");
+						}
+					}
+				}
+			}
+			
+			if (sessions.containsKey(sidCandidate)) {
+				SessionMapEntry entry = sessions.get(sidCandidate);
+				if (entry.validUntil <= System.currentTimeMillis() / 1000) {
+					sessions.remove(entry);
+				}else {
+					entry.validUntil = System.currentTimeMillis() / 1000 + sessionTimeout;
+					this.SID = entry.sid;
+					permPrams = entry.map;
+					return;
+				}
+			}
+			
+			initSession();
+		}
+		
+		private void initSession() {
+			this.SID = generateSID();
+			SessionMapEntry session = new SessionMapEntry();
+
+			session.sid = SID;
+			session.validUntil = System.currentTimeMillis() / 1000 + sessionTimeout;
+			session.map = new ConcurrentHashMap<>();
+
+			permPrams = session.map;
+			sessions.put(session.sid, session);
+		}
+		
+		private String generateSID() {
+			char[] text = new char[SID_LENGTH];
+			
+			for (int i = 0; i < SID_LENGTH; i++)
+		    {
+		        text[i] = SID_CHARACTERS.charAt(sessionRandom.nextInt(SID_CHARACTERS.length()));
+		    }
+			
+		    return new String(text);
+		}
+
+		private String correctDomain(List<String> request) {
+			for (String line : request) {
+				if (line.startsWith("Host")) {
+					return line.substring(6, line.indexOf(":", 6));
+				}
+			}
+			
+			return address;
 		}
 
 		@Override
@@ -210,7 +302,9 @@ public class SmartHttpServer {
 				return;
 			}
 
-			if (path.startsWith("/ext/")) {
+			if (directCall && (path.startsWith("/private") || path.startsWith("/private/"))) {
+				sendError(404, "Denied by request filtering configuration.");
+			} else if (path.startsWith("/ext/")) {
 				try {
 					String fqdn = "hr.fer.zemris.java.webserver.workers." + path.substring(5);
 					Class.forName(fqdn);
@@ -233,7 +327,7 @@ public class SmartHttpServer {
 				extension = path.substring(i + 1);
 			}
 			if (extension.equals("smscr")) {
-				runScrtipt(path);
+				runScript(path);
 				return;
 			}
 			String mimeType = mimeTypes.getOrDefault(extension, "application/octet-stream");
@@ -247,7 +341,7 @@ public class SmartHttpServer {
 			context.write(Files.readAllBytes(absPath));
 		}
 
-		private void runScrtipt(String path) throws IOException {
+		private void runScript(String path) throws IOException {
 			Path scriptPath = documentRoot.resolve(path.substring(1));
 			SmartScriptParser parser = new SmartScriptParser(new String(Files.readAllBytes(scriptPath)));
 			SmartScriptEngine engine = new SmartScriptEngine(parser.getDocumentNode(), getContext());
@@ -351,6 +445,12 @@ public class SmartHttpServer {
 			}
 			return bos.toByteArray();
 		}
+	}
+	
+	private static class SessionMapEntry {
+		String sid;
+		long validUntil;
+		Map<String, String> map;
 	}
 
 	public static void main(String[] args) {
