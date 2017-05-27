@@ -20,12 +20,36 @@ import hr.fer.zemris.java.custom.scripting.nodes.Node;
 import hr.fer.zemris.java.custom.scripting.nodes.TextNode;
 import hr.fer.zemris.java.webserver.RequestContext;
 
+/**
+ * <code>SmartScriptEngine</code> is a class whose job is to execute document
+ * whose parsed three it obtains.
+ *
+ * @author Ivan Rezic
+ */
 public class SmartScriptEngine {
+
+	/** {@linkplain DocumentNode} which will be executed. */
 	private DocumentNode documentNode;
+
+	/** {@linkplain RequestContext} */
 	private RequestContext requestContext;
+
+	/** Stack used for storing values from parsed script. */
 	private ObjectMultistack multistack = new ObjectMultistack();
+
+	/**
+	 * Visitor which provides this class functionality.
+	 */
 	private INodeVisitor visitor = new EngineVisitor();
 
+	/**
+	 * Constructor which instantiates new smart script engine.
+	 *
+	 * @param documentNode
+	 *            the document node
+	 * @param requestContext
+	 *            the request context
+	 */
 	public SmartScriptEngine(DocumentNode documentNode, RequestContext requestContext) {
 		Objects.requireNonNull(documentNode, "Document node must not be null");
 		Objects.requireNonNull(requestContext, "Request context must not be null");
@@ -34,10 +58,19 @@ public class SmartScriptEngine {
 		this.requestContext = requestContext;
 	}
 
+	/**
+	 * Executes parsed script.
+	 */
 	public void execute() {
 		documentNode.accept(visitor);
 	}
 
+	/**
+	 * <code>EngineVisitor</code> is visitor from Visitor pattern. It provides
+	 * external functionalities to implementing classes.
+	 *
+	 * @author Ivan Rezic
+	 */
 	private class EngineVisitor implements INodeVisitor {
 
 		@Override
@@ -57,7 +90,7 @@ public class SmartScriptEngine {
 			multistack.push(name, start);
 
 			int count = node.numberOfChildren();
-			while(start.numCompare(end) != 1) {
+			while (start.numCompare(end) != 1) {
 				for (int j = 0; j < count; j++) {
 					node.getChild(j).accept(this);
 				}
@@ -95,6 +128,15 @@ public class SmartScriptEngine {
 			}
 		}
 
+		/**
+		 * Helper method which calculates wanted arithmetic operation within
+		 * last two values from stack.
+		 *
+		 * @param stack
+		 *            Stack which stores values loaded from script.
+		 * @param element
+		 *            Element class which encapsulates wanted operation.
+		 */
 		private void calculate(Stack<Object> stack, ElementOperator element) {
 			ValueWrapper first = new ValueWrapper(stack.pop());
 			ValueWrapper second = new ValueWrapper(stack.pop());
@@ -120,6 +162,14 @@ public class SmartScriptEngine {
 			stack.push(first.getValue());
 		}
 
+		/**
+		 * Executes function invoked by script.
+		 *
+		 * @param stack
+		 *            Stack which stores values loaded from script.
+		 * @param element
+		 *            Element class which encapsulates wanted function.
+		 */
 		private void execute(Stack<Object> stack, ElementFunction element) {
 			Object first = stack.pop();
 

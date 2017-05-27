@@ -6,6 +6,13 @@ import java.util.Date;
 import hr.fer.zemris.java.webserver.IWebWorker;
 import hr.fer.zemris.java.webserver.RequestContext;
 
+/**
+ * <code>HelloWorker</code> is worker which prints current time and given
+ * parameter length. If there is no given parameter it prints "You did not send
+ * me your name!".
+ *
+ * @author Ivan Rezic
+ */
 public class HelloWorker implements IWebWorker {
 
 	@Override

@@ -3,8 +3,9 @@ package hr.fer.zemris.java.custom.scripting.nodes;
 import hr.fer.zemris.java.custom.collections.ArrayIndexedCollection;
 
 /**
- * Base class for all graph nodes which can contain one or more nodes as its children.
- * Also it provides method as: {@link #addChildNode(Node)}, {@link #numberOfChildren()} and {@link #getChild(int)}.
+ * Base class for all graph nodes which can contain one or more nodes as its
+ * children. Also it provides method as: {@link #addChildNode(Node)},
+ * {@link #numberOfChildren()} and {@link #getChild(int)}.
  * 
  * @author Ivan
  */
@@ -48,7 +49,15 @@ public abstract class Node {
 	public Node getChild(int index) throws IndexOutOfBoundsException {
 		return (Node) children.get(index);
 	}
-	
+
+	/**
+	 * Method which enables Node subclasses to use Visitor pattern. Through this
+	 * method, each subclass provides itself throught visitor implementation
+	 * constructor.
+	 *
+	 * @param visitor
+	 *            the visitor
+	 */
 	public abstract void accept(INodeVisitor visitor);
 
 	@Override

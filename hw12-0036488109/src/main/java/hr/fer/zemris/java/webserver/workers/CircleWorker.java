@@ -12,6 +12,13 @@ import javax.imageio.ImageIO;
 import hr.fer.zemris.java.webserver.IWebWorker;
 import hr.fer.zemris.java.webserver.RequestContext;
 
+/**
+ * <code>CircleWorker</code> is worker which prints image in png format. It has
+ * dimensions 200 by 200. Within it there is circle whose diameter is as wide as
+ * picture containing it.
+ *
+ * @author Ivan Rezic
+ */
 public class CircleWorker implements IWebWorker {
 
 	@Override

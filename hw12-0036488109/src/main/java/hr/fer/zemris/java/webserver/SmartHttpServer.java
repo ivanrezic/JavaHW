@@ -30,19 +30,56 @@ import hr.fer.zemris.java.custom.scripting.exec.SmartScriptEngine;
 import hr.fer.zemris.java.custom.scripting.parser.SmartScriptParser;
 import hr.fer.zemris.java.webserver.RequestContext.RCCookie;
 
+/**
+ * <code>SmartHttpServer</code> processes requests via HTTP. The term can refer
+ * to the entire system, or specifically to the software that accepts and
+ * supervises the HTTP requests. This HTTP server uses TCP transfer protocol
+ * that works in a way that it transfers bytes between server and client using
+ * {@link Socket}.
+ *
+ * @author Ivan Rezic
+ */
 public class SmartHttpServer {
+
+	/** Server ip address. */
 	private String address;
+
+	/** Server port. */
 	private int port;
+
+	/** Number of paralel worker threads. */
 	private int workerThreads;
+
+	/** Server session timeout. */
 	private int sessionTimeout;
+
+	/** Server respond mime types. */
 	private Map<String, String> mimeTypes = new HashMap<String, String>();
+
+	/** Represents job done by server. */
 	private ServerThread serverThread;
+
+	/** Thread pool used for thread synchronization. */
 	private ExecutorService threadPool;
+
+	/** Server documents root folder. */
 	private Path documentRoot;
+
+	/** Server workers map. */
 	private Map<String, IWebWorker> workersMap;
+
+	/** Currently active sessions. */
 	private Map<String, SessionMapEntry> sessions = new HashMap<>();
+
+	/** Session id randomizer. */
 	private Random sessionRandom = new Random();
 
+	/**
+	 * Constructor which instantiates new smart http server.
+	 *
+	 * @param configFileName
+	 *            the config file name
+	 */
 	public SmartHttpServer(String configFileName) {
 		Properties properties = new Properties();
 		try {
@@ -65,6 +102,13 @@ public class SmartHttpServer {
 
 	}
 
+	/**
+	 * Helper method which loads mime types from configuration file.
+	 *
+	 * @param mimeConfigFile
+	 *            the mime config file
+	 * @return Map containing mime types compatible with this server.
+	 */
 	private Map<String, String> loadMimeTypes(Path mimeConfigFile) {
 		Properties properties = new Properties();
 
@@ -78,6 +122,13 @@ public class SmartHttpServer {
 				.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
 	}
 
+	/**
+	 * Helper method which loads workers configuration file.
+	 *
+	 * @param workersConfigFile
+	 *            the workers config file
+	 * @return Map containing all workers instantiated objects.
+	 */
 	private Map<String, IWebWorker> loadWorkers(Path workersConfigFile) {
 		Properties properties = new Properties();
 
@@ -98,6 +149,14 @@ public class SmartHttpServer {
 				.collect(Collectors.toMap(e -> e.getKey(), e -> JVMCreateNewInstance(e.getValue())));
 	}
 
+	/**
+	 * Helper method which instantiates objects from fully qualified class
+	 * names, if they exist.
+	 *
+	 * @param fqcn
+	 *            fully qualified class name
+	 * @return Web worker instance.
+	 */
 	private IWebWorker JVMCreateNewInstance(String fqcn) {
 		Object newObject = null;
 
@@ -111,6 +170,9 @@ public class SmartHttpServer {
 		return (IWebWorker) newObject;
 	}
 
+	/**
+	 * Method which initializes server processing.
+	 */
 	protected synchronized void start() {
 		if (serverThread == null) {
 			serverThread = new ServerThread();
@@ -123,6 +185,10 @@ public class SmartHttpServer {
 		}
 	}
 
+	/**
+	 * Helper method which initializes session cleaner, sessions are cleaned
+	 * from session after 5 minutes of inactivity.
+	 */
 	private void initSessionCleaner() {
 		Timer cleanSessions = new Timer(true);
 		cleanSessions.schedule(new TimerTask() {
@@ -130,20 +196,29 @@ public class SmartHttpServer {
 			public void run() {
 				Map<String, SessionMapEntry> newMap = new HashMap<>(sessions);
 				for (Map.Entry<String, SessionMapEntry> entry : newMap.entrySet()) {
-					if (entry.getValue().validUntil > System.currentTimeMillis()/1000) {
+					if (entry.getValue().validUntil > System.currentTimeMillis() / 1000) {
 						sessions.remove(entry.getKey());
 					}
 				}
 			}
-		}, 0, 5*60*1000);
+		}, 0, 5 * 60 * 1000);
 	}
 
+	/**
+	 * Method which terminates server processing.
+	 */
 	protected synchronized void stop() {
 		serverThread.interrupt();
 		threadPool.shutdown();
 	}
 
+	/**
+	 * <code>ServerThread</code> is thread which does al server processing.
+	 *
+	 * @author Ivan Rezic
+	 */
 	protected class ServerThread extends Thread {
+
 		@Override
 		public void run() {
 			try {
@@ -161,21 +236,58 @@ public class SmartHttpServer {
 		}
 	}
 
+	/**
+	 * <code>ClientWorker</code> represents client in this server-client model.
+	 *
+	 * @author Ivan Rezic
+	 */
 	private class ClientWorker implements Runnable, IDispatcher {
+
+		/** Session id length. */
 		private static final int SID_LENGTH = 20;
+
+		/** Chars used for creation of session id. */
 		private static final String SID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+		/** Server socket which is used for client connection. */
 		private Socket csocket;
+
+		/** Client input stream. */
 		private PushbackInputStream istream;
+
+		/** Client output stream. */
 		private OutputStream ostream;
+
+		/** Http request version. */
 		private String version;
+
+		/** Http method. */
 		private String method;
+
+		/** Http parameters given. */
 		private Map<String, String> params = new HashMap<String, String>();
+
+		/** Http temporary parameters given. */
 		private Map<String, String> tempParams = new HashMap<String, String>();
+
+		/** Http persistent parameters given. */
 		private Map<String, String> permPrams = new HashMap<String, String>();
+
+		/** Output cookies. */
 		private List<RCCookie> outputCookies = new ArrayList<RCCookie>();
+
+		/** Session id. */
 		private String SID;
+
+		/** Http request context. */
 		private RequestContext context;
 
+		/**
+		 * Constructor which instantiates new client worker.
+		 *
+		 * @param csocket
+		 *            the csocket
+		 */
 		public ClientWorker(Socket csocket) {
 			super();
 			this.csocket = csocket;
@@ -207,12 +319,13 @@ public class SmartHttpServer {
 
 				checkSession(request);
 				outputCookies.add(new RCCookie("sid", SID, null, correctDomain(request), "/", true));
-				
+
 				String path = null;
 				String requestedPath = firstLineParts[1];
 				if (requestedPath.contains("?")) {
 					String[] parts = requestedPath.split("\\?");
-					if(parts.length != 2) return;
+					if (parts.length != 2)
+						return;
 					path = parts[0];
 					String paramString = parts[1];
 					parseParameters(paramString);
@@ -226,10 +339,17 @@ public class SmartHttpServer {
 				e.printStackTrace();
 			}
 		}
-		
+
+		/**
+		 * Helper method which checks if current request is made within same
+		 * session. If not it creates new ssesion with unique session id.
+		 *
+		 * @param headerLines
+		 *            Http header.
+		 */
 		private synchronized void checkSession(List<String> headerLines) {
 			String sidCandidate = null;
-			
+
 			for (String line : headerLines) {
 				if (line.startsWith("Cookie: ")) {
 					String[] cookies = line.substring("Cookie: ".length()).split(";");
@@ -241,22 +361,25 @@ public class SmartHttpServer {
 					}
 				}
 			}
-			
+
 			if (sessions.containsKey(sidCandidate)) {
 				SessionMapEntry entry = sessions.get(sidCandidate);
 				if (entry.validUntil <= System.currentTimeMillis() / 1000) {
 					sessions.remove(entry);
-				}else {
+				} else {
 					entry.validUntil = System.currentTimeMillis() / 1000 + sessionTimeout;
 					this.SID = entry.sid;
 					permPrams = entry.map;
 					return;
 				}
 			}
-			
+
 			initSession();
 		}
-		
+
+		/**
+		 * Helper method which initializes new session.
+		 */
 		private void initSession() {
 			this.SID = generateSID();
 			SessionMapEntry session = new SessionMapEntry();
@@ -268,25 +391,37 @@ public class SmartHttpServer {
 			permPrams = session.map;
 			sessions.put(session.sid, session);
 		}
-		
+
+		/**
+		 * Helper method which generates new session id out of given
+		 * charracters. New session id is 20 character in length.
+		 *
+		 * @return Session id as string.
+		 */
 		private String generateSID() {
 			char[] text = new char[SID_LENGTH];
-			
-			for (int i = 0; i < SID_LENGTH; i++)
-		    {
-		        text[i] = SID_CHARACTERS.charAt(sessionRandom.nextInt(SID_CHARACTERS.length()));
-		    }
-			
-		    return new String(text);
+
+			for (int i = 0; i < SID_LENGTH; i++) {
+				text[i] = SID_CHARACTERS.charAt(sessionRandom.nextInt(SID_CHARACTERS.length()));
+			}
+
+			return new String(text);
 		}
 
+		/**
+		 * Helper method which extracts correct domain out of http header.
+		 *
+		 * @param request
+		 *            Http header.
+		 * @return Extracted domain.
+		 */
 		private String correctDomain(List<String> request) {
 			for (String line : request) {
 				if (line.startsWith("Host")) {
 					return line.substring(6, line.indexOf(":", 6));
 				}
 			}
-			
+
 			return address;
 		}
 
@@ -295,6 +430,16 @@ public class SmartHttpServer {
 			internalDispatchRequest(urlPath, false);
 		}
 
+		/**
+		 * It dispatches request to given path.
+		 *
+		 * @param path
+		 *            Path to be dispathced on.
+		 * @param directCall
+		 *            Is this method direct call,true if it is, false otherwise.
+		 * @throws Exception
+		 *             The exception which occurs during dispatching.
+		 */
 		public void internalDispatchRequest(String path, boolean directCall) throws Exception {
 			Path absPath = documentRoot.resolve(path.substring(1));
 			if (!absPath.startsWith(documentRoot)) {
@@ -341,6 +486,14 @@ public class SmartHttpServer {
 			context.write(Files.readAllBytes(absPath));
 		}
 
+		/**
+		 * Helper method which executes wanted script.
+		 *
+		 * @param path
+		 *            Path to wanted script.
+		 * @throws IOException
+		 *             Signals that an I/O exception has occurred.
+		 */
 		private void runScript(String path) throws IOException {
 			Path scriptPath = documentRoot.resolve(path.substring(1));
 			SmartScriptParser parser = new SmartScriptParser(new String(Files.readAllBytes(scriptPath)));
@@ -348,6 +501,11 @@ public class SmartHttpServer {
 			engine.execute();
 		}
 
+		/**
+		 * Method used for getting property <code>Context</code>.
+		 *
+		 * @return context
+		 */
 		private RequestContext getContext() {
 			if (context == null) {
 				context = new RequestContext(ostream, params, permPrams, outputCookies, tempParams, this);
@@ -356,6 +514,12 @@ public class SmartHttpServer {
 			return context;
 		}
 
+		/**
+		 * Parses the parameters, and extrace parameter key and value.
+		 *
+		 * @param paramString
+		 *            Parameter from http.
+		 */
 		private void parseParameters(String paramString) {
 			String[] parts = paramString.split("[&]");
 			for (String part : parts) {
@@ -366,6 +530,16 @@ public class SmartHttpServer {
 			}
 		}
 
+		/**
+		 * Helper method which prints error as respond request.
+		 *
+		 * @param statusCode
+		 *            the status code
+		 * @param statusText
+		 *            the status text
+		 * @throws IOException
+		 *             Signals that an I/O exception has occurred.
+		 */
 		private void sendError(int statusCode, String statusText) throws IOException {
 
 			ostream.write(("HTTP/1.1 " + statusCode + " " + statusText + "\r\n" + "Server: simple java server\r\n"
@@ -375,6 +549,13 @@ public class SmartHttpServer {
 
 		}
 
+		/**
+		 * Helper method which extracts header from input stream data.
+		 *
+		 * @return The list, each string represents one line of header.
+		 * @throws IOException
+		 *             Signals that an I/O exception has occurred.
+		 */
 		private List<String> extractHeaders() throws IOException {
 			List<String> headers = new ArrayList<String>();
 			String currentLine = null;
@@ -399,6 +580,16 @@ public class SmartHttpServer {
 			return headers;
 		}
 
+		/**
+		 * Helper method used in {@link #extractHeaders()}. It is simple
+		 * automata which parses data from input stream.
+		 *
+		 * @param is
+		 *            the is
+		 * @return the byte[]
+		 * @throws IOException
+		 *             Signals that an I/O exception has occurred.
+		 */
 		private byte[] readRequest(InputStream is) throws IOException {
 
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -446,13 +637,30 @@ public class SmartHttpServer {
 			return bos.toByteArray();
 		}
 	}
-	
+
+	/**
+	 * <code>SessionMapEntry</code> represents each session.
+	 *
+	 * @author Ivan Rezic
+	 */
 	private static class SessionMapEntry {
+
+		/** Session id. */
 		String sid;
+
+		/** Session life time. */
 		long validUntil;
+
+		/** Session persistent parameters */
 		Map<String, String> map;
 	}
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args
+	 *            the arguments from command line, not used here
+	 */
 	public static void main(String[] args) {
 		SmartHttpServer server = new SmartHttpServer("config/server.properties");
 		server.start();

@@ -13,25 +13,45 @@ import hr.fer.zemris.java.custom.scripting.parser.SmartScriptParser;
 import hr.fer.zemris.java.webserver.RequestContext;
 import hr.fer.zemris.java.webserver.RequestContext.RCCookie;
 
+/**
+ * <code>EngineDemo</code> is demonstration program which shows how each script
+ * is parsed and executed.
+ *
+ * @author Ivan Rezic
+ */
 @SuppressWarnings("unused")
 public class EngineDemo {
 
+	/**
+	 * The main method of this class, used for demonstration purposes.
+	 *
+	 * @param args
+	 *            The arguments from command line, not used here.
+	 */
 	public static void main(String[] args) {
 		String documentBody = null;
 		try {
-			documentBody = new String(Files.readAllBytes(Paths.get("webroot/scripts/fibonacci.smscr")), StandardCharsets.UTF_8);
+			documentBody = new String(Files.readAllBytes(Paths.get("webroot/scripts/osnovni.smscr")),
+					StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Wrong file path given.");
 			System.exit(-1);
 		}
 
-		// osnovni(documentBody);
+		osnovni(documentBody);
 		// zbrajanje(documentBody);
 		// brojPoziva(documentBody);
-		fibonacci(documentBody);
+		// fibonacci(documentBody);
 
 	}
 
+	/**
+	 * Demonstrates, simple operations provided by
+	 * {@linkplain SmartScriptEngine}.
+	 *
+	 * @param documentBody
+	 *            the document body
+	 */
 	private static void osnovni(String documentBody) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		Map<String, String> persistentParameters = new HashMap<String, String>();
@@ -42,6 +62,13 @@ public class EngineDemo {
 
 	}
 
+	/**
+	 * Demonstrates simple addition of two parameters stored in a parameters
+	 * map.
+	 *
+	 * @param documentBody
+	 *            the document body
+	 */
 	private static void zbrajanje(String documentBody) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		Map<String, String> persistentParameters = new HashMap<String, String>();
@@ -54,6 +81,14 @@ public class EngineDemo {
 
 	}
 
+	/**
+	 * Prints number which is by one larger than number stored in
+	 * persistentParameters map. This script is later used to count number of
+	 * times client requested context from server.
+	 *
+	 * @param documentBody
+	 *            the document body
+	 */
 	private static void brojPoziva(String documentBody) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		Map<String, String> persistentParameters = new HashMap<String, String>();
@@ -64,6 +99,12 @@ public class EngineDemo {
 		System.out.println("Vrijednost u mapi: " + rc.getPersistentParameter("brojPoziva"));
 	}
 
+	/**
+	 * Prints first ten fibonnaci numbers.
+	 *
+	 * @param documentBody
+	 *            the document body
+	 */
 	private static void fibonacci(String documentBody) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		Map<String, String> persistentParameters = new HashMap<String, String>();
