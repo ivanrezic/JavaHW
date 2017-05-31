@@ -25,15 +25,15 @@ public class TrigonometricFunctionsServlet extends HttpServlet {
 			this.sinus = sinus;
 			this.cosinus = cosinus;
 		}
-
+		
 		public Integer getNumber() {
 			return number;
 		}
-
+		
 		public Double getSinus() {
 			return sinus;
 		}
-
+		
 		public Double getCosinus() {
 			return cosinus;
 		}
