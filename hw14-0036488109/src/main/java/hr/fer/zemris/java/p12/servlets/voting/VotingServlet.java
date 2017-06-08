@@ -1,4 +1,4 @@
-package hr.fer.zemris.p12.servlets.voting;
+package hr.fer.zemris.java.p12.servlets.voting;
 
 import java.io.IOException;
 import java.util.ArrayList;

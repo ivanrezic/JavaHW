@@ -1,4 +1,4 @@
-package hr.fer.zemris.p12.servlets;
+package hr.fer.zemris.java.p12.servlets;
 
 import java.io.IOException;
 import java.util.List;
