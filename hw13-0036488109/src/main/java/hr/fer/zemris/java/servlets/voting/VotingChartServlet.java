@@ -22,9 +22,16 @@ import org.jfree.util.Rotation;
 
 import hr.fer.zemris.java.servlets.voting.VotingServlet.Band;
 
+/**
+ * <code>VotingChartServlet</code> is servlet used for creation of pie chart out
+ * of retrieved data from global attributes.
+ *
+ * @author Ivan Rezic
+ */
 @WebServlet("/glasanje-grafika")
 public class VotingChartServlet extends HttpServlet {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -35,7 +42,7 @@ public class VotingChartServlet extends HttpServlet {
 
 		List<Band> bands = (List<Band>) req.getServletContext().getAttribute("bands");
 		Map<String, Integer> scores = (Map<String, Integer>) req.getServletContext().getAttribute("scores");
-		PieDataset dataset = createDataset(bands,scores);
+		PieDataset dataset = createDataset(bands, scores);
 		JFreeChart chart = createChart(dataset, "Favorite bands");
 
 		RenderedImage chartImage = chart.createBufferedImage(400, 400);
@@ -44,6 +51,15 @@ public class VotingChartServlet extends HttpServlet {
 		os.close();
 	}
 
+	/**
+	 * Creates the dataset.
+	 *
+	 * @param bands
+	 *            the bands
+	 * @param scores
+	 *            the scores
+	 * @return the pie dataset
+	 */
 	private PieDataset createDataset(List<Band> bands, Map<String, Integer> scores) {
 		DefaultPieDataset result = new DefaultPieDataset();
 
@@ -54,6 +70,15 @@ public class VotingChartServlet extends HttpServlet {
 		return result;
 	}
 
+	/**
+	 * Creates the chart.
+	 *
+	 * @param dataset
+	 *            the dataset
+	 * @param title
+	 *            the title
+	 * @return the j free chart
+	 */
 	private JFreeChart createChart(PieDataset dataset, String title) {
 		JFreeChart chart = ChartFactory.createPieChart3D(title, dataset, true, true, false);
 

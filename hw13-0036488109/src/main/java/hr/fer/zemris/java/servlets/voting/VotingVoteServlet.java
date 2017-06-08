@@ -21,9 +21,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import hr.fer.zemris.java.servlets.voting.VotingServlet.Band;
 
+/**
+ * <code>VotingVoteServlet</code> is servlet which retrieves all data that will
+ * be used in "/glasanjeRez".
+ *
+ * @author Ivan Rezic
+ */
 @WebServlet("/glasanje-glasaj")
 public class VotingVoteServlet extends HttpServlet {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -56,6 +63,17 @@ public class VotingVoteServlet extends HttpServlet {
 		req.getRequestDispatcher("/WEB-INF/pages/glasanjeRez.jsp").forward(req, resp);
 	}
 
+	/**
+	 * Method used for converting data out of given file path.
+	 *
+	 * @param req
+	 *            the request
+	 * @param file
+	 *            the file
+	 * @return scores
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	private Map<String, Integer> getScores(HttpServletRequest req, Path file) throws IOException {
 		Map<String, Integer> score = new HashMap<>();
 
@@ -68,6 +86,16 @@ public class VotingVoteServlet extends HttpServlet {
 		return score;
 	}
 
+	/**
+	 * Write map data into as file onto given path.
+	 *
+	 * @param score
+	 *            the score
+	 * @param file
+	 *            the file
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	private void writeIntoFile(Map<String, Integer> score, Path file) throws IOException {
 		BufferedWriter writer = Files.newBufferedWriter(file);
 
@@ -78,21 +106,39 @@ public class VotingVoteServlet extends HttpServlet {
 		writer.close();
 	}
 
+	/**
+	 * Helper method which sorts given map by value.
+	 *
+	 * @param <K>
+	 *            the key type
+	 * @param <V>
+	 *            the value type
+	 * @param map
+	 *            Map to be sorted.
+	 * @return Sorted map.
+	 */
 	private <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
 		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
+	/**
+	 * Helper method which extracts all wining id-s from voting results.
+	 *
+	 * @param sorted
+	 *            map containing data
+	 * @return wining ID
+	 */
 	private List<Integer> getWiningID(Map<String, Integer> sorted) {
 		List<Integer> result = new ArrayList<>();
 		int max = Collections.max(sorted.values());
-		
+
 		for (Map.Entry<String, Integer> entry : sorted.entrySet()) {
 			if (entry.getValue() == max) {
 				result.add(Integer.valueOf(entry.getKey()));
 			}
 		}
-		
+
 		return result;
 	}
 }

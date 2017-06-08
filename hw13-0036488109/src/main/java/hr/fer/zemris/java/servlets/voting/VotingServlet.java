@@ -12,30 +12,73 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * <code>VotingServlet</code> is servlet which reads all data from given path
+ * and forwards it to the glasanjeIndex view.
+ *
+ * @author Ivan Rezic
+ */
 @WebServlet("/glasanje")
 public class VotingServlet extends HttpServlet {
 
+	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * <code>Band</code> is helper class containg all relevant data about band.
+	 *
+	 * @author Ivan Rezic
+	 */
 	public static class Band {
+
+		/** Band id. */
 		String id;
+
+		/** Band name. */
 		String name;
+
+		/** Band song. */
 		String song;
 
+		/**
+		 * Constructor which instantiates new band.
+		 *
+		 * @param id
+		 *            the id
+		 * @param name
+		 *            the name
+		 * @param song
+		 *            the song
+		 */
 		public Band(String id, String name, String song) {
 			this.id = id;
 			this.name = name;
 			this.song = song;
 		}
-		
+
+		/**
+		 * Method used for getting property <code>Id</code>.
+		 *
+		 * @return id
+		 */
 		public String getId() {
 			return id;
 		}
-		
+
+		/**
+		 * Method used for getting property <code>Name</code>.
+		 *
+		 * @return name
+		 */
 		public String getName() {
 			return name;
 		}
-		
+
+		/**
+		 * Method used for getting property <code>Song</code>.
+		 *
+		 * @return song
+		 */
 		public String getSong() {
 			return song;
 		}

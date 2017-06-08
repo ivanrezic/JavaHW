@@ -1,7 +1,8 @@
-package hr.fer.zemris.java.servlets;
+package hr.fer.zemris.p12.servlets.voting;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -18,13 +19,17 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.util.Rotation;
 
+import hr.fer.zemris.java.p12.dao.DAOProvider;
+import hr.fer.zemris.java.p12.model.PollOption;
+
 /**
- * <code>PieChartServlet</code> is servlet used to create pie chart graphic.
+ * <code>VotingChartServlet</code> is servlet used for creation of pie chart out
+ * of retrieved data from database.
  *
  * @author Ivan Rezic
  */
-@WebServlet(name = "usagePieChart", urlPatterns = { "/reportImage" })
-public class PieChartServlet extends HttpServlet {
+@WebServlet("servleti/glasanje-grafika")
+public class VotingChartServlet extends HttpServlet {
 
 	/** Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -34,38 +39,28 @@ public class PieChartServlet extends HttpServlet {
 		resp.setContentType("image/png");
 		ServletOutputStream os = resp.getOutputStream();
 
-		PieDataset dataset = createDataset();
-		JFreeChart chart = createChart(dataset, "OS Usage");
+		Long pollID = (Long) req.getSession().getAttribute("pollID");
+		List<PollOption> results = DAOProvider.getDao().getPollOptions(pollID);
 
-		RenderedImage chartImage = chart.createBufferedImage(400, 300);
+		DefaultPieDataset result = new DefaultPieDataset();
+		results.forEach(e -> result.setValue(e.getOptionTitle(), e.getVotesCount()));
+
+		JFreeChart chart = createChart(result, "Favorite options");
+
+		RenderedImage chartImage = chart.createBufferedImage(400, 400);
 		ImageIO.write(chartImage, "png", os);
 		os.flush();
 		os.close();
 	}
 
 	/**
-	 * Creates the dataset.
-	 *
-	 * @return the pie dataset
-	 */
-	private PieDataset createDataset() {
-		DefaultPieDataset result = new DefaultPieDataset();
-
-		result.setValue("Linux", 29);
-		result.setValue("Mac", 20);
-		result.setValue("Windows", 51);
-
-		return result;
-	}
-
-	/**
-	 * Creates the chart.
+	 * Creates the chart from given dataset.
 	 *
 	 * @param dataset
-	 *            Dataset
+	 *            Dataset.
 	 * @param title
-	 *            Chart tile.
-	 * @return chart
+	 *            Chart title.
+	 * @return Plotted chart.
 	 */
 	private JFreeChart createChart(PieDataset dataset, String title) {
 		JFreeChart chart = ChartFactory.createPieChart3D(title, dataset, true, true, false);
