@@ -1,36 +1,63 @@
 package hr.fer.zemris.java.similarity;
 
+/**
+ * <code>MyWord</code> is class which encapsulates one vocabulary word. Each word has its text value and IDF value.
+ *
+ * @author Ivan Rezic
+ */
 public class MyWord {
 
+	/** text. */
 	private String text;
+	
+	/** IDF part from TF-IDF vector. */
 	private double IDF;
 
+	/**
+	 * Constructor which instantiates new my word.
+	 *
+	 * @param text the text
+	 */
 	public MyWord(String text) {
 		this.text = text;
 	}
 	
+	/**
+	 * Method used for getting property <code>Text</code>.
+	 *
+	 * @return text
+	 */
 	public String getText() {
 		return text;
 	}
 	
+	/**
+	 * Method used for getting property <code>IDF</code>.
+	 *
+	 * @return idf
+	 */
 	public double getIDF() {
 		return IDF;
 	}
 	
-	public void storeIDF(int count, int vocabularySize) {
-		this.IDF = Math.log10((vocabularySize * 1.0)/count);
+	/**
+	 * Sets the IDF.
+	 *
+	 * @param count the count
+	 * @param filesSize the files size
+	 */
+	public void setIDF(int count, int filesSize) {
+		this.IDF = Math.log((filesSize * 1.0)/count);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(IDF);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((text == null) ? 0 : text.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -41,8 +68,6 @@ public class MyWord {
 		if (!(obj instanceof MyWord))
 			return false;
 		MyWord other = (MyWord) obj;
-		if (Double.doubleToLongBits(IDF) != Double.doubleToLongBits(other.IDF))
-			return false;
 		if (text == null) {
 			if (other.text != null)
 				return false;
@@ -50,4 +75,6 @@ public class MyWord {
 			return false;
 		return true;
 	}
+
+	
 }
