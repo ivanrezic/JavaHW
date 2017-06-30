@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Ivanova Aplikacija</string>
+    <string name="second_button_text">Statistics</string>
+    <string name="first_button_text">Mathematics</string>
+    <string name="first_hint">Enter first number</string>
+    <string name="second_hint">Enter second number</string>
+    <string name="radio_one_text">Add</string>
+    <string name="radio_two_text">Sub</string>
+    <string name="radio_three_text">Mul</string>
+    <string name="radio_four_text">Div</string>
+    <string name="result_button_text">Result</string>
+    <string name="display_first_button_text">Ok</string>
+    <string name="display_second_button_text">Send report</string>
+    <string name="form_header">Please provide relative path:</string>
+    <string name="form_button_text">Load</string>
+    <string name="imageView_content_description">avatar</string>
+</resources>

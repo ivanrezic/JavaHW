@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context="hr.fer.android.hw0036488109.ivanovaaplikacija.CalculusActivity">
+
+    <EditText
+        android:id="@+id/firstInput"
+        android:textAlignment="center"
+        android:hint="@string/first_hint"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/margin">
+
+        <RadioButton
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_one_text" />
+
+        <RadioButton
+            android:id="@+id/sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_two_text" />
+
+        <RadioButton
+            android:id="@+id/mul"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_three_text" />
+
+        <RadioButton
+            android:id="@+id/div"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_four_text" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/secondInput"
+        android:textAlignment="center"
+        android:hint="@string/second_hint"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"/>
+    
+    <Button
+        android:id="@+id/result"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="wrap_content"
+        android:text="@string/result_button_text"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"/>
+</LinearLayout>
