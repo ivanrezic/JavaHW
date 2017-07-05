@@ -52,16 +52,20 @@ public class Console {
 			System.out.print("Enter command > ");
 			String line = scanner.nextLine();
 			
-			if (line.matches("query .+")) {
-				executeQuery(line);
-			}else if (line.matches("type [0-9]")) {
-				executeType(line);
-			}else if (line.startsWith("results")) {
-				printResults();
-			}else if (line.equals("exit")) {
-				break;
-			}else {
-				System.out.println("Invalid command, please try again.");
+			try {
+				if (line.matches("query .+")) {
+					executeQuery(line);
+				}else if (line.matches("type [0-9]")) {
+					executeType(line);
+				}else if (line.startsWith("results")) {
+					printResults();
+				}else if (line.equals("exit")) {
+					break;
+				}else {
+					System.out.println("Invalid command, please try again.");
+				}
+			} catch (RuntimeException e) {
+				System.out.println("Query first!");
 			}
 		}
 		scanner.close();

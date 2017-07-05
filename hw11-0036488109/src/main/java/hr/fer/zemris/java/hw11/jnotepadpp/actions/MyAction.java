@@ -95,7 +95,7 @@ public abstract class MyAction extends AbstractAction {
 			title = file.getName();
 		}
 
-		tabbedPane.addTab(title, loadIconFrom("icons/save_green.png"), panel, tooltip);
+		tabbedPane.addTab(title, loadIconFrom("/save_green.png"), panel, tooltip);
 		tabbedPane.setSelectedComponent(panel);
 		return true;
 	}
